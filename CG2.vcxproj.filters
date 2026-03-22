@@ -1,31 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{bf94fcab-98ee-4bef-a047-5520bc3b3776}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DirectX">
+      <UniqueIdentifier>{e822d4c8-1b25-48ef-b22f-56ce7fb5ee3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DirectX\ShaderCompiler">
+      <UniqueIdentifier>{62e39884-b869-408d-9dae-00b88fffda53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils">
+      <UniqueIdentifier>{aacb24f2-43cd-4be4-b4cc-dd207c94a172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils\DebugUtil">
+      <UniqueIdentifier>{426bfd59-b730-4ef5-8657-62995d492588}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils\StringUtil">
+      <UniqueIdentifier>{955ef733-f233-4e77-bbea-23eb12b352a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\System">
+      <UniqueIdentifier>{d6a38bd0-17d3-4462-9e86-98a7e99b2165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\System\WinApi">
+      <UniqueIdentifier>{0bdaee3b-a1a3-46e1-845a-b4a11f793a38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Math">
+      <UniqueIdentifier>{68f0b603-0c8b-4cef-8676-210231178896}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="WinApi.cpp">
+      <Filter>Source\System\WinApi</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>Source\DirectX\ShaderCompiler</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugUtil.cpp">
+      <Filter>Source\Utils\DebugUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>Source\Utils\StringUtil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl" />
-    <FxCompile Include="Object3d.PS.hlsl" />
+    <FxCompile Include="Object3d.PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Object3d.VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="WinApi.h">
+      <Filter>Source\System\WinApi</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>Source\DirectX\ShaderCompiler</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugUtil.h">
+      <Filter>Source\Utils\DebugUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Source\Utils\StringUtil</Filter>
+    </ClInclude>
     <ClInclude Include="Vector4.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Source\Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

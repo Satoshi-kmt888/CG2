@@ -1,46 +1,25 @@
-#include "Vector4.h"
 #include <cassert>
 #include <cstdint>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <format>
-#include <string>
 #include <strsafe.h>
 #include <Windows.h>
 
+#include "DebugUtil.h"
+#include "ShaderCompiler.h"
+#include "StringUtil.h"
+#include "Vector4.h"
+#include "WinApi.h"
+
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
-
-//Debug用の機能を使えるようにする
-#include <dbghelp.h>
-#pragma comment(lib, "Dbghelp.lib")
 
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 
 #include <dxcapi.h>
 #pragma comment(lib, "dxcompiler.lib")
-
-//ウィンドウプロシージャ
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-//ログ
-void Log(const std::string& message);
-
-//string->wstring
-std::wstring ConvertString(const std::string& str);
-
-//wstring->string
-std::string ConvertString(const std::wstring& str);
-
-static LONG WINAPI ExportDump(EXCEPTION_POINTERS* exception);
-
-IDxcBlob* CompileShader(
-	const std::wstring& filePath, const wchar_t* profile,
-	IDxcUtils* dxcUtils,
-	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler
-);
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -581,154 +560,4 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	return 0;
-}
-
-LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	//メッセージに応じてゲーム固有の処理を行う
-	switch (msg) {
-		//ウィンドウが破棄された
-	case WM_DESTROY:
-		//OSに対して、アプリの終了を伝える
-		PostQuitMessage(0);
-		return 0;
-	}
-
-	//標準のメッセージ処理を行う
-	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-
-void Log(const std::string& message) {
-	OutputDebugStringA(message.c_str());
-}
-
-std::wstring ConvertString(const std::string& str) {
-	if (str.empty()) {
-		return std::wstring();
-	}
-
-	auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), NULL, 0);
-	if (sizeNeeded == 0) {
-		return std::wstring();
-	}
-
-	std::wstring result(sizeNeeded, 0);
-	MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), &result[0], sizeNeeded);
-
-	return result;
-}
-
-std::string ConvertString(const std::wstring& str) {
-	if (str.empty()) {
-		return std::string();
-	}
-
-	auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), NULL, 0, NULL, NULL);
-	if (sizeNeeded == 0) {
-		return std::string();
-	}
-
-	std::string result(sizeNeeded, 0);
-	WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), result.data(), sizeNeeded, NULL, NULL);
-
-	return result;
-}
-
-LONG __stdcall ExportDump(EXCEPTION_POINTERS* exception) {
-	//時刻を取得して、自国を名前に入れたファイルを作成。Dumpsディレクトリ以下に主力
-	SYSTEMTIME time;
-	GetLocalTime(&time);
-	wchar_t filePath[MAX_PATH] = { 0 };
-	CreateDirectory(L"./Dumps", nullptr);
-	StringCchPrintfW(filePath, MAX_PATH, L"./Dumps/%04d-%02d%02d-%02d%02d.dmp", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute);
-	HANDLE dumpFileHandle = CreateFile(filePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
-	//processId(このexeのId)とクラッシュ(例外)の発生したthreadIdを取得
-	DWORD processId = GetCurrentProcessId();
-	DWORD threadId = GetCurrentThreadId();
-	//設定情報を入力
-	MINIDUMP_EXCEPTION_INFORMATION minidumpInformation{ 0 };
-	minidumpInformation.ThreadId = threadId;
-	minidumpInformation.ExceptionPointers = exception;
-	minidumpInformation.ClientPointers = TRUE;
-	//Dumpを出力。MiniDumpNormalは最低限の情報を出力するフラグ
-	MiniDumpWriteDump(GetCurrentProcess(), processId, dumpFileHandle, MiniDumpNormal, &minidumpInformation, nullptr, nullptr);
-	//他に関連付けられているSEH例外ハンドラがあれば実行。通常はプロセスを終了する
-
-	return EXCEPTION_EXECUTE_HANDLER;
-}
-
-IDxcBlob* CompileShader(
-	/*
-	hlslファイルを読み込む
-	------------------------------*/
-	//CompilerするShaderファイルへのパス
-	const std::wstring& filePath,
-	//Compilerに使用するProfile
-	const wchar_t* profile,
-	//初期化で生成したもの
-	IDxcUtils* dxcUtils,
-	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler) {
-	//これからシェーダーをコンパイルする旨をログに出す
-	Log(ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
-	//hlslファイルを読む
-	IDxcBlobEncoding* shaderSource = nullptr;
-	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
-	//読めなかったら止める
-	assert(SUCCEEDED(hr));
-	//読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
-	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
-	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
-	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF8の文字コードであることを通知
-
-	/*
-	Compileする
-	------------------------------*/
-	LPCWSTR arguments[] = {
-		filePath.c_str(),		  //コンパイル対象のhlslファイル名
-		L"-E", L"main",			  //エントリーポイント指定。基本的にmain以外にはしない
-		L"-T", profile,			  //ShaderProfileの設定
-		L"-Zi", L"-Qembed_debug", //デバッグ用の情報を埋め込む
-		L"-Od",					  //最適化を外しておく
-		L"-Zpr"					  //メモリレイアウトは行優先
-	};
-	//実際にシェーダーをコンパイルする
-	IDxcResult* shaderResult = nullptr;
-	hr = dxcCompiler->Compile(
-		&shaderSourceBuffer,		//読み込んだファイル
-		arguments,					//コンパイルオプション
-		_countof(arguments),		//コンパイルオプションの数
-		includeHandler,				//includeが含まれた諸々
-		IID_PPV_ARGS(&shaderResult) //コンパイル結果
-	);
-	//コンパイルエラーではなくdxcが起動できないほどの致命的な状況
-	assert(SUCCEEDED(hr));
-
-	/*
-	警告・エラーの確認
-	------------------------------*/
-	//警告・エラーが出たらログに出して止める
-	IDxcBlobUtf8* shaderError = nullptr;
-	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
-		Log(shaderError->GetStringPointer());
-		assert(false);
-	}
-
-	/*
-	Compile結果を返す
-	------------------------------*/
-	//コンパイル結果から実行のバイナリ部分を取得
-	IDxcBlob* shaderBlob = nullptr;
-	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
-	assert(SUCCEEDED(hr));
-	//成功したログを出す
-	Log(ConvertString(std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
-	//使わなくなったリソースを開放
-	shaderSource->Release();
-	shaderResult->Release();
-
-	//実行用のバイナリを返却
-	return shaderBlob;
 }

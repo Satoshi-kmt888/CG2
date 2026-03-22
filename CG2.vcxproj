@@ -89,7 +89,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DebugUtil.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="StringUtil.cpp" />
+    <ClCompile Include="WinApi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -106,7 +110,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugUtil.h" />
+    <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="StringUtil.h" />
     <ClInclude Include="Vector4.h" />
+    <ClInclude Include="WinApi.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
