@@ -1,14 +1,16 @@
-#include "DebugUtil.h"
+#include <Windows.h>
 #include <strsafe.h>
-//Debug用の機能を使えるようにする
 #include <dbghelp.h>
+
+#include "DebugUtil.h"
+
 #pragma comment(lib, "Dbghelp.lib")
 
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
 }
 
-LONG __stdcall ExportDump(EXCEPTION_POINTERS* exception) {
+LONG __stdcall ExportDump(_EXCEPTION_POINTERS* exception) {
 	//時刻を取得して、自国を名前に入れたファイルを作成。Dumpsディレクトリ以下に主力
 	SYSTEMTIME time;
 	GetLocalTime(&time);

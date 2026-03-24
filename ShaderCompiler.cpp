@@ -1,12 +1,13 @@
-#include <cassert>
-#include <format>
 #include <Windows.h>
+#include <cassert>
+#include <dxcapi.h>
+#include <format>
 
 #include "DebugUtil.h"
 #include "ShaderCompiler.h"
 #include "StringUtil.h"
 
-#include <dxcapi.h>
+
 #pragma comment(lib, "dxcompiler.lib")
 
 IDxcBlob* CompileShader(

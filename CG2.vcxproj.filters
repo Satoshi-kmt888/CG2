@@ -36,6 +36,9 @@
     <Filter Include="Source\Math">
       <UniqueIdentifier>{68f0b603-0c8b-4cef-8676-210231178896}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Utils\D3D12Util">
+      <UniqueIdentifier>{66cb7f4c-0583-4686-8e1c-d7994a6f3f1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -52,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="StringUtil.cpp">
       <Filter>Source\Utils\StringUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12Util.cpp">
+      <Filter>Source\Utils\D3D12Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="Vector4.h">
       <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12Util.h">
+      <Filter>Source\Utils\D3D12Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
