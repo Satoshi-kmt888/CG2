@@ -13,6 +13,8 @@
 #include "ShaderCompiler.h"
 #include "StringUtil.h"
 #include "Vector4.h"
+#include "Matrix4x4.h"
+#include "Transform.h"
 #include "WinApi.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -257,12 +259,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//RootParameter作成
-	D3D12_ROOT_PARAMETER rootParameters[1] = {};
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	//CBVを使う
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParameters[0].Descriptor.ShaderRegister = 0;					//レジスタ番号0とバインド
-	descriptionRootSignature.pParameters = rootParameters;				//ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof(rootParameters);	//配列の長さ
+	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	 //CBVを使う
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;  //PixelShaderで使う
+	rootParameters[0].Descriptor.ShaderRegister = 0;					 //レジスタ番号0とバインド
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	 //CBVを使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //レジスタ番号0とバインド
+	rootParameters[1].Descriptor.ShaderRegister = 0;					 //レジスタ番号0とバインド
+	descriptionRootSignature.pParameters = rootParameters;				 //ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters);	 //配列の長さ
 
 	//シリアライズにしてバイナリにする
 	ID3DBlob* signatureBlob = nullptr;
@@ -371,6 +376,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//赤を書き込む
 	*materialData = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
+	//WVP用のリソースを作る
+	ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
+	//データを書き込む
+	Matrix4x4* wvpData = nullptr;
+	//書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	//単位行列を書き込んでおく
+	*wvpData = Matrix4x4::Identity();
+
 	/*
 	VertexBufferViewの作成
 	------------------------------*/
@@ -418,6 +432,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	scissorRect.top = 0;
 	scissorRect.bottom = kClientHeight;
 
+	//Transform変数を作る
+	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+
 	MSG msg{};
 	//ウィンドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -452,6 +469,30 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
 			//==================================================
+			//三角形の更新
+			//==================================================
+
+			//回転
+			transform.rotation.y += 0.01f;
+
+			//カメラのワールド変換データ
+			Transform cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
+
+			//ワールド行列更新
+			Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
+			Matrix4x4 cameraMatrix =
+				Matrix4x4::MakeAffineMatrix(
+					cameraTransform.scale, cameraTransform.rotation, cameraTransform.translation
+				);
+			Matrix4x4 viewMatrix = cameraMatrix.Inversed();
+			Matrix4x4 projectionMatrix =
+				Matrix4x4::MakeProjectionFovMatrix(
+				0.45f, static_cast<float>(kClientWidth) / static_cast<float>(kClientHeight),0.1f, 100.0f
+				);
+			Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewMatrix * projectionMatrix;
+			*wvpData = worldViewProjectionMatrix;
+
+			//==================================================
 			//三角形の描画
 			//==================================================
 
@@ -468,6 +509,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			//マテリアルCBufferの場所を設定(RootParameter配列の0番目)
 			commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+			//wvp用のCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 			//描画(DrawCall)
 			commandList->DrawInstanced(3, 1, 0, 0);
 
@@ -519,6 +562,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	/*
 	三角形の描画に利用したもの
 	------------------------------*/
+	wvpResource->Release();
 	materialResource->Release();
 	vertexResource->Release();
 	graphicsPipelineState->Release();

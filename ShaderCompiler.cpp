@@ -7,7 +7,6 @@
 #include "ShaderCompiler.h"
 #include "StringUtil.h"
 
-
 #pragma comment(lib, "dxcompiler.lib")
 
 IDxcBlob* CompileShader(

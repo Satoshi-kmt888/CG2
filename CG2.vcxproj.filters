@@ -39,6 +39,18 @@
     <Filter Include="Source\Utils\D3D12Util">
       <UniqueIdentifier>{66cb7f4c-0583-4686-8e1c-d7994a6f3f1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Math\Matrix4x4">
+      <UniqueIdentifier>{c205a79d-205c-48cd-a92c-a69d92769750}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Math\Transform">
+      <UniqueIdentifier>{38101bc0-21af-4bc6-8d7a-81e6a6a7b83d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Camera">
+      <UniqueIdentifier>{64a2e7b0-d97e-427f-a291-4328f5a087cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Math\Projection">
+      <UniqueIdentifier>{c5b4fe4c-bc0e-4361-a654-c67af4598c92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,6 +70,15 @@
     </ClCompile>
     <ClCompile Include="D3D12Util.cpp">
       <Filter>Source\Utils\D3D12Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4x4.cpp">
+      <Filter>Source\Math\Matrix4x4</Filter>
+    </ClCompile>
+    <ClCompile Include="Projection.cpp">
+      <Filter>Source\Math\Projection</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +107,21 @@
     </ClInclude>
     <ClInclude Include="D3D12Util.h">
       <Filter>Source\Utils\D3D12Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4.h">
+      <Filter>Source\Math\Matrix4x4</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Source\Math\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Projection.h">
+      <Filter>Source\Math\Projection</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Source\Camera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
