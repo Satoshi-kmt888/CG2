@@ -9,18 +9,26 @@
 
 #pragma comment(lib, "dxcompiler.lib")
 
-IDxcBlob* CompileShader(
-	/*
-	hlslファイルを読み込む
-	------------------------------*/
-	//CompilerするShaderファイルへのパス
-	const std::wstring& filePath,
-	//Compilerに使用するProfile
-	const wchar_t* profile,
-	//初期化で生成したもの
-	IDxcUtils* dxcUtils,
-	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler) {
+void ShaderCompiler::Initialize(){
+	HRESULT hr;
+
+	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	assert(SUCCEEDED(hr));
+	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	assert(SUCCEEDED(hr));
+
+	//現時点でincludeしないが、includeに対応するための設定を行っておく
+	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	assert(SUCCEEDED(hr));
+}
+
+void ShaderCompiler::Finalize(){
+	includeHandler->Release();
+	dxcCompiler->Release();
+	dxcUtils->Release();
+}
+
+IDxcBlob* ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* profile) {
 	//これからシェーダーをコンパイルする旨をログに出す
 	Log(ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
 	//hlslファイルを読む
@@ -66,6 +74,10 @@ IDxcBlob* CompileShader(
 	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
 		Log(shaderError->GetStringPointer());
 		assert(false);
+	}
+
+	if (shaderError) {
+		shaderError->Release();
 	}
 
 	/*

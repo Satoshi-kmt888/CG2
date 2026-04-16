@@ -6,11 +6,22 @@ struct IDxcUtils;
 struct IDxcCompiler3;
 struct IDxcIncludeHandler;
 
-//シェーダをコンパイル
-IDxcBlob* CompileShader(
-	const std::wstring& filePath,
-	const wchar_t* profile,
-	IDxcUtils* dxcUtils,
-	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler
-);
+/// <summary>
+/// シェーダーコンパイラ
+/// </summary>
+class ShaderCompiler {
+public:
+	void Initialize();
+	void Finalize();
+
+	//コンパイル処理
+	IDxcBlob* Compile(
+		const std::wstring& filePath,
+		const wchar_t* profile
+	);
+
+private:
+	IDxcUtils* dxcUtils = nullptr;
+	IDxcCompiler3* dxcCompiler = nullptr;
+	IDxcIncludeHandler* includeHandler = nullptr;
+};

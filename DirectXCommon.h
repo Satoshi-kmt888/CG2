@@ -9,7 +9,7 @@
 /// <summary>
 /// DirectXの基盤
 /// </summary>
-class DirectXCommon{
+class DirectXCommon {
 public:
 
 	void Initialize(WinApp* winApp);
@@ -36,7 +36,6 @@ private:
 	ID3D12GraphicsCommandList* commandList = nullptr;
 	IDXGISwapChain4* swapChain = nullptr;
 	ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
-	//ID3D12DescriptorHeap* srvDescriptorHeap = nullptr;
 	ID3D12Resource* swapChainResources[2] = { nullptr };
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	ID3D12Fence* fence = nullptr;
@@ -45,4 +44,3 @@ private:
 
 	uint32_t backBufferIndex = 0;
 };
-

@@ -57,6 +57,9 @@
     <Filter Include="Source\System\WinApp">
       <UniqueIdentifier>{0bdaee3b-a1a3-46e1-845a-b4a11f793a38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\DirectX\GraphicsPipeline">
+      <UniqueIdentifier>{9d5f7683-4719-4d1a-b035-379abf782415}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -108,7 +111,10 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="DirectXCommon.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\DirectX\DirectXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPipeline.cpp">
+      <Filter>Source\DirectX\GraphicsPipeline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -177,7 +183,12 @@
     <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h" />
+    <ClInclude Include="DirectXCommon.h">
+      <Filter>Source\DirectX\DirectXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Source\DirectX\GraphicsPipeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
