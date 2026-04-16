@@ -30,9 +30,6 @@
     <Filter Include="Source\System">
       <UniqueIdentifier>{d6a38bd0-17d3-4462-9e86-98a7e99b2165}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\System\WinApi">
-      <UniqueIdentifier>{0bdaee3b-a1a3-46e1-845a-b4a11f793a38}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Math">
       <UniqueIdentifier>{68f0b603-0c8b-4cef-8676-210231178896}</UniqueIdentifier>
     </Filter>
@@ -51,13 +48,22 @@
     <Filter Include="Source\Math\Projection">
       <UniqueIdentifier>{c5b4fe4c-bc0e-4361-a654-c67af4598c92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DirectX\DirectXCommon">
+      <UniqueIdentifier>{0a3d31e8-8caf-4e4a-86eb-929deb0d716c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\System\WinApp">
+      <UniqueIdentifier>{0bdaee3b-a1a3-46e1-845a-b4a11f793a38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="WinApi.cpp">
-      <Filter>Source\System\WinApi</Filter>
+    <ClCompile Include="WinApp.cpp">
+      <Filter>Source\System\WinApp</Filter>
     </ClCompile>
     <ClCompile Include="ShaderCompiler.cpp">
       <Filter>Source\DirectX\ShaderCompiler</Filter>
@@ -80,6 +86,30 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="externals\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXCommon.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -90,8 +120,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WinApi.h">
-      <Filter>Source\System\WinApi</Filter>
+    <ClInclude Include="WinApp.h">
+      <Filter>Source\System\WinApp</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCompiler.h">
       <Filter>Source\DirectX\ShaderCompiler</Filter>
@@ -123,5 +153,35 @@
     <ClInclude Include="Camera.h">
       <Filter>Source\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="externals\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_win32.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXCommon.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="externals\imgui\LICENSE.txt">
+      <Filter>imgui</Filter>
+    </Text>
   </ItemGroup>
 </Project>
