@@ -31,20 +31,34 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//誰も捕捉しなかった場合に(Unhandled)、捕捉する関数を登録
 	SetUnhandledExceptionFilter(ExportDump);
 
+	//ウィンドウズアプリケーションを生成・初期化
 	WinApp* winApp = new WinApp();
 	winApp->Initialize();
+	Log(std::format(
+		"WinApp Initialize Succeeded. ClientSize: {}x{}\n",
+		winApp->kClientWidth, winApp->kClientHeight
+	));
 
+	//DirectX12の基盤を生成・初期化
 	DirectXCommon* dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
+	Log(std::format(
+		"DirectXCommon Initialize Succeeded.\n"
+	));
 
+	//シェーダーコンパイラを生成・初期化
 	ShaderCompiler* shaderCompiler = new ShaderCompiler();
 	shaderCompiler->Initialize();
+	Log(std::format(
+		"ShaderCompiler Initialize Succeeded.\n"
+	));
 
+	//グラフィックスパイプラインを生成・初期化
 	GraphicsPipeline* graphicsPipeline = new GraphicsPipeline();
 	graphicsPipeline->Initialize(dxCommon->GetDevice(), shaderCompiler);
-
-	//出力ウィンドウへの文字出力
-	OutputDebugStringA("Hello,DirectX!\n");
+	Log(std::format(
+		"GraphicsPipeline Initialize Succeeded.\n"
+	));
 
 	//==================================================
 	//ImGui
@@ -253,7 +267,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	shaderCompiler->Finalize();
 	delete shaderCompiler;
 
-	//dxCommonの開放
+	//DirectX12関連の開放
 	dxCommon->Finalize();
 	delete dxCommon;
 

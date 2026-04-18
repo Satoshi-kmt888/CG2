@@ -3,8 +3,8 @@
 #include <dxcapi.h>
 #include <format>
 
-#include "DebugUtil.h"
 #include "ShaderCompiler.h"
+#include "DebugUtil.h"
 #include "StringUtil.h"
 
 #pragma comment(lib, "dxcompiler.lib")
