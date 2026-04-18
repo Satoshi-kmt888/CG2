@@ -19,6 +19,9 @@ public:
 
 	ID3D12Device* GetDevice() const { return device; }
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList; }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc; }
+	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc; }
+	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap; }
 
 private:
 	void CreateDevice();
@@ -35,8 +38,11 @@ private:
 	ID3D12CommandAllocator* commandAllocator = nullptr;
 	ID3D12GraphicsCommandList* commandList = nullptr;
 	IDXGISwapChain4* swapChain = nullptr;
-	ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	ID3D12Resource* swapChainResources[2] = { nullptr };
+	ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	ID3D12DescriptorHeap* srvDescriptorHeap = nullptr;
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	ID3D12Fence* fence = nullptr;
 	uint64_t fenceValue = 0;

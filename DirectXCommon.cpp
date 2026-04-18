@@ -93,9 +93,9 @@ void DirectXCommon::PostDraw() {
 void DirectXCommon::Finalize() {
 	CloseHandle(fenceEvent);
 	fence->Release();
-	//srvDescriptorHeap->Release();
 	swapChainResources[1]->Release();
 	swapChainResources[0]->Release();
+	srvDescriptorHeap->Release();
 	rtvDescriptorHeap->Release();
 	swapChain->Release();
 	commandList->Release();
@@ -219,7 +219,6 @@ void DirectXCommon::CreateSwapChain(WinApp* winApp) {
 	HRESULT hr;
 
 	//スワップチェーンを生成する
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	swapChainDesc.Width = winApp->kClientWidth;					 //画面の幅。ウィンドウのクライアント領域と同じものにしておく
 	swapChainDesc.Height = winApp->kClientHeight;				 //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;			 //色の形式
@@ -248,7 +247,6 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	assert(SUCCEEDED(hr));
 
 	//RTVの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	   //出力結果をSRGBに変換して書き込む
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; //2dテクスチャとして書き込む
 
@@ -263,7 +261,7 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	//2つ目を作る
 	device->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 
-	//ID3D12DescriptorHeap* srvDescriptorHeap = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true); //srv
+	srvDescriptorHeap = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true); //srv
 }
 
 void DirectXCommon::CreateFence() {

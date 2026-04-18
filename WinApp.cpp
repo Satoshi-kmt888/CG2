@@ -1,15 +1,16 @@
 #include "WinApp.h"
 #include "imgui.h"
 
-#include "backends/imgui_impl_dx12.h"
-#include "backends/imgui_impl_win32.h"
-
+#ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+#ifdef USE_IMGUI
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
+#endif
 
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
@@ -25,8 +26,8 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 }
 
 void WinApp::Initialize() {
-	hInstance_= GetModuleHandle(nullptr);
-	
+	hInstance_ = GetModuleHandle(nullptr);
+
 	//ウィンドウプロシージャ
 	wc_.lpfnWndProc = WindowProc;
 	//ウィンドウクラス名

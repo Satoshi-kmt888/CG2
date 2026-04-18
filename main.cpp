@@ -15,6 +15,12 @@
 #include "Matrix4x4.h"
 #include "Transform.h"
 
+#ifdef USE_IMGUI
+#include "imgui.h"
+#include "backends/imgui_impl_dx12.h"
+#include "backends/imgui_impl_win32.h"
+#endif
+
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -37,13 +43,33 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	GraphicsPipeline* graphicsPipeline = new GraphicsPipeline();
 	graphicsPipeline->Initialize(dxCommon->GetDevice(), shaderCompiler);
 
+	//出力ウィンドウへの文字出力
+	OutputDebugStringA("Hello,DirectX!\n");
+
 	//==================================================
 	//ImGui
 	//==================================================
 
-	//IMGUI_CHECKVERSION();
-	//ImGui::CreateContext();
-	//::StyleColorsDark();
+	//------------------------------
+	//初期化
+	//------------------------------
+
+#ifdef USE_IMGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(winApp->GetHwnd());
+	ImGui_ImplDX12_Init(
+		dxCommon->GetDevice(),
+		dxCommon->GetSwapChainDesc().BufferCount,
+		dxCommon->GetRtvDesc().Format,
+		dxCommon->GetSrvDescriptorHeap(),
+		dxCommon->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+		dxCommon->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
+	);
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->Build();
+#endif
 
 	//==================================================
 	//頂点データの作成とビュー
@@ -123,9 +149,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//Transform変数を作る
 	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
+
 	//ウィンドウの×ボタンが押されるまでループ
 	while (winApp->ProcessMessage() != 0) {
 		//ゲームの処理
+#ifdef USE_IMGUI
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		//デモウィンドウの表示
+		ImGui::ShowDemoWindow();
+#endif
 
 		//==================================================
 		//三角形の更新
@@ -151,11 +186,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewMatrix * projectionMatrix;
 		*wvpData = worldViewProjectionMatrix;
 
+
+		//描画前処理
+		dxCommon->PreDraw();
+
+#ifdef USE_IMGUI
+		//
+		ImGui::Render();
+#endif
+
+		//
+		ID3D12DescriptorHeap* descriptorHeap[] = { dxCommon->GetSrvDescriptorHeap() };
+		dxCommon->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
+
 		//==================================================
 		//三角形の描画
 		//==================================================
-
-		dxCommon->PreDraw();
 
 		/*
 		コマンドを積む
@@ -175,39 +221,45 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//描画(DrawCall)
 		dxCommon->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 
+#ifdef USE_IMGUI
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetCommandList());
+#endif
+
+		//描画処理
 		dxCommon->PostDraw();
 	}
-
-	//出力ウィンドウへの文字出力
-	OutputDebugStringA("Hello,DirectX!\n");
 
 	//==================================================
 	//解放作業
 	//==================================================
 
-
-	/*
-	三角形の描画に利用したもの
-	------------------------------*/
+	//三角形の描画に利用したもの
 	wvpResource->Release();
 	materialResource->Release();
 	vertexResource->Release();
 
+#ifdef USE_IMGUI
+	//ImGui
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+#endif
+
+	//PSOの開放
 	graphicsPipeline->Finalize();
 	delete graphicsPipeline;
 
+	//シェーダーコンパイラの開放
 	shaderCompiler->Finalize();
 	delete shaderCompiler;
 
+	//dxCommonの開放
 	dxCommon->Finalize();
 	delete dxCommon;
 
+	//ウィンドウズアプリケーションの開放
 	winApp->Finalize();
 	delete winApp;
-
-	/*
-	ウィンドウ生成やデバッグに利用したもの
-	------------------------------*/
 
 	//リソースリークチェック
 	IDXGIDebug1* debug;
