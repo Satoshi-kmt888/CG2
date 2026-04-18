@@ -362,7 +362,13 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# Dump
 *.dmp
 Dumps/
 
+# imgui
 imgui.ini
+
+# log
+*.log
+/logs

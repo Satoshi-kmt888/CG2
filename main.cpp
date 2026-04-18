@@ -4,6 +4,7 @@
 #include <dxgidebug.h>
 #include <format>
 #include <strsafe.h>
+#include <iostream>
 
 #include "WinApp.h"
 #include "DirectXCommon.h"
@@ -31,10 +32,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//誰も捕捉しなかった場合に(Unhandled)、捕捉する関数を登録
 	SetUnhandledExceptionFilter(ExportDump);
 
+	//
+	InitLog();
+
 	//ウィンドウズアプリケーションを生成・初期化
 	WinApp* winApp = new WinApp();
 	winApp->Initialize();
-	Log(std::format(
+	Log(std::cout,
+		std::format(
 		"WinApp Initialize Succeeded. ClientSize: {}x{}\n",
 		winApp->kClientWidth, winApp->kClientHeight
 	));

@@ -1,13 +1,48 @@
 #include <Windows.h>
 #include <strsafe.h>
 #include <dbghelp.h>
+#include <fstream>
+#include <chrono>
+#include <filesystem>
 
 #include "DebugUtil.h"
 
 #pragma comment(lib, "Dbghelp.lib")
 
+static std::ofstream gLogStream;
+
+void InitLog(){
+	//ログのディレクトリを用意
+	std::filesystem::create_directory("logs");
+
+	//現在時刻取得(UTC時刻)
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	//ログファイルの名前を秒までの時刻にする
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>
+		nowSeconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+	//日本時間(PCの設定時間)に変換
+	std::chrono::zoned_time localTime{ std::chrono::current_zone(), nowSeconds };
+	//formatで年月日_時分秒に変換
+	std::string dateString = std::format("{:%Y%m%d_%H%M%S}", localTime);
+	//時刻からファイル名を決定
+	std::string logFilePath = std::string("logs/") + dateString + ".log";
+	//ファイルを使って書き込み準備
+	gLogStream.open(logFilePath);
+}
+
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
+}
+
+void Log(std::ostream& os, const std::string& message) {
+	os << message << std::endl;
+	OutputDebugStringA(message.c_str());
+
+	// こちらでもファイルに書き込む
+	if (gLogStream.is_open()) {
+		gLogStream << message << std::endl;
+		gLogStream.flush();
+	}
 }
 
 LONG __stdcall ExportDump(_EXCEPTION_POINTERS* exception) {
