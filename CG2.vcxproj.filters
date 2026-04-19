@@ -38,12 +38,6 @@
     <Filter Include="Source\Math\Transform">
       <UniqueIdentifier>{38101bc0-21af-4bc6-8d7a-81e6a6a7b83d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Camera">
-      <UniqueIdentifier>{64a2e7b0-d97e-427f-a291-4328f5a087cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Math\Projection">
-      <UniqueIdentifier>{c5b4fe4c-bc0e-4361-a654-c67af4598c92}</UniqueIdentifier>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
     </Filter>
@@ -55,6 +49,9 @@
     </Filter>
     <Filter Include="Source\DirectX\GraphicsPipeline">
       <UniqueIdentifier>{9d5f7683-4719-4d1a-b035-379abf782415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Object3D">
+      <UniqueIdentifier>{f3945d5e-d23d-434c-9a8b-612d597426a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -78,12 +75,6 @@
     </ClCompile>
     <ClCompile Include="Matrix4x4.cpp">
       <Filter>Source\Math\Matrix4x4</Filter>
-    </ClCompile>
-    <ClCompile Include="Projection.cpp">
-      <Filter>Source\Math\Projection</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source\Camera</Filter>
     </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
@@ -111,6 +102,9 @@
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
       <Filter>Source\DirectX\GraphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3D.cpp">
+      <Filter>Source\Object3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,12 +143,6 @@
     <ClInclude Include="Transform.h">
       <Filter>Source\Math\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="Projection.h">
-      <Filter>Source\Math\Projection</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Source\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -184,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="GraphicsPipeline.h">
       <Filter>Source\DirectX\GraphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D.h">
+      <Filter>Source\Object3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@
 
 static std::ofstream gLogStream;
 
-void InitLog(){
+void InitLog() {
 	//ログのディレクトリを用意
 	std::filesystem::create_directory("logs");
 
