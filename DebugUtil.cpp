@@ -11,7 +11,7 @@
 
 static std::ofstream gLogStream;
 
-void InitLog() {
+void InitializeLog() {
 	//ログのディレクトリを用意
 	std::filesystem::create_directory("logs");
 
@@ -31,17 +31,13 @@ void InitLog() {
 }
 
 void Log(const std::string& message) {
+	gLogStream << message << std::endl;
 	OutputDebugStringA(message.c_str());
 }
 
-void Log(std::ostream& os, const std::string& message) {
-	os << message << std::endl;
-	OutputDebugStringA(message.c_str());
-
-	// こちらでもファイルに書き込む
+void FinalizeLog(){
 	if (gLogStream.is_open()) {
-		gLogStream << message << std::endl;
-		gLogStream.flush();
+		gLogStream.close();
 	}
 }
 

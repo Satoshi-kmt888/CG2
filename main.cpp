@@ -36,37 +36,30 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//==================================================
 
 	//ログファイル
-	InitLog();
+	InitializeLog();
 
 	//ウィンドウズアプリケーションを生成・初期化
 	WinApp* winApp = new WinApp();
 	winApp->Initialize();
-	Log(std::cout,
-		std::format(
-			"WinApp Initialize Succeeded. ClientSize: {}x{}\n",
-			winApp->kClientWidth, winApp->kClientHeight
-		));
+	Log(std::format(
+		"WinApp Initialize Succeeded. ClientSize: {}x{}\n",
+		winApp->kClientWidth, winApp->kClientHeight
+	));
 
 	//DirectX12の基盤を生成・初期化
 	DirectXCommon* dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
-	Log(std::format(
-		"DirectXCommon Initialize Succeeded.\n"
-	));
+	Log("DirectXCommon Initialize Succeeded.\n");
 
 	//シェーダーコンパイラを生成・初期化
 	ShaderCompiler* shaderCompiler = new ShaderCompiler();
 	shaderCompiler->Initialize();
-	Log(std::format(
-		"ShaderCompiler Initialize Succeeded.\n"
-	));
+	Log("ShaderCompiler Initialize Succeeded.\n");
 
 	//グラフィックスパイプラインを生成・初期化
 	GraphicsPipeline* graphicsPipeline = new GraphicsPipeline();
 	graphicsPipeline->Initialize(dxCommon->GetDevice(), shaderCompiler);
-	Log(std::format(
-		"GraphicsPipeline Initialize Succeeded.\n"
-	));
+	Log("GraphicsPipeline Initialize Succeeded.\n");
 
 	//オブジェクト(三角形)を生成・初期化
 	Object3D* triangle = new Object3D();
@@ -203,6 +196,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//ウィンドウズアプリケーションの開放
 	winApp->Finalize();
 	delete winApp;
+
+	//ログファイルの終了
+	FinalizeLog();
 
 	//リソースリークチェック
 	IDXGIDebug1* debug;
