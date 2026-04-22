@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "WinApp.h"
 #include "imgui.h"
 
@@ -26,6 +28,12 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 }
 
 void WinApp::Initialize() {
+	HRESULT hr;
+
+	//COMの初期化
+	hr = CoInitializeEx(0, COINIT_MULTITHREADED);
+	assert(SUCCEEDED(hr));
+
 	hInstance_ = GetModuleHandle(nullptr);
 
 	//ウィンドウプロシージャ
@@ -75,5 +83,9 @@ bool WinApp::ProcessMessage() {
 }
 
 void WinApp::Finalize() {
+	//ウィンドウを最小化
 	CloseWindow(hwnd_);
+
+	//COMを終了
+	CoUninitialize();
 }
