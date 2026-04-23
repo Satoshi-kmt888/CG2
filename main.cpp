@@ -2,18 +2,20 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
+#include <externals/DirectXTex/DirectXTex.h>
 #include <format>
 #include <strsafe.h>
-#include <iostream>
+#include <cassert>
 
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "ShaderCompiler.h"
 #include "GraphicsPipeline.h"
 #include "Object3D.h"
+#include "StringUtil.h"
+#include "D3D12Util.h"
 #include "DebugUtil.h"
 #include "Matrix4x4.h"
-#include "Transform.h"
 
 #ifdef USE_IMGUI
 #include "imgui.h"
@@ -25,6 +27,10 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
+
+DirectX::ScratchImage LoadTexture(const std::string& filePath);
+
+void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -101,6 +107,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	scissorRect.top = 0;
 	scissorRect.bottom = winApp->kClientHeight;
 
+
+	//Textureを読んで転送する
+	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	ID3D12Resource* textureResource = CreateTextureResource(dxCommon->GetDevice(), metadata);
+	UploadTextureData(textureResource, mipImages);
+
+
 	//ウィンドウの×ボタンが押されるまでループ
 	while (winApp->ProcessMessage() != 0) {
 		//==================================================
@@ -114,7 +128,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::NewFrame();
 
 		//デモウィンドウの表示
-		ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();
 #endif
 
 		//カメラのワールド変換データ
@@ -177,7 +191,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ImGui::DestroyContext();
 #endif
 
-	//
+	//テクスチャリソース
+	textureResource->Release();
+
+	//三角形
 	triangle->Finalize();
 	delete triangle;
 
@@ -210,4 +227,37 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	return 0;
+}
+
+DirectX::ScratchImage LoadTexture(const std::string& filePath){
+	//テクスチャを読み込んで扱えるようにする
+	DirectX::ScratchImage image{};
+	std::wstring filePathW = ConvertString(filePath);
+	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	assert(SUCCEEDED(hr));
+
+	//ミップマップの作成
+	DirectX::ScratchImage mipImages{};
+	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+
+	return mipImages;
+}
+
+void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages){
+	//Meta情報を取得
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	//全mipMap
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+		//MipMapLevelを指定して各Imageを取得
+		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+		//Textureに転送
+		HRESULT hr = texture->WriteToSubresource(
+			UINT(mipLevel),
+			nullptr,			  //全領域へコピー 
+			img->pixels,		  //元データアドレス
+			UINT(img->rowPitch),  //1ラインサイズ
+			UINT(img->slicePitch) //1枚のサイズ
+		);
+		assert(SUCCEEDED(hr));
+	}
 }
