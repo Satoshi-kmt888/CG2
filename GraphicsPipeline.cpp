@@ -93,7 +93,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	//==================================================
 	
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature;
+	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
 	graphicsPipelineStateDesc.VS = {
 		vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize()
@@ -119,6 +119,6 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 }
 
 void GraphicsPipeline::Finalize(){
-	graphicsPipelineState->Release();
-	rootSignature->Release();
+	//graphicsPipelineState->Release();
+	//rootSignature->Release();
 }

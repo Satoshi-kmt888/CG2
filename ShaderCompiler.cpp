@@ -1,6 +1,6 @@
 #include <Windows.h>
-#include <cassert>
 #include <dxcapi.h>
+#include <cassert>
 #include <format>
 
 #include "ShaderCompiler.h"
@@ -23,9 +23,9 @@ void ShaderCompiler::Initialize(){
 }
 
 void ShaderCompiler::Finalize(){
-	includeHandler->Release();
-	dxcCompiler->Release();
-	dxcUtils->Release();
+	//includeHandler->Release();
+	//dxcCompiler->Release();
+	//dxcUtils->Release();
 }
 
 IDxcBlob* ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* profile) {
@@ -59,7 +59,7 @@ IDxcBlob* ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* p
 		&shaderSourceBuffer,		//読み込んだファイル
 		arguments,					//コンパイルオプション
 		_countof(arguments),		//コンパイルオプションの数
-		includeHandler,				//includeが含まれた諸々
+		includeHandler.Get(),		//includeが含まれた諸々
 		IID_PPV_ARGS(&shaderResult) //コンパイル結果
 	);
 	//コンパイルエラーではなくdxcが起動できないほどの致命的な状況

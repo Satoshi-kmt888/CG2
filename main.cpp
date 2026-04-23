@@ -1,8 +1,11 @@
 #include <Windows.h>
+#include <wrl/client.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <dxcapi.h>
 #include <dxgidebug.h>
 #include <externals/DirectXTex/DirectXTex.h>
+#include <memory>
 #include <format>
 #include <strsafe.h>
 #include <cassert>
@@ -45,30 +48,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	InitializeLog();
 
 	//ウィンドウズアプリケーションを生成・初期化
-	WinApp* winApp = new WinApp();
+	std::unique_ptr<WinApp> winApp = std::make_unique<WinApp>();
 	winApp->Initialize();
-	Log(std::format(
-		"WinApp Initialize Succeeded. ClientSize: {}x{}\n",
-		winApp->kClientWidth, winApp->kClientHeight
-	));
+	uint32_t w = winApp->kClientWidth;
+	uint32_t h = winApp->kClientHeight;
+	Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", w, h));
 
 	//DirectX12の基盤を生成・初期化
-	DirectXCommon* dxCommon = new DirectXCommon();
-	dxCommon->Initialize(winApp);
+	std::unique_ptr<DirectXCommon> dxCommon = std::make_unique<DirectXCommon>();
+	dxCommon->Initialize(winApp.get());
 	Log("DirectXCommon Initialize Succeeded.\n");
 
 	//シェーダーコンパイラを生成・初期化
-	ShaderCompiler* shaderCompiler = new ShaderCompiler();
+	std::unique_ptr<ShaderCompiler> shaderCompiler = std::make_unique<ShaderCompiler>();
 	shaderCompiler->Initialize();
 	Log("ShaderCompiler Initialize Succeeded.\n");
 
 	//グラフィックスパイプラインを生成・初期化
-	GraphicsPipeline* graphicsPipeline = new GraphicsPipeline();
-	graphicsPipeline->Initialize(dxCommon->GetDevice(), shaderCompiler);
+	std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
+	graphicsPipeline->Initialize(dxCommon->GetDevice(), shaderCompiler.get());
 	Log("GraphicsPipeline Initialize Succeeded.\n");
 
 	//オブジェクト(三角形)を生成・初期化
-	Object3D* triangle = new Object3D();
+	std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
 	triangle->Initialize(dxCommon->GetDevice());
 
 	//IMGUI
@@ -92,8 +94,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
 	//クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = winApp->kClientWidth;
-	viewport.Height = winApp->kClientHeight;
+	viewport.Width = static_cast<float>(winApp->kClientWidth);
+	viewport.Height = static_cast<float>(winApp->kClientHeight);
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.MinDepth = 0.0f;
@@ -103,16 +105,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	D3D12_RECT scissorRect{};
 	//基本的にビューポートと同じ矩形が構成されるようにする
 	scissorRect.left = 0;
-	scissorRect.right = winApp->kClientWidth;
+	scissorRect.right = static_cast<long>(winApp->kClientWidth);
 	scissorRect.top = 0;
-	scissorRect.bottom = winApp->kClientHeight;
+	scissorRect.bottom = static_cast<long>(winApp->kClientHeight);
 
 
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	ID3D12Resource* textureResource = CreateTextureResource(dxCommon->GetDevice(), metadata);
-	UploadTextureData(textureResource, mipImages);
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(dxCommon->GetDevice(), metadata);
+	UploadTextureData(textureResource.Get(), mipImages);
 
 
 	//ウィンドウの×ボタンが押されるまでループ
@@ -179,7 +181,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//描画後処理
 		dxCommon->PostDraw();
 	}
-
 	//==================================================
 	//                    解放作業
 	//==================================================
@@ -190,29 +191,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 #endif
-
-	//テクスチャリソース
-	textureResource->Release();
-
-	//三角形
-	triangle->Finalize();
-	delete triangle;
-
-	//グラフィックスパイプラインの開放
-	graphicsPipeline->Finalize();
-	delete graphicsPipeline;
-
-	//シェーダーコンパイラの開放
-	shaderCompiler->Finalize();
-	delete shaderCompiler;
-
-	//DirectX12関連の開放
-	dxCommon->Finalize();
-	delete dxCommon;
-
-	//ウィンドウズアプリケーションの開放
-	winApp->Finalize();
-	delete winApp;
 
 	//ログファイルの終了
 	FinalizeLog();
@@ -229,7 +207,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	return 0;
 }
 
-DirectX::ScratchImage LoadTexture(const std::string& filePath){
+DirectX::ScratchImage LoadTexture(const std::string& filePath) {
 	//テクスチャを読み込んで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = ConvertString(filePath);
@@ -243,7 +221,7 @@ DirectX::ScratchImage LoadTexture(const std::string& filePath){
 	return mipImages;
 }
 
-void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages){
+void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
 	//Meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	//全mipMap

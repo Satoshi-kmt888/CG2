@@ -1,5 +1,6 @@
 #pragma once
 
+#include <wrl/client.h>
 #include <d3d12.h>
 
 #include "ShaderCompiler.h"
@@ -12,10 +13,10 @@ public:
 	void Initialize(ID3D12Device* device, ShaderCompiler* shaderCompiler);
 	void Finalize();
 
-	ID3D12RootSignature* GetRootSignature() const { return rootSignature; }
-	ID3D12PipelineState* GetGraphicsPipelineState() const { return graphicsPipelineState; }
+	ID3D12RootSignature* GetRootSignature() const { return rootSignature.Get(); }
+	ID3D12PipelineState* GetGraphicsPipelineState() const { return graphicsPipelineState.Get(); }
 
 private:
-	ID3D12RootSignature* rootSignature = nullptr;
-	ID3D12PipelineState* graphicsPipelineState = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 };

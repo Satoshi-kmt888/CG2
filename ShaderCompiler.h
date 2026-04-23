@@ -1,4 +1,6 @@
 #pragma once
+
+#include <wrl/client.h>
 #include <string>
 
 struct IDxcBlob;
@@ -21,7 +23,7 @@ public:
 	);
 
 private:
-	IDxcUtils* dxcUtils = nullptr;
-	IDxcCompiler3* dxcCompiler = nullptr;
-	IDxcIncludeHandler* includeHandler = nullptr;
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils = nullptr;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
 };

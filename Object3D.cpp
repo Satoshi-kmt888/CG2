@@ -59,7 +59,7 @@ void Object3D::Draw(ID3D12GraphicsCommandList* commandList) {
 }
 
 void Object3D::Finalize() {
-	vertexResource->Release();
-	materialResource->Release();
-	wvpResource->Release();
+	//vertexResource->Release();
+	//materialResource->Release();
+	//wvpResource->Release();
 }
