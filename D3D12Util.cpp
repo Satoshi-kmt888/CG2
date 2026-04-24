@@ -1,5 +1,4 @@
 #include <wrl/client.h>
-#include <d3d12.h>
 #include <cassert>
 
 #include "D3D12Util.h"

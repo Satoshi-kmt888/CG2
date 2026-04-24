@@ -1,7 +1,14 @@
 #include "Object3D.h"
 #include "D3D12Util.h"
 
-void Object3D::Initialize(ID3D12Device* device) {
+void Object3D::Initialize(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap) {
+	//SRVを作成するDescriptorHeapの場所を決める
+	textureSrvHandleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	//先頭はImGuiが使っているのでその次を使う
+	textureSrvHandleCPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 	/*頂点リソースの作成*/
 	//データ書き込み
 	vertexResource = CreateBufferResource(device, sizeof(VertexData) * 3);
@@ -29,7 +36,7 @@ void Object3D::Initialize(ID3D12Device* device) {
 	//書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	//赤を書き込む
-	*materialData = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	/*WVPリソースの作成*/
 	wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
@@ -43,8 +50,6 @@ void Object3D::Initialize(ID3D12Device* device) {
 }
 
 void Object3D::Update(const Matrix4x4& viewProjectionMatrix) {
-	transform.rotation.y += 0.01f;
-
 	//ワールド行列更新
 	Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
 
@@ -60,6 +65,8 @@ void Object3D::Draw(ID3D12GraphicsCommandList* commandList) {
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの先頭を設定
+	commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	//描画(DrawCall)
 	commandList->DrawInstanced(3, 1, 0, 0);
 }

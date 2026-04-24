@@ -2,9 +2,7 @@
 
 #include <wrl/client.h>
 #include <externals/DirectXTex/DirectXTex.h>
-
-struct ID3D12Resource;
-struct ID3D12Device;
+#include <d3d12.h>
 
 //バッファリソースの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);

@@ -71,7 +71,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
-		triangle->Initialize(dxCommon->GetDevice());
+		triangle->Initialize(dxCommon->GetDevice(), dxCommon->GetSrvDescriptorHeap());
 
 		//IMGUI
 #ifdef USE_IMGUI
@@ -124,14 +124,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
-		//SRVを作成するDescriptorHeapの場所を決める
-		D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dxCommon->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
-		D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = dxCommon->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
-		//先頭はImGuiが使っているのでその次を使う
-		textureSrvHandleCPU.ptr += dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		textureSrvHandleGPU.ptr += dxCommon->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		//SRVの生成
-		dxCommon->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
+		dxCommon->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, triangle->GetTextureSrvHandleCPU());
 
 
 		//ウィンドウの×ボタンが押されるまでループ
@@ -148,9 +142,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 			//デモウィンドウの表示
 			//ImGui::ShowDemoWindow();
+
+			//三角形の色を変更
+			ImGui::DragFloat4("materialData", &triangle->GetMaterialData().x, 0.01f, 0.0f, 1.0f, "%.3f");
 #endif
 
-		//カメラのワールド変換データ
+			//カメラのワールド変換データ
 			Transform cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
 			Matrix4x4 cameraMatrix =
 				Matrix4x4::MakeAffineMatrix(

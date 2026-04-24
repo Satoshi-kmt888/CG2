@@ -18,10 +18,13 @@ struct VertexData {
 /// </summary>
 class Object3D {
 public:
-	void Initialize(ID3D12Device* device);
+	void Initialize(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap);
 	void Update(const Matrix4x4& viewProjectionMatrix);
 	void Draw(ID3D12GraphicsCommandList* commandList);
 	void Finalize();
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetTextureSrvHandleCPU() const { return textureSrvHandleCPU; }
+	Vector4& GetMaterialData() const { return *materialData; }
 
 private:
 	//リソース
@@ -31,6 +34,10 @@ private:
 
 	//ビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+
+	//
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 	//データポインタ
 	VertexData* vertexData = nullptr;
