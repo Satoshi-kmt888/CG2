@@ -3,9 +3,15 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 
+#include "Vector2.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Transform.h"
+
+struct VertexData {
+	Vector4 position;
+	Vector2	texCoord;
+};
 
 /// <summary>
 /// オブジェクト3D
@@ -27,7 +33,7 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
 	//データポインタ
-	Vector4* vertexData = nullptr;
+	VertexData* vertexData = nullptr;
 	Vector4* materialData = nullptr;
 	Matrix4x4* wvpData = nullptr;
 

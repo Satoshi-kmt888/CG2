@@ -4,19 +4,25 @@
 void Object3D::Initialize(ID3D12Device* device) {
 	/*頂点リソースの作成*/
 	//データ書き込み
-	vertexResource = CreateBufferResource(device, sizeof(Vector4) * 3);
+	vertexResource = CreateBufferResource(device, sizeof(VertexData) * 3);
 	//リソースの先頭アドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	//使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(Vector4) * 3;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
 	//1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(Vector4);
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	//書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	vertexData[0] = { -0.5f, -0.5f, 0.0f, 1.0f }; //左下
-	vertexData[1] = { 0.0f, 0.5f, 0.0f, 1.0f }; //上
-	vertexData[2] = { 0.5f, -0.5f, 0.0f, 1.0f }; //右下
+	//左下
+	vertexData[0].position = { -0.5f, -0.5f, 0.0f, 1.0f };
+	vertexData[0].texCoord = { 0.0f, 1.0f };
+	//上
+	vertexData[1].position = { 0.0f, 0.5f, 0.0f, 1.0f };
+	vertexData[1].texCoord = { 0.5f, 0.0f };
+	//右下
+	vertexData[2].position = { 0.5f, -0.5f, 0.0f, 1.0f };
+	vertexData[2].texCoord = { 1.0f, 1.0f };
 
 	/*マテリアルリソースの作成*/
 	materialResource = CreateBufferResource(device, sizeof(Vector4));

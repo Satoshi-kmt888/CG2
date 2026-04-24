@@ -53,6 +53,9 @@
     <Filter Include="Source\Object3D">
       <UniqueIdentifier>{f3945d5e-d23d-434c-9a8b-612d597426a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Math\Vector">
+      <UniqueIdentifier>{6dbc3820-ad9a-4d9b-93ef-5a1a011eac16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -128,14 +131,8 @@
     <ClInclude Include="StringUtil.h">
       <Filter>Source\Utils\StringUtil</Filter>
     </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Source\Math</Filter>
-    </ClInclude>
     <ClInclude Include="D3D12Util.h">
       <Filter>Source\Utils\D3D12Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="Matrix4x4.h">
       <Filter>Source\Math\Matrix4x4</Filter>
@@ -176,10 +173,24 @@
     <ClInclude Include="Object3D.h">
       <Filter>Source\Object3D</Filter>
     </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Source\Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Source\Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Source\Math\Vector</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
       <Filter>imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Object3d.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
