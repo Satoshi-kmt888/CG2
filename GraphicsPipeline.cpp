@@ -7,19 +7,22 @@
 
 #pragma comment(lib, "dxcompiler.lib")
 
-void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCompiler){
+void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCompiler) {
 	HRESULT hr;
 
 	//==================================================
 	//RootSignature
 	//==================================================
 
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	descriptionRootSignature.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	//ディスクリプタレンジの設定
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 0; //0から始まる
+	descriptorRange[0].NumDescriptors = 1; //数は1つ
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; //SRVを使う
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //Offsetを自動計算
 
 	//RootParameter作成
-	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	 //CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;  //PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;					 //レジスタ番号0とバインド
@@ -27,6 +30,10 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //レジスタ番号0とバインド
 	rootParameters[1].Descriptor.ShaderRegister = 0;					 //レジスタ番号0とバインド
 
+	//
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
+	descriptionRootSignature.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	descriptionRootSignature.pParameters = rootParameters;				 //ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);	 //配列の長さ
 
@@ -67,7 +74,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	//==================================================
 	//BlendState
 	//==================================================
-	
+
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -75,7 +82,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	//==================================================
 	//RasterizerState
 	//==================================================
-	
+
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
 	//裏面(時計回り)を表示しない
 	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
@@ -85,7 +92,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	//==================================================
 	//CompileShader
 	//==================================================
-	
+
 	//vertexShader
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = shaderCompiler->Compile(L"Object3D.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
@@ -97,7 +104,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	//==================================================
 	//PSOを作成
 	//==================================================
-	
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
@@ -124,7 +131,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	assert(SUCCEEDED(hr));
 }
 
-void GraphicsPipeline::Finalize(){
+void GraphicsPipeline::Finalize() {
 	//graphicsPipelineState->Release();
 	//rootSignature->Release();
 }
