@@ -17,7 +17,7 @@ public:
 	void Finalize();
 
 	//コンパイル処理
-	IDxcBlob* Compile(
+	Microsoft::WRL::ComPtr<IDxcBlob> Compile(
 		const std::wstring& filePath,
 		const wchar_t* profile
 	);

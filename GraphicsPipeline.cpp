@@ -31,8 +31,8 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	descriptionRootSignature.NumParameters = _countof(rootParameters);	 //配列の長さ
 
 	//シリアライズにしてバイナリにする
-	ID3DBlob* signatureBlob = nullptr;
-	ID3DBlob* errorBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 	hr = D3D12SerializeRootSignature(
 		&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob
 	);
@@ -81,11 +81,11 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	//==================================================
 	
 	//vertexShader
-	IDxcBlob* vertexShaderBlob = shaderCompiler->Compile(L"Object3D.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = shaderCompiler->Compile(L"Object3D.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
 
 	//pixelShader
-	IDxcBlob* pixelShaderBlob = shaderCompiler->Compile(L"Object3D.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = shaderCompiler->Compile(L"Object3D.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	//==================================================
