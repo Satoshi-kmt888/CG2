@@ -194,17 +194,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			//描画後処理
 			dxCommon->PostDraw();
 		}
-		//==================================================
-		//                    解放作業
-		//==================================================
 
-		//ImGui
-#ifdef USE_IMGUI
-		ImGui_ImplDX12_Shutdown();
-		ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext();
-#endif
+		//ウィンドウズアプリケーションの終了
+		WinApp::GetInstance()->Finalize();
 	}
+
+	//==================================================
+	//                    解放作業
+	//==================================================
+
+	//ImGui
+#ifdef USE_IMGUI
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+#endif
 
 	//ログファイルの終了
 	FinalizeLog();
