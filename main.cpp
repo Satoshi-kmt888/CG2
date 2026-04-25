@@ -54,8 +54,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", w, h));
 
 		//DirectX12の基盤を生成・初期化
-		std::unique_ptr<DirectXCommon> dxCommon = std::make_unique<DirectXCommon>();
-		dxCommon->Initialize();
+		DirectXCommon::GetInstance()->Initialize();
 		Log("DirectXCommon Initialize Succeeded.\n");
 
 		//シェーダーコンパイラを生成・初期化
@@ -65,12 +64,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//グラフィックスパイプラインを生成・初期化
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
-		graphicsPipeline->Initialize(dxCommon->GetDevice(), shaderCompiler.get());
+		graphicsPipeline->Initialize(DirectXCommon::GetInstance()->GetDevice(), shaderCompiler.get());
 		Log("GraphicsPipeline Initialize Succeeded.\n");
 
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
-		triangle->Initialize(dxCommon->GetDevice(), dxCommon->GetSrvDescriptorHeap());
+		triangle->Initialize(DirectXCommon::GetInstance()->GetDevice(), DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
 
 		//IMGUI
 #ifdef USE_IMGUI
@@ -79,12 +78,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::StyleColorsDark();
 		ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHwnd());
 		ImGui_ImplDX12_Init(
-			dxCommon->GetDevice(),
-			dxCommon->GetSwapChainDesc().BufferCount,
-			dxCommon->GetRtvDesc().Format,
-			dxCommon->GetSrvDescriptorHeap(),
-			dxCommon->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-			dxCommon->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
+			DirectXCommon::GetInstance()->GetDevice(),
+			DirectXCommon::GetInstance()->GetSwapChainDesc().BufferCount,
+			DirectXCommon::GetInstance()->GetRtvDesc().Format,
+			DirectXCommon::GetInstance()->GetSrvDescriptorHeap(),
+			DirectXCommon::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+			DirectXCommon::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
 		);
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->Build();
@@ -112,7 +111,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//Textureを読んで転送する
 		DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 		const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(dxCommon->GetDevice(), metadata);
+		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(DirectXCommon::GetInstance()->GetDevice(), metadata);
 		UploadTextureData(textureResource.Get(), mipImages);
 
 
@@ -124,7 +123,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 		//SRVの生成
-		dxCommon->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, triangle->GetTextureSrvHandleCPU());
+		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, triangle->GetTextureSrvHandleCPU());
 
 
 		//ウィンドウの×ボタンが押されるまでループ
@@ -167,7 +166,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			//==================================================
 
 			//描画前処理
-			dxCommon->PreDraw();
+			DirectXCommon::GetInstance()->PreDraw();
 
 #ifdef USE_IMGUI
 			//
@@ -175,40 +174,43 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 			//SRV用のヒープ
-			ID3D12DescriptorHeap* descriptorHeap[] = { dxCommon->GetSrvDescriptorHeap() };
-			dxCommon->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
+			ID3D12DescriptorHeap* descriptorHeap[] = { DirectXCommon::GetInstance()->GetSrvDescriptorHeap() };
+			DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
-			dxCommon->GetCommandList()->RSSetViewports(1, &viewport);
-			dxCommon->GetCommandList()->RSSetScissorRects(1, &scissorRect);
+			DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &viewport);
+			DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 			//RootSignatureを設定。PSOとは別途設定が必要
-			dxCommon->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
-			dxCommon->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
+			DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
+			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 
 			//三角形の描画処理
-			triangle->Draw(dxCommon->GetCommandList());
+			triangle->Draw(DirectXCommon::GetInstance()->GetCommandList());
 
 #ifdef USE_IMGUI
-			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetCommandList());
+			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList());
 #endif
 
 			//描画後処理
-			dxCommon->PostDraw();
+			DirectXCommon::GetInstance()->PostDraw();
 		}
+
+		//ImGui
+#ifdef USE_IMGUI
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+#endif
+		DirectXCommon::GetInstance()->Finalize();
 
 		//ウィンドウズアプリケーションの終了
 		WinApp::GetInstance()->Finalize();
+
 	}
 
 	//==================================================
 	//                    解放作業
 	//==================================================
 
-	//ImGui
-#ifdef USE_IMGUI
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-#endif
 
 	//ログファイルの終了
 	FinalizeLog();

@@ -1,12 +1,17 @@
-#include <wrl/client.h>
+#include "DirectXCommon.h"
+
 #include <cassert>
 #include <format>
 
-#include "DirectXCommon.h"
 #include "WinApp.h"
 #include "D3D12Util.h"
 #include "DebugUtil.h"
 #include "StringUtil.h"
+
+DirectXCommon* DirectXCommon::GetInstance() {
+	static DirectXCommon instance;
+	return &instance;
+}
 
 void DirectXCommon::Initialize() {
 	EnableDebugLayer();
@@ -16,6 +21,8 @@ void DirectXCommon::Initialize() {
 	CreateSwapChain();
 	CreateFinalRenderTargets();
 	CreateFence();
+
+	Log("DirectXCommon Initialize Succeeded.\n");
 }
 
 void DirectXCommon::PreDraw() {
@@ -46,8 +53,6 @@ void DirectXCommon::PreDraw() {
 }
 
 void DirectXCommon::PostDraw() {
-	HRESULT hr;
-
 	//TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier{};
 	//今回のバリアはTransition
@@ -65,7 +70,7 @@ void DirectXCommon::PostDraw() {
 	commandList->ResourceBarrier(1, &barrier);
 
 	//コマンドリストの内容を確定させる。すべてのコマンドを積んでからClose
-	hr = commandList->Close();
+	HRESULT hr = commandList->Close();
 	assert(SUCCEEDED(hr));
 
 	//GPUにコマンドリストの実行を行わせる
@@ -96,18 +101,19 @@ void DirectXCommon::PostDraw() {
 
 void DirectXCommon::Finalize() {
 	CloseHandle(fenceEvent);
-	//fence->Release();
-	//srvDescriptorHeap->Release();
-	//rtvDescriptorHeap->Release();
-	//swapChainResources[1]->Release();
-	//swapChainResources[0]->Release();
-	//swapChain->Release();
-	//commandList->Release();
-	//commandAllocator->Release();
-	//commandQueue->Release();
-	//device->Release();
-	//useAdapter->Release();
-	//dxgiFactory->Release();
+
+	fence.Reset();
+	srvDescriptorHeap.Reset();
+	rtvDescriptorHeap.Reset();
+	swapChainResources[0].Reset();
+	swapChainResources[1].Reset();
+	swapChain.Reset();
+	commandList.Reset();
+	commandAllocator.Reset();
+	commandQueue.Reset();
+	device.Reset();
+	useAdapter.Reset();
+	dxgiFactory.Reset();
 }
 
 void DirectXCommon::EnableDebugLayer() {
@@ -119,8 +125,8 @@ void DirectXCommon::EnableDebugLayer() {
 		//さらにGPU側でもチェックを行うようにする
 		debugController->SetEnableGPUBasedValidation(TRUE);
 	}
-#endif
 	Log("Enable Debuger Layer Succeeded.\n");
+#endif
 }
 
 void DirectXCommon::CreateDevice() {
@@ -129,7 +135,7 @@ void DirectXCommon::CreateDevice() {
 	//初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、どうにもできない場合が多いのでassert
 	assert(SUCCEEDED(hr));
 
-	//
+	//パフォーマンスの高い順にアダプターをチェックする
 	for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
 		IID_PPV_ARGS(&useAdapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
 		//アダプターの情報を取得する
@@ -149,7 +155,6 @@ void DirectXCommon::CreateDevice() {
 	//適切なアダプタが見つからなったので起動できない
 	assert(useAdapter != nullptr);
 
-	device = nullptr;
 	//機能レベルとログ出力用の文字列
 	D3D_FEATURE_LEVEL featureLevels[] = {
 		D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0
@@ -169,7 +174,7 @@ void DirectXCommon::CreateDevice() {
 	//デバイスの生成がうまくいかなかったので起動できない
 	assert(device != nullptr);
 	//初期化完了のログを出す
-	Log("Complete create D3D12Device!!!\n");
+	Log("Create Device Succeeded.\n");
 
 #ifdef _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
@@ -199,11 +204,9 @@ void DirectXCommon::CreateDevice() {
 }
 
 void DirectXCommon::CreateCommand() {
-	HRESULT hr;
-
 	//コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
-	hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
+	HRESULT hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
 	//コマンドキューの生成がうまくいかなかったので起動できない
 	assert(SUCCEEDED(hr));
 
@@ -221,19 +224,17 @@ void DirectXCommon::CreateCommand() {
 }
 
 void DirectXCommon::CreateSwapChain() {
-	HRESULT hr;
-
 	//スワップチェーンを生成する
-	swapChainDesc.Width = WinApp::GetInstance()->kClientWidth;					 //画面の幅。ウィンドウのクライアント領域と同じものにしておく
-	swapChainDesc.Height = WinApp::GetInstance()->kClientHeight;				 //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;			 //色の形式
-	swapChainDesc.SampleDesc.Count = 1;							 //マルチサンプルしない
+	swapChainDesc.Width = WinApp::GetInstance()->kClientWidth;   //画面の幅。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc.Height = WinApp::GetInstance()->kClientHeight; //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;           //色の形式
+	swapChainDesc.SampleDesc.Count = 1;                          //マルチサンプルしない
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
-	swapChainDesc.BufferCount = 2;								 //ダブルバッファ
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;	 //モニタにうつしたら中身を破棄
+	swapChainDesc.BufferCount = 2;                               //ダブルバッファ
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;    //モニタにうつしたら中身を破棄
 	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
 	//コマンドキュー、ウィンドウハンドル、設定を渡して生成する
-	hr = dxgiFactory->CreateSwapChainForHwnd(
+	HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(
 		commandQueue.Get(),
 		WinApp::GetInstance()->GetHwnd(),
 		&swapChainDesc,
@@ -246,23 +247,19 @@ void DirectXCommon::CreateSwapChain() {
 	hr = swapChain1.As(&swapChain);
 	assert(SUCCEEDED(hr));
 
-	Log("Create Swap Chain Succeeded.\n");
+	Log("Create SwapChain Succeeded.\n");
 }
 
 void DirectXCommon::CreateFinalRenderTargets() {
-	HRESULT hr;
-	Log("rtvDescriptorHeap Succeeded.\n");
-
 	//ディスクリプターヒープの生成
 	rtvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 
 	//SwapChainからResourceを引っ張ってくる
-	hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
+	HRESULT hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
 	//うまく取得できなければ起動できない
 	assert(SUCCEEDED(hr));
 	hr = swapChain->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
 	assert(SUCCEEDED(hr));
-
 
 	//RTVの設定
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	   //出力結果をSRGBに変換して書き込む
@@ -281,21 +278,19 @@ void DirectXCommon::CreateFinalRenderTargets() {
 
 	srvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true); //srv
 
-	Log("Create Final Render Target Succeeded.\n");
+	Log("Create FinalRenderTargets Succeeded.\n");
 }
 
 void DirectXCommon::CreateFence() {
-	HRESULT hr;
-
 	//Fenceの生成
 	fence = nullptr;
 	fenceValue = 0;
-	hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	HRESULT hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(hr));
 
 	//FenceのSignalを待つためのイベントを作成する
 	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent != nullptr);
 
-	Log("Create Fence.\n");
-}	
+	Log("Create Fence Succeeded.\n");
+}
