@@ -5,8 +5,6 @@
 #include <dxgi1_6.h>
 #include <cstdint>
 
-class WinApp;
-
 /// <summary>
 /// DirectXの基盤
 /// </summary>
@@ -14,7 +12,7 @@ class DirectXCommon {
 public:
 	/*--------ライフサイクル--------*/
 
-	void Initialize(WinApp* winApp);
+	void Initialize();
 	void PreDraw();
 	void PostDraw();
 	void Finalize();
@@ -38,7 +36,7 @@ private:
 	void CreateCommand();
 
 	//スワップチェーンの作成
-	void CreateSwapChain(WinApp* winApp);
+	void CreateSwapChain();
 
 	//描画対象の作成
 	void CreateFinalRenderTargets();

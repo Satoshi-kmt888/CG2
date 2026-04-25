@@ -8,12 +8,12 @@
 #include "DebugUtil.h"
 #include "StringUtil.h"
 
-void DirectXCommon::Initialize(WinApp* winApp) {
+void DirectXCommon::Initialize() {
 	EnableDebugLayer();
 
 	CreateDevice();
 	CreateCommand();
-	CreateSwapChain(winApp);
+	CreateSwapChain();
 	CreateFinalRenderTargets();
 	CreateFence();
 }
@@ -220,12 +220,12 @@ void DirectXCommon::CreateCommand() {
 	Log("Create Command Succeeded.\n");
 }
 
-void DirectXCommon::CreateSwapChain(WinApp* winApp) {
+void DirectXCommon::CreateSwapChain() {
 	HRESULT hr;
 
 	//スワップチェーンを生成する
-	swapChainDesc.Width = winApp->kClientWidth;					 //画面の幅。ウィンドウのクライアント領域と同じものにしておく
-	swapChainDesc.Height = winApp->kClientHeight;				 //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc.Width = WinApp::GetInstance()->kClientWidth;					 //画面の幅。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc.Height = WinApp::GetInstance()->kClientHeight;				 //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;			 //色の形式
 	swapChainDesc.SampleDesc.Count = 1;							 //マルチサンプルしない
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
@@ -235,7 +235,7 @@ void DirectXCommon::CreateSwapChain(WinApp* winApp) {
 	//コマンドキュー、ウィンドウハンドル、設定を渡して生成する
 	hr = dxgiFactory->CreateSwapChainForHwnd(
 		commandQueue.Get(),
-		winApp->GetHwnd(),
+		WinApp::GetInstance()->GetHwnd(),
 		&swapChainDesc,
 		nullptr,
 		nullptr,

@@ -48,15 +48,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		InitializeLog();
 
 		//ウィンドウズアプリケーションを生成・初期化
-		std::unique_ptr<WinApp> winApp = std::make_unique<WinApp>();
-		winApp->Initialize();
-		uint32_t w = winApp->kClientWidth;
-		uint32_t h = winApp->kClientHeight;
+		WinApp::GetInstance()->Initialize();
+		uint32_t w = WinApp::GetInstance()->kClientWidth;
+		uint32_t h = WinApp::GetInstance()->kClientHeight;
 		Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", w, h));
 
 		//DirectX12の基盤を生成・初期化
 		std::unique_ptr<DirectXCommon> dxCommon = std::make_unique<DirectXCommon>();
-		dxCommon->Initialize(winApp.get());
+		dxCommon->Initialize();
 		Log("DirectXCommon Initialize Succeeded.\n");
 
 		//シェーダーコンパイラを生成・初期化
@@ -78,7 +77,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
-		ImGui_ImplWin32_Init(winApp->GetHwnd());
+		ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHwnd());
 		ImGui_ImplDX12_Init(
 			dxCommon->GetDevice(),
 			dxCommon->GetSwapChainDesc().BufferCount,
@@ -94,8 +93,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ビューポート
 		D3D12_VIEWPORT viewport{};
 		//クライアント領域のサイズと一緒にして画面全体に表示
-		viewport.Width = static_cast<float>(winApp->kClientWidth);
-		viewport.Height = static_cast<float>(winApp->kClientHeight);
+		viewport.Width = static_cast<float>(WinApp::GetInstance()->kClientWidth);
+		viewport.Height = static_cast<float>(WinApp::GetInstance()->kClientHeight);
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.MinDepth = 0.0f;
@@ -105,9 +104,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		D3D12_RECT scissorRect{};
 		//基本的にビューポートと同じ矩形が構成されるようにする
 		scissorRect.left = 0;
-		scissorRect.right = static_cast<long>(winApp->kClientWidth);
+		scissorRect.right = static_cast<long>(WinApp::GetInstance()->kClientWidth);
 		scissorRect.top = 0;
-		scissorRect.bottom = static_cast<long>(winApp->kClientHeight);
+		scissorRect.bottom = static_cast<long>(WinApp::GetInstance()->kClientHeight);
 
 
 		//Textureを読んで転送する
@@ -129,7 +128,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 		//ウィンドウの×ボタンが押されるまでループ
-		while (winApp->ProcessMessage() != 0) {
+		while (WinApp::GetInstance()->ProcessMessage() != 0) {
 			//==================================================
 			//                       更新
 			//==================================================
@@ -156,7 +155,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			Matrix4x4 viewMatrix = cameraMatrix.Inversed();
 			Matrix4x4 projectionMatrix =
 				Matrix4x4::MakeProjectionFovMatrix(
-					0.45f, static_cast<float>(winApp->kClientWidth) / static_cast<float>(winApp->kClientHeight), 0.1f, 100.0f
+					0.45f, static_cast<float>(WinApp::GetInstance()->kClientWidth) / static_cast<float>(WinApp::GetInstance()->kClientHeight), 0.1f, 100.0f
 				);
 			Matrix4x4 viewProjectionMatrix = viewMatrix * projectionMatrix;
 
