@@ -1,15 +1,16 @@
-#include <cassert>
-#include <d3d12.h>
-#include <dxcapi.h>
-
 #include "GraphicsPipeline.h"
+
+#include "DirectXCommon.h"
+#include "ShaderCompiler.h"
 #include "DebugUtil.h"
+
+#include <cassert>
+
+#include <dxcapi.h>
 
 #pragma comment(lib, "dxcompiler.lib")
 
-void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCompiler) {
-	HRESULT hr;
-
+void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 	//==================================================
 	//RootSignature
 	//==================================================
@@ -45,7 +46,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	staticSamplers[0].ShaderRegister = 0;								//レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 
-	//
+	//シリアライズにしてバイナリにする
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -53,11 +54,10 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	descriptionRootSignature.NumParameters = _countof(rootParameters);	 //配列の長さ
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
-
-	//シリアライズにしてバイナリにする
+	
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
-	hr = D3D12SerializeRootSignature(
+	HRESULT hr = D3D12SerializeRootSignature(
 		&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob
 	);
 	if (FAILED(hr)) {
@@ -65,7 +65,7 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 		assert(false);
 	}
 	//バイナリをもとに作成
-	hr = device->CreateRootSignature(
+	hr = DirectXCommon::GetInstance()->GetDevice()->CreateRootSignature(
 		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature)
 	);
 	assert(SUCCEEDED(hr));
@@ -142,13 +142,10 @@ void GraphicsPipeline::Initialize(ID3D12Device* device, ShaderCompiler* shaderCo
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	//実際に生成
-	hr = device->CreateGraphicsPipelineState(
+	hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(
 		&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState)
 	);
 	assert(SUCCEEDED(hr));
-}
 
-void GraphicsPipeline::Finalize() {
-	//graphicsPipelineState->Release();
-	//rootSignature->Release();
+	Log("GraphicsPipeline Initialize Succeeded.\n");
 }

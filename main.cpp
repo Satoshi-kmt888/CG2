@@ -64,8 +64,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//グラフィックスパイプラインを生成・初期化
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
-		graphicsPipeline->Initialize(DirectXCommon::GetInstance()->GetDevice(), shaderCompiler.get());
-		Log("GraphicsPipeline Initialize Succeeded.\n");
+		graphicsPipeline->Initialize(shaderCompiler.get());
 
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
