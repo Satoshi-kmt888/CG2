@@ -49,9 +49,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//ウィンドウズアプリケーションを生成・初期化
 		WinApp::GetInstance()->Initialize();
-		uint32_t w = WinApp::GetInstance()->kClientWidth;
-		uint32_t h = WinApp::GetInstance()->kClientHeight;
-		Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", w, h));
 
 		//DirectX12の基盤を生成・初期化
 		DirectXCommon::GetInstance()->Initialize();

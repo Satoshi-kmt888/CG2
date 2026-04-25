@@ -1,8 +1,10 @@
 #include "WinApp.h"
 
-#include <cassert>
-
+#include "DebugUtil.h"
 #include "imgui.h"
+
+#include <cassert>
+#include <format>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -68,6 +70,8 @@ void WinApp::Initialize() {
 
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
+
+	Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", kClientWidth, kClientHeight));
 }
 
 bool WinApp::ProcessMessage() {
