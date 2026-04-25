@@ -1,15 +1,12 @@
+#include "WinApp.h"
+
 #include <cassert>
 
-#include "WinApp.h"
 #include "imgui.h"
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
-
-WinApp::~WinApp(){
-	Finalize();
-}
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 #ifdef USE_IMGUI
@@ -32,10 +29,8 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 }
 
 void WinApp::Initialize() {
-	HRESULT hr;
-
 	//COMの初期化
-	hr = CoInitializeEx(0, COINIT_MULTITHREADED);
+	HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));
 
 	hInstance_ = GetModuleHandle(nullptr);
@@ -58,17 +53,17 @@ void WinApp::Initialize() {
 
 	//ウィンドウの生成
 	hwnd_ = CreateWindow(
-		wc_.lpszClassName,	  //利用するクラス名
-		L"CG2",				  //タイトルバーの文字
+		wc_.lpszClassName,    //利用するクラス名
+		L"CG2",               //タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,  //ウィンドウスタイル
-		CW_USEDEFAULT,		  //表示X座標(Windowsに任せる)
-		CW_USEDEFAULT,		  //表示Y座標(Windowsに任せる)
+		CW_USEDEFAULT,        //表示X座標(Windowsに任せる)
+		CW_USEDEFAULT,        //表示Y座標(Windowsに任せる)
 		wrc.right - wrc.left, //ウィンドウ横幅
 		wrc.bottom - wrc.top, //ウィンドウ縦幅
-		nullptr,			  //親ウィンドウハンドル
-		nullptr,			  //メニューハンドル
-		hInstance_,		  //インスタンスハンドル
-		nullptr				  //オプション
+		nullptr,              //親ウィンドウハンドル
+		nullptr,              //メニューハンドル
+		hInstance_,           //インスタンスハンドル
+		nullptr               //オプション
 	);
 
 	//ウィンドウを表示する
