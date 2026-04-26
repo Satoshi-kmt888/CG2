@@ -1,12 +1,12 @@
 #include "DirectXCommon.h"
 
-#include <cassert>
-#include <format>
-
-#include "WinApp.h"
 #include "D3D12Util.h"
 #include "DebugUtil.h"
 #include "StringUtil.h"
+#include "WinApp.h"
+
+#include <cassert>
+#include <format>
 
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;

@@ -1,9 +1,9 @@
 #pragma once
+#include <cstdint>
+
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl/client.h>
-
-#include <cstdint>
 
 /**
  * \class DirectXCommon
@@ -15,11 +15,7 @@
  * - 各種ディスクリプターヒープの保持
  */
 class DirectXCommon {
-public:
-	/*==================================================
-	 インスタンス制御
-	==================================================*/
-
+public://--- インスタンス制御 ---
 	/**
 	 * \brief インスタンスの取得
 	 * \return DirectXCommon唯一のインスタンス
@@ -30,12 +26,8 @@ public:
 	DirectXCommon(const DirectXCommon&) = delete;
 	DirectXCommon& operator=(const DirectXCommon&) = delete;
 
-public:
-	/*==================================================
-	 ライフサイクル
-	==================================================*/
-
-	/** \brief 基盤系の初期化 */
+public://--- ライフサイクル ---
+	/** \brief 初期化処理 */
 	void Initialize();
 
 	/** \brief フレーム描画開始処理 */
@@ -44,25 +36,17 @@ public:
 	/** \brief フレーム描画終了処理 */
 	void PostDraw();
 
-	/** \brief  基盤系の終了処理*/
+	/** \brief  終了処理*/
 	void Finalize();
 
-public:
-	/*==================================================
-	 ゲッター
-	==================================================*/
-
+public://--- ゲッター ---
 	ID3D12Device* GetDevice() const { return device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList.Get(); }
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc; }
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap.Get(); }
 
-private:
-	/*==================================================
-	 内部初期化関数
-	==================================================*/
-
+private://--- 内部初期化関数 ---
 	/** \brief デバッグレイヤーの有効化 */
 	void EnableDebugLayer();
 
@@ -81,19 +65,11 @@ private:
 	/** \brief GPUとの同期用フェンスの作成 */
 	void CreateFence();
 
-private:
-	/*==================================================
-	 コンストラクタ・デストラクタ
-	==================================================*/
-
+private://--- コンストラクタ・デストラクタ
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 
-private:
-	/*==================================================
-	 メンバ変数
-	==================================================*/
-
+private://--- メンバ変数 ---
 	//基盤
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter = nullptr;
