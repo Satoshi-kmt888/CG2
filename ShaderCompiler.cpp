@@ -1,18 +1,18 @@
-#include <Windows.h>
-#include <dxcapi.h>
+#include <Windows.h> //ShaderCompiler.h内のdxcapi.hがWindows.hの内容を必要としているためこの位置
+#include "ShaderCompiler.h"
+
+#include "DebugUtil.h"
+#include "StringUtil.h"
+
 #include <cassert>
 #include <format>
 
-#include "ShaderCompiler.h"
-#include "DebugUtil.h"
-#include "StringUtil.h"
+#include <dxcapi.h>
 
 #pragma comment(lib, "dxcompiler.lib")
 
 void ShaderCompiler::Initialize(){
-	HRESULT hr;
-
-	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
 	assert(SUCCEEDED(hr));
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
 	assert(SUCCEEDED(hr));
@@ -24,12 +24,6 @@ void ShaderCompiler::Initialize(){
 	Log("ShaderCompiler Initialize Succeeded.\n");
 }
 
-void ShaderCompiler::Finalize(){
-	//includeHandler->Release();
-	//dxcCompiler->Release();
-	//dxcUtils->Release();
-}
-
 Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* profile) {
 	//これからシェーダーをコンパイルする旨をログに出す
 	Log(ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
@@ -39,7 +33,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& fil
 	//読めなかったら止める
 	assert(SUCCEEDED(hr));
 	//読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
+	DxcBuffer shaderSourceBuffer{};
 	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
 	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
 	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF8の文字コードであることを通知
