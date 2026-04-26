@@ -61,7 +61,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
-		triangle->Initialize(DirectXCommon::GetInstance()->GetDevice(), DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
+		triangle->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
 
 		//IMGUI
 #ifdef USE_IMGUI
@@ -173,7 +173,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 
 			//三角形の描画処理
-			triangle->Draw(DirectXCommon::GetInstance()->GetCommandList());
+			triangle->Draw();
 
 #ifdef USE_IMGUI
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList());
