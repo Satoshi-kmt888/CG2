@@ -2,11 +2,7 @@
 
 #include <wrl/client.h>
 #include <string>
-
-struct IDxcBlob;
-struct IDxcUtils;
-struct IDxcCompiler3;
-struct IDxcIncludeHandler;
+#include <dxcapi.h>
 
 /// <summary>
 /// シェーダーコンパイラ

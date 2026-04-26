@@ -20,6 +20,8 @@ void ShaderCompiler::Initialize(){
 	//現時点でincludeしないが、includeに対応するための設定を行っておく
 	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr));
+
+	Log("ShaderCompiler Initialize Succeeded.\n");
 }
 
 void ShaderCompiler::Finalize(){

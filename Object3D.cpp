@@ -1,5 +1,11 @@
 #include "Object3D.h"
+
 #include "D3D12Util.h"
+#include "Matrix4x4.h"
+#include "Vector4.h"
+
+#include <d3d12.h>
+#include <d3dcommon.h>
 
 void Object3D::Initialize(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap) {
 	//SRVを作成するDescriptorHeapの場所を決める

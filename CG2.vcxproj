@@ -128,6 +128,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="StringUtil.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Object3D.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="StringUtil.h" />
+    <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />

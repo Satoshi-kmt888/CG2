@@ -1,39 +1,37 @@
-#include <Windows.h>
-#include <wrl/client.h>
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <dxcapi.h>
-#include <dxgidebug.h>
-#include <externals/DirectXTex/DirectXTex.h>
-#include <memory>
-#include <format>
-#include <strsafe.h>
-#include <cassert>
-
-#include "WinApp.h"
 #include "DirectXCommon.h"
-#include "ShaderCompiler.h"
-#include "GraphicsPipeline.h"
-#include "Object3D.h"
-#include "StringUtil.h"
+#include "WinApp.h"
+
 #include "D3D12Util.h"
 #include "DebugUtil.h"
+#include "GraphicsPipeline.h"
 #include "Matrix4x4.h"
+#include "Object3D.h"
+#include "ShaderCompiler.h"
+#include "TextureLoader.h"
+#include "Transform.h"
 
+#include <externals/DirectXTex/DirectXTex.h>
 #ifdef USE_IMGUI
-#include "imgui.h"
-#include "backends/imgui_impl_dx12.h"
-#include "backends/imgui_impl_win32.h"
+#include <imgui.h>
+#include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_win32.h>
 #endif
+
+#include <memory>
+
+#include <Windows.h>
+#include <d3d12.h>
+#include <dxgidebug.h>
+#include <strsafe.h>
+#include <wrl/client.h>
+#include <dxgi1_3.h>
+#include <d3d12sdklayers.h>
+#include <sal.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
-
-DirectX::ScratchImage LoadTexture(const std::string& filePath);
-
-void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -47,17 +45,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ログファイル
 		InitializeLog();
 
-		//ウィンドウズアプリケーションを生成・初期化
+		//ウィンドウズアプリケーション
 		WinApp::GetInstance()->Initialize();
 
-		//DirectX12の基盤を生成・初期化
+		//DirectX12の基盤
 		DirectXCommon::GetInstance()->Initialize();
-		Log("DirectXCommon Initialize Succeeded.\n");
 
 		//シェーダーコンパイラを生成・初期化
 		std::unique_ptr<ShaderCompiler> shaderCompiler = std::make_unique<ShaderCompiler>();
 		shaderCompiler->Initialize();
-		Log("ShaderCompiler Initialize Succeeded.\n");
 
 		//グラフィックスパイプラインを生成・初期化
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
@@ -134,9 +130,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			//デモウィンドウの表示
-			//ImGui::ShowDemoWindow();
-
 			//三角形の色を変更
 			ImGui::DragFloat4("materialData", &triangle->GetMaterialData().x, 0.01f, 0.0f, 1.0f, "%.3f");
 #endif
@@ -165,7 +158,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->PreDraw();
 
 #ifdef USE_IMGUI
-			//
+			//ImGUiの描画コマンドを確定させる
 			ImGui::Render();
 #endif
 
@@ -200,13 +193,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//ウィンドウズアプリケーションの終了
 		WinApp::GetInstance()->Finalize();
-
 	}
 
 	//==================================================
 	//                    解放作業
 	//==================================================
-
 
 	//ログファイルの終了
 	FinalizeLog();
@@ -220,37 +211,4 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	return 0;
-}
-
-DirectX::ScratchImage LoadTexture(const std::string& filePath) {
-	//テクスチャを読み込んで扱えるようにする
-	DirectX::ScratchImage image{};
-	std::wstring filePathW = ConvertString(filePath);
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	assert(SUCCEEDED(hr));
-
-	//ミップマップの作成
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-
-	return mipImages;
-}
-
-void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
-	//Meta情報を取得
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	//全mipMap
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		//MipMapLevelを指定して各Imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		//Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,			  //全領域へコピー 
-			img->pixels,		  //元データアドレス
-			UINT(img->rowPitch),  //1ラインサイズ
-			UINT(img->slicePitch) //1枚のサイズ
-		);
-		assert(SUCCEEDED(hr));
-	}
 }

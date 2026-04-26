@@ -53,6 +53,9 @@
     <Filter Include="Source\Object3D">
       <UniqueIdentifier>{f3945d5e-d23d-434c-9a8b-612d597426a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Utils\TextureLoader">
+      <UniqueIdentifier>{f8f7ef77-d75f-4959-ad8a-2e1720be27b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -105,6 +108,9 @@
     </ClCompile>
     <ClCompile Include="Object3D.cpp">
       <Filter>Source\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>Source\Utils\TextureLoader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="Object3D.h">
       <Filter>Source\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>Source\Utils\TextureLoader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
