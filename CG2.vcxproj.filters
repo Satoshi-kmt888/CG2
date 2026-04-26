@@ -56,6 +56,9 @@
     <Filter Include="Source\Utils\TextureLoader">
       <UniqueIdentifier>{f8f7ef77-d75f-4959-ad8a-2e1720be27b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Math\Vector">
+      <UniqueIdentifier>{6a57ad6a-87ae-4049-aadf-18a489165abe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -134,14 +137,8 @@
     <ClInclude Include="StringUtil.h">
       <Filter>Source\Utils\StringUtil</Filter>
     </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Source\Math</Filter>
-    </ClInclude>
     <ClInclude Include="D3D12Util.h">
       <Filter>Source\Utils\D3D12Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="Matrix4x4.h">
       <Filter>Source\Math\Matrix4x4</Filter>
@@ -184,6 +181,15 @@
     </ClInclude>
     <ClInclude Include="TextureLoader.h">
       <Filter>Source\Utils\TextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Source\Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Source\Math\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Source\Math\Vector</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
