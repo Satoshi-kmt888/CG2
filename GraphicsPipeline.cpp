@@ -54,7 +54,7 @@ void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 	descriptionRootSignature.NumParameters = _countof(rootParameters);	 //配列の長さ
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
-	
+
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(

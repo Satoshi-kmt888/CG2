@@ -104,8 +104,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 		const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(DirectXCommon::GetInstance()->GetDevice(), metadata);
-		UploadTextureData(textureResource.Get(), mipImages);
-
+		Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = UploadTextureData(textureResource.Get(), mipImages);
 
 		//metadataをもとにSRVを設定
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -189,6 +188,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 #endif
+		//DirecX12基盤の終了
 		DirectXCommon::GetInstance()->Finalize();
 
 		//ウィンドウズアプリケーションの終了
