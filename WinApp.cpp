@@ -1,14 +1,23 @@
 #include "WinApp.h"
 
+//自作ヘッダー
 #include "DebugUtil.h"
+
+//サードパーティ製ライブラリ
 #include "imgui.h"
 
+//標準ライブラリ
 #include <cassert>
 #include <format>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
+
+WinApp* WinApp::GetInstance() {
+	static WinApp instance;
+	return &instance;
+}
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 #ifdef USE_IMGUI

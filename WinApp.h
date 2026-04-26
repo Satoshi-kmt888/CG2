@@ -1,12 +1,14 @@
 #pragma once
+//標準ライブラリ
 #include <cstdint>
 
+//OS・APIヘッダー
 #include <Windows.h>
 
 /**
  * \class WinApp
  * \brief Windowsアプリケーションの基盤管理を行うシングルトンクラス
- * * ウィンドウの生成、メッセージループの制御、および各種ハンドルの管理を担当します。
+ * \details ウィンドウの生成、メッセージループの制御、および各種ハンドルの管理を担当します。
  */
 class WinApp {
 public://--- 公開定数 ---
@@ -18,10 +20,7 @@ public://--- インスタンス制御---
 	 * \brief インスタンスの取得
 	 * \return WinAppの唯一のインスタンス
 	 */
-	static WinApp* GetInstance() {
-		static WinApp instance;
-		return &instance;
-	}
+	static WinApp* GetInstance();
 
 	//コピーガード
 	WinApp(const WinApp&) = delete;            //!< コピーコンストラクタを禁止
