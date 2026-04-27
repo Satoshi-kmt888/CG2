@@ -105,6 +105,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(DirectXCommon::GetInstance()->GetDevice(), metadata);
 		Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = UploadTextureData(textureResource.Get(), mipImages);
+		Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource =
+			CreateDepthStencilTextureResource(
+				DirectXCommon::GetInstance()->GetDevice(),
+				WinApp::GetInstance()->kClientWidth,
+				WinApp::GetInstance()->kClientHeight
+			);
 
 		//metadataをもとにSRVを設定
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
