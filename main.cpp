@@ -105,12 +105,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(DirectXCommon::GetInstance()->GetDevice(), metadata);
 		Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = UploadTextureData(textureResource.Get(), mipImages);
-		Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource =
-			CreateDepthStencilTextureResource(
-				DirectXCommon::GetInstance()->GetDevice(),
-				WinApp::GetInstance()->kClientWidth,
-				WinApp::GetInstance()->kClientHeight
-			);
 
 		//metadataをもとにSRVを設定
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -118,9 +112,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
 		//SRVの生成
-		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, triangle->GetTextureSrvHandleCPU());
+		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(
+			textureResource.Get(),
+			&srvDesc,
+			triangle->GetTextureSrvHandleCPU()
+		);
 
 
 		//ウィンドウの×ボタンが押されるまでループ
@@ -194,7 +191,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 #endif
-		//DirecX12基盤の終了
+		//DirectX12基盤の終了
 		DirectXCommon::GetInstance()->Finalize();
 
 		//ウィンドウズアプリケーションの終了

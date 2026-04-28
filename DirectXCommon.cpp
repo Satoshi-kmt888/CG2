@@ -44,12 +44,15 @@ void DirectXCommon::PreDraw() {
 	//TransitionBarrierを張る
 	commandList->ResourceBarrier(1, &barrier);
 
-	//描画先のRTVを設定する
-	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
+	//描画先のRTVとDSVを設定する
+	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
 
 	//指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f }; //青っぽい色
 	commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+
+	//指定した深度で画面全体をクリアする
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 void DirectXCommon::PostDraw() {
@@ -102,8 +105,10 @@ void DirectXCommon::PostDraw() {
 void DirectXCommon::Finalize() {
 	CloseHandle(fenceEvent);
 
+	depthStencilResource.Reset();
 	fence.Reset();
 	srvDescriptorHeap.Reset();
+	dsvDescriptorHeap.Reset();
 	rtvDescriptorHeap.Reset();
 	swapChainResources[0].Reset();
 	swapChainResources[1].Reset();
@@ -251,7 +256,7 @@ void DirectXCommon::CreateSwapChain() {
 }
 
 void DirectXCommon::CreateFinalRenderTargets() {
-	//ディスクリプターヒープの生成
+	//RTVディスクリプターヒープの生成
 	rtvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 
 	//SwapChainからResourceを引っ張ってくる
@@ -276,7 +281,30 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	//2つ目を作る
 	device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
-	srvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true); //srv
+	//DSVディスクリプターヒープの生成
+	dsvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+
+	//
+	depthStencilResource = CreateDepthStencilTextureResource(
+		device.Get(),
+		WinApp::GetInstance()->kClientWidth,
+		WinApp::GetInstance()->kClientHeight
+	);
+
+	//DSVの設定
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //Format。基本的にはResourceに合わせる
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture
+	//DSVHeapの先頭にDSVを作る
+	device->CreateDepthStencilView(
+		depthStencilResource.Get(),
+		&dsvDesc,
+		dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
+	);
+
+	dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+
+	//SRVディスクリプターヒープの生成
+	srvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	Log("Create FinalRenderTargets Succeeded.\n");
 }

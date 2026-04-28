@@ -4,6 +4,9 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl/client.h>
+#include <dxgi1_2.h>
+#include <dxgi1_5.h>
+#include <Windows.h>
 
 /**
  * \class DirectXCommon
@@ -44,6 +47,7 @@ public://--- ゲッター ---
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList.Get(); }
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc; }
+	ID3D12DescriptorHeap* GetDsvDescriptorHeap() const { return dsvDescriptorHeap.Get(); }
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap.Get(); }
 
 private://--- 内部初期化関数 ---
@@ -89,6 +93,9 @@ private://--- メンバ変数 ---
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2]{};
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle{};
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
 
 	//同期・その他
@@ -96,4 +103,5 @@ private://--- メンバ変数 ---
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent = nullptr;
 	uint32_t backBufferIndex = 0;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource = nullptr;
 };
