@@ -1,18 +1,14 @@
 #pragma once
 
 #include "BaseObject.h"
-#include "Matrix4x4.h"
-
-#include <d3d12.h>
 
 /**
- * \class Object3d
- * \brief 3Dオブジェクトの描画とデータを管理するクラス
- * \details 頂点バッファ、マテリアル、WVPの行列リソース管理を行う
- * 描画に必要なSRVハンドルんp管理及びコマンドリストへの記録
+ * .
  */
-class Object3D : public BaseObject {
-public://--- ライフサイクル ---
+class Sprite : public BaseObject{
+public:
+
+public:
 	/**
 	 * \brief 初期化処理
 	 * \param[in] descriptorHeap SRVを管理するディスクリプターヒープ
@@ -28,3 +24,4 @@ public://--- ライフサイクル ---
 	/** \brief 描画処理 */
 	void Draw() override;
 };
+

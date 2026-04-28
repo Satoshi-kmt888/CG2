@@ -6,6 +6,7 @@
 #include "GraphicsPipeline.h"
 #include "Matrix4x4.h"
 #include "Object3D.h"
+#include "Sprite.h"
 #include "ShaderCompiler.h"
 #include "TextureLoader.h"
 #include "Transform.h"
@@ -62,6 +63,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
 		triangle->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
+
+		//スプライトを生成・初期化
+		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
+		sprite->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
 
 		//IMGUI
 #ifdef USE_IMGUI
@@ -134,6 +139,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 			//三角形の色を変更
 			ImGui::DragFloat4("materialData", &triangle->GetMaterialData().x, 0.01f, 0.0f, 1.0f, "%.3f");
+
+			//スプライトの座標変更
+			ImGui::DragFloat3("translateSprite", &sprite->GetTranslate().x, 1.0f);
 #endif
 
 			//カメラのワールド変換データ
@@ -143,14 +151,28 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 					cameraTransform.scale, cameraTransform.rotation, cameraTransform.translation
 				);
 			Matrix4x4 viewMatrix = cameraMatrix.Inversed();
-			Matrix4x4 projectionMatrix =
+			Matrix4x4 perspectiveMatrix =
 				Matrix4x4::MakeProjectionFovMatrix(
-					0.45f, static_cast<float>(WinApp::GetInstance()->kClientWidth) / static_cast<float>(WinApp::GetInstance()->kClientHeight), 0.1f, 100.0f
+					0.45f,
+					static_cast<float>(WinApp::GetInstance()->kClientWidth) /
+					static_cast<float>(WinApp::GetInstance()->kClientHeight),
+					0.1f, 100.0f
 				);
-			Matrix4x4 viewProjectionMatrix = viewMatrix * projectionMatrix;
+			Matrix4x4 orthographicMatrix =
+				Matrix4x4::MakeOrthographicMatrix(
+					0.0f, 0.0f,
+					static_cast<float>(WinApp::GetInstance()->kClientWidth),
+					static_cast<float>(WinApp::GetInstance()->kClientHeight),
+					0.1f, 100.0f
+				);
+			Matrix4x4 viewPerspectiveProjectionMatrix = viewMatrix * perspectiveMatrix;
+			Matrix4x4 viewOrthographicProjectionMatrix = viewMatrix * orthographicMatrix;
 
 			//三角形の更新処理
-			triangle->Update(viewProjectionMatrix);
+			triangle->Update(viewPerspectiveProjectionMatrix);
+
+			//スプライトの更新処理
+			sprite->Update(viewOrthographicProjectionMatrix);
 
 			//==================================================
 			//                       描画
@@ -176,6 +198,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 			//三角形の描画処理
 			triangle->Draw();
+
+			//スプライトの描画
+			sprite->Draw();
 
 #ifdef USE_IMGUI
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList());
