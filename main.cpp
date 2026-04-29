@@ -4,12 +4,12 @@
 #include "D3D12Util.h"
 #include "DebugUtil.h"
 #include "GraphicsPipeline.h"
-#include "Matrix4x4.h"
 #include "Object3D.h"
 #include "Sprite.h"
 #include "ShaderCompiler.h"
 #include "TextureLoader.h"
 #include "Transform.h"
+#include "Camera.h"
 
 #include <externals/DirectXTex/DirectXTex.h>
 #ifdef USE_IMGUI
@@ -60,6 +60,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
 		graphicsPipeline->Initialize(shaderCompiler.get());
 
+		//カメラを生成初期化
+		std::unique_ptr<Camera> camera = std::make_unique<Camera>();
+		camera->Initialize();
+
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
 		triangle->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
@@ -85,24 +89,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->Build();
 #endif
-
-		//ビューポート
-		D3D12_VIEWPORT viewport{};
-		//クライアント領域のサイズと一緒にして画面全体に表示
-		viewport.Width = static_cast<float>(WinApp::GetInstance()->kClientWidth);
-		viewport.Height = static_cast<float>(WinApp::GetInstance()->kClientHeight);
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-
-		//シザー矩形
-		D3D12_RECT scissorRect{};
-		//基本的にビューポートと同じ矩形が構成されるようにする
-		scissorRect.left = 0;
-		scissorRect.right = static_cast<long>(WinApp::GetInstance()->kClientWidth);
-		scissorRect.top = 0;
-		scissorRect.bottom = static_cast<long>(WinApp::GetInstance()->kClientHeight);
 
 
 		//Textureを読んで転送する
@@ -144,35 +130,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::DragFloat3("translateSprite", &sprite->GetTranslate().x, 1.0f);
 #endif
 
-			//カメラのワールド変換データ
-			Transform cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
-			Matrix4x4 cameraMatrix =
-				Matrix4x4::MakeAffineMatrix(
-					cameraTransform.scale, cameraTransform.rotation, cameraTransform.translation
-				);
-			Matrix4x4 viewMatrix = cameraMatrix.Inversed();
-			Matrix4x4 perspectiveMatrix =
-				Matrix4x4::MakeProjectionFovMatrix(
-					0.45f,
-					static_cast<float>(WinApp::GetInstance()->kClientWidth) /
-					static_cast<float>(WinApp::GetInstance()->kClientHeight),
-					0.1f, 100.0f
-				);
-			Matrix4x4 orthographicMatrix =
-				Matrix4x4::MakeOrthographicMatrix(
-					0.0f, 0.0f,
-					static_cast<float>(WinApp::GetInstance()->kClientWidth),
-					static_cast<float>(WinApp::GetInstance()->kClientHeight),
-					0.1f, 100.0f
-				);
-			Matrix4x4 viewPerspectiveProjectionMatrix = viewMatrix * perspectiveMatrix;
-			Matrix4x4 viewOrthographicProjectionMatrix = viewMatrix * orthographicMatrix;
+			//カメラの更新
+			camera->Update();
 
 			//三角形の更新処理
-			triangle->Update(viewPerspectiveProjectionMatrix);
+			triangle->Update(camera->GetVppMatrix());
 
 			//スプライトの更新処理
-			sprite->Update(viewOrthographicProjectionMatrix);
+			sprite->Update(camera->GetVopMatrix());
 
 			//==================================================
 			//                       描画
@@ -190,8 +155,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ID3D12DescriptorHeap* descriptorHeap[] = { DirectXCommon::GetInstance()->GetSrvDescriptorHeap() };
 			DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
-			DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &viewport);
-			DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, &scissorRect);
+			DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &camera->GetViewport());
+			DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, &camera->GetScissorRect());
 			//RootSignatureを設定。PSOとは別途設定が必要
 			DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
@@ -210,6 +175,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->PostDraw();
 		}
 
+		//==================================================
+		//                    解放作業
+		//==================================================
+
 		//ImGui
 #ifdef USE_IMGUI
 		ImGui_ImplDX12_Shutdown();
@@ -222,10 +191,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ウィンドウズアプリケーションの終了
 		WinApp::GetInstance()->Finalize();
 	}
-
-	//==================================================
-	//                    解放作業
-	//==================================================
 
 	//ログファイルの終了
 	FinalizeLog();

@@ -68,6 +68,9 @@
     <Filter Include="Source\Object\Sprite">
       <UniqueIdentifier>{44e246ee-1fb8-4c8b-8f78-130207868817}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Camera">
+      <UniqueIdentifier>{68a40384-e3f6-46ca-8b78-7244fe4c2355}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -129,6 +132,9 @@
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Source\Object\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Source\Object\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Source\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
