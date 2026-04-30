@@ -60,9 +60,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
 		graphicsPipeline->Initialize(shaderCompiler.get());
 
-		//カメラを生成初期化
-		std::unique_ptr<Camera> camera = std::make_unique<Camera>();
-		camera->Initialize();
+		//3Dカメラを生成・初期化
+		std::unique_ptr<Camera> camera3D = std::make_unique<Camera>();
+		camera3D->Initialize(
+			WinApp::GetInstance()->kClientWidth,
+			WinApp::GetInstance()->kClientHeight
+		);
+
+		//2Dカメラを生成・初期化
+		std::unique_ptr<Camera> camera2D = std::make_unique<Camera>();
+		camera2D->SetProjectionType(ProjectionType::Orthographic);
+		camera2D->Initialize(
+			WinApp::GetInstance()->kClientWidth,
+			WinApp::GetInstance()->kClientHeight
+		);
 
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
@@ -131,13 +142,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 			//カメラの更新
-			camera->Update();
+			camera3D->Update();
 
 			//三角形の更新処理
-			triangle->Update(camera->GetVppMatrix());
+			triangle->Update(camera3D->GetViewProjMatrix());
 
 			//スプライトの更新処理
-			sprite->Update(camera->GetVopMatrix());
+			sprite->Update(camera2D->GetViewProjMatrix());
 
 			//==================================================
 			//                       描画
@@ -155,8 +166,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ID3D12DescriptorHeap* descriptorHeap[] = { DirectXCommon::GetInstance()->GetSrvDescriptorHeap() };
 			DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
-			DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &camera->GetViewport());
-			DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, &camera->GetScissorRect());
+			DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &camera3D->GetViewport());
+			DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, &camera3D->GetScissorRect());
 			//RootSignatureを設定。PSOとは別途設定が必要
 			DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());

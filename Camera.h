@@ -6,23 +6,53 @@
 #include <d3d12.h>
 
 /**
+ *  \enum ProjectionType
+ *  \brief カメラの投影方式を定義する列挙型
+ */
+enum class ProjectionType {
+	Perspective, //!< 3D
+	Orthographic //!< 2D
+};
+
+/**
 *  \class Camera
- * \brief 3Dカメラを管理するクラス
+ * \brief ビュー行列とプロジェクション行列を管理するクラス
+ * \details 透視投影(3D)と正射影(2D)の両方の行列を生成・保持
  */
 class Camera {
+public://--- コンストラクタ・デストラクタ ---
+	Camera();
+	~Camera() = default;
+
 public://--- ライフサイクル ---
-	void Initialize();
+	/**
+	 * \brief 初期化処理
+	 * \param[in] width クライアント領域の横幅
+	 * \param[in] height クライアント領域の縦幅
+	 */
+	void Initialize(int width, int height);
+
+	/**
+	 * \brief 更新処理
+	 * \details
+	 */
 	void Update();
 
 private://--- 内部関数 ---
+	/**
+	 * \brief 行列の更新
+	 * \details ビュー行列・プロジェクション行列から合成行列を求める
+	 */
 	void UpdateMatrix();
 
 public://--- ゲッター ---
 	const D3D12_VIEWPORT& GetViewport() const { return viewport_; }
 	const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
 
-	Matrix4x4 GetVppMatrix() const { return viewPerspectiveProjectionMatrix_; }
-	Matrix4x4 GetVopMatrix() const { return viewOrthographicProjectionMatrix_; }
+	Matrix4x4 GetViewProjMatrix() const { return viewProjMatrix_; }
+
+public://--- セッター ---
+	void SetProjectionType(ProjectionType projectionType) { projectionType_ = projectionType; }
 
 private://--- メンバ変数 ---
 	//ワールド変換データ
@@ -33,12 +63,6 @@ private://--- メンバ変数 ---
 	float fovY_;
 	float aspectRatio_;
 
-	//正射影
-	float left_;
-	float top_;
-	float right_;
-	float bottom_;
-
 	//クリップ範囲
 	float nearClip_;
 	float farClip_;
@@ -47,10 +71,11 @@ private://--- メンバ変数 ---
 	D3D12_VIEWPORT viewport_{};
 	D3D12_RECT scissorRect_{};
 
+	//投影の種別
+	ProjectionType projectionType_;
+
 	//行列
 	Matrix4x4 viewMatrix_;
-	Matrix4x4 perspectiveMatrix_;
-	Matrix4x4 orthographicMatrix_;
-	Matrix4x4 viewPerspectiveProjectionMatrix_;
-	Matrix4x4 viewOrthographicProjectionMatrix_;
+	Matrix4x4 projectionMatrix_;
+	Matrix4x4 viewProjMatrix_;
 };
