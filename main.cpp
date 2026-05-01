@@ -6,6 +6,7 @@
 #include "GraphicsPipeline.h"
 #include "Object3D.h"
 #include "Sprite.h"
+#include "Sphere.h"
 #include "ShaderCompiler.h"
 #include "TextureLoader.h"
 #include "Transform.h"
@@ -76,8 +77,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		);
 
 		//オブジェクト(三角形)を生成・初期化
-		std::unique_ptr<Object3D> triangle = std::make_unique<Object3D>();
-		triangle->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
+		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>();
+		sphere->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
 
 		//スプライトを生成・初期化
 		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
@@ -118,7 +119,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(
 			textureResource.Get(),
 			&srvDesc,
-			triangle->GetTextureSrvHandleCPU()
+			sphere->GetTextureSrvHandleCPU()
 		);
 
 
@@ -134,9 +135,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			//三角形の色を変更
-			ImGui::DragFloat4("materialData", &triangle->GetMaterialData().x, 0.01f, 0.0f, 1.0f, "%.3f");
-
 			//スプライトの座標変更
 			ImGui::DragFloat3("translateSprite", &sprite->GetTranslate().x, 1.0f);
 #endif
@@ -145,7 +143,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			camera3D->Update();
 
 			//三角形の更新処理
-			triangle->Update(camera3D->GetViewProjMatrix());
+			sphere->Update(camera3D->GetViewProjMatrix());
 
 			//スプライトの更新処理
 			sprite->Update(camera2D->GetViewProjMatrix());
@@ -173,7 +171,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 
 			//三角形の描画処理
-			triangle->Draw();
+			sphere->Draw();
 
 			//スプライトの描画
 			sprite->Draw();

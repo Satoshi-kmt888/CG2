@@ -71,6 +71,9 @@
     <Filter Include="Source\Camera">
       <UniqueIdentifier>{68a40384-e3f6-46ca-8b78-7244fe4c2355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Object\Sphere">
+      <UniqueIdentifier>{86d9efac-ddd6-4489-a66b-85383ba0d65e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -135,6 +138,9 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source\Object\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Source\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Source\Object\Sphere</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
