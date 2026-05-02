@@ -27,6 +27,13 @@ public://--- ライフサイクル ---
 	virtual void Update(const Matrix4x4& viewProjectionMatrix) = 0;
 	virtual void Draw() = 0;
 
+protected:
+	void CreateVertexBuffer(uint32_t vertexCount);
+	void CreateMaterialBuffer();
+	void CreateWVPBuffer();
+
+	void RecordCommonCommand(ID3D12GraphicsCommandList* commandList);
+
 public://--- ゲッター ---
 	D3D12_CPU_DESCRIPTOR_HANDLE GetTextureSrvHandleCPU() const { return textureSrvHandleCPU; }
 	Vector4& GetMaterialData() const { return *materialData; }

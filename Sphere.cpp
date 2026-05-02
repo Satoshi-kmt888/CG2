@@ -13,32 +13,14 @@ void Sphere::Initialize(ID3D12DescriptorHeap* descriptorHeap) {
 	textureSrvHandleCPU.ptr += DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU.ptr += DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	/*頂点リソースの作成*/
-	//データ書き込み
-	vertexResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * vertexCount);
-	//リソースの先頭アドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	//使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * vertexCount;
-	//1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
+	//頂点リソースの作成
+	CreateVertexBuffer(vertexCount);
 
-	//書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	//マテリアルリソースの作成
+	CreateMaterialBuffer();
 
-	/*マテリアルリソースの作成*/
-	materialResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Vector4));
-	//書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	//赤を書き込む
-	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	/*WVPリソースの作成*/
-	wvpResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Matrix4x4));
-	//書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	//単位行列を書き込んでおく
-	*wvpData = Matrix4x4::Identity();
+	//WVPリソースの作成
+	CreateWVPBuffer();
 
 	/*Transformの初期化*/
 	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
@@ -118,18 +100,9 @@ void Sphere::Update(const Matrix4x4& viewProjectionMatrix) {
 }
 
 void Sphere::Draw() {
-	// 2. 描画コマンドの発行
-	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
-
-	// 頂点バッファのセット
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// マテリアル・WVP行列・テクスチャをセット (Object3Dと同じ順序)
-	commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-	commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-	commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	RecordCommonCommand(DirectXCommon::GetInstance()->GetCommandList());
+	DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// 全頂点数を描画
-	commandList->DrawInstanced(vertexCount, 1, 0, 0);
+	DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(vertexCount, 1, 0, 0);
 }

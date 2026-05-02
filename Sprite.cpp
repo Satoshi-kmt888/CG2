@@ -1,21 +1,9 @@
 #include "Sprite.h"
 
 #include "DirectXCommon.h"
-#include "D3D12Util.h"
-#include "WinApp.h"
 
 void Sprite::Initialize(ID3D12DescriptorHeap* descriptorHeap) {
-	//Sprite用の頂点リソースを作る
-	vertexResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * 6);
-
-	//リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	//使用するリソースのサイズは頂点6つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
-	//1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	CreateVertexBuffer(6);
 
 	//1枚目の三角形
 	vertexData[0].position = { 0.0f, 360.0f, 0.0f, 1.0f };//左下
@@ -33,17 +21,7 @@ void Sprite::Initialize(ID3D12DescriptorHeap* descriptorHeap) {
 	vertexData[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
 	vertexData[5].texCoord = { 1.0f, 1.0f };
 
-	//Sprite用のTransformationMatrix用のリソースを作る
-	wvpResource = CreateBufferResource(
-		DirectXCommon::GetInstance()->GetDevice(),
-		sizeof(Matrix4x4)
-	);
-	//データを書き込む
-	wvpData = nullptr;
-	//書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	//単位行列を書き込んでいく
-	*wvpData = Matrix4x4::Identity();
+	CreateWVPBuffer();
 
 	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 }
