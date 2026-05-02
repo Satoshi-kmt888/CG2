@@ -1,18 +1,16 @@
 #include "DirectXCommon.h"
 #include "WinApp.h"
 
-#include "D3D12Util.h"
 #include "DebugUtil.h"
 #include "GraphicsPipeline.h"
 #include "Object3D.h"
 #include "Sprite.h"
 #include "Sphere.h"
 #include "ShaderCompiler.h"
-#include "TextureLoader.h"
+#include "TextureManager.h"
 #include "Transform.h"
 #include "Camera.h"
 
-#include <externals/DirectXTex/DirectXTex.h>
 #ifdef USE_IMGUI
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
@@ -61,6 +59,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
 		graphicsPipeline->Initialize(shaderCompiler.get());
 
+		//
+		TextureManager::GetInstance()->Initialize(
+			DirectXCommon::GetInstance()->GetDevice(),
+			DirectXCommon::GetInstance()->GetCommandList()
+		);
+
 		//3Dカメラを生成・初期化
 		std::unique_ptr<Camera> camera3D = std::make_unique<Camera>();
 		camera3D->Initialize(
@@ -78,11 +82,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//オブジェクト(三角形)を生成・初期化
 		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>();
-		sphere->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
+		sphere->Initialize(TextureManager::GetInstance()->GetSrvDescriptorHeap());
 
 		//スプライトを生成・初期化
 		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(DirectXCommon::GetInstance()->GetSrvDescriptorHeap());
+		sprite->Initialize(TextureManager::GetInstance()->GetSrvDescriptorHeap());
 
 		//IMGUI
 #ifdef USE_IMGUI
@@ -94,34 +98,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->GetDevice(),
 			DirectXCommon::GetInstance()->GetSwapChainDesc().BufferCount,
 			DirectXCommon::GetInstance()->GetRtvDesc().Format,
-			DirectXCommon::GetInstance()->GetSrvDescriptorHeap(),
-			DirectXCommon::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-			DirectXCommon::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
+			TextureManager::GetInstance()->GetSrvDescriptorHeap(),
+			TextureManager::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+			TextureManager::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
 		);
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->Build();
 #endif
 
-
-		//Textureを読んで転送する
-		DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
-		const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = CreateTextureResource(DirectXCommon::GetInstance()->GetDevice(), metadata);
-		Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = UploadTextureData(textureResource.Get(), mipImages);
-
-		//metadataをもとにSRVを設定
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-		srvDesc.Format = metadata.format;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-		//SRVの生成
-		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(
-			textureResource.Get(),
-			&srvDesc,
-			sphere->GetTextureSrvHandleCPU()
-		);
-
+		TextureManager::GetInstance()->Load("resource/uvChecker.png");
 
 		//ウィンドウの×ボタンが押されるまでループ
 		while (WinApp::GetInstance()->ProcessMessage() != 0) {
@@ -161,7 +146,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 			//SRV用のヒープ
-			ID3D12DescriptorHeap* descriptorHeap[] = { DirectXCommon::GetInstance()->GetSrvDescriptorHeap() };
+			ID3D12DescriptorHeap* descriptorHeap[] = { TextureManager::GetInstance()->GetSrvDescriptorHeap() };
 			DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
 			DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &camera3D->GetViewport());

@@ -132,7 +132,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StringUtil.cpp" />
-    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,7 +170,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="StringUtil.h" />
-    <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />

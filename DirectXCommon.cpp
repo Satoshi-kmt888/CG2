@@ -107,7 +107,6 @@ void DirectXCommon::Finalize() {
 
 	depthStencilResource.Reset();
 	fence.Reset();
-	srvDescriptorHeap.Reset();
 	dsvDescriptorHeap.Reset();
 	rtvDescriptorHeap.Reset();
 	swapChainResources[0].Reset();
@@ -302,9 +301,6 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	);
 
 	dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-
-	//SRVディスクリプターヒープの生成
-	srvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	Log("Create FinalRenderTargets Succeeded.\n");
 }

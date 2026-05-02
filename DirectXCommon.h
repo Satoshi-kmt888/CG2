@@ -48,7 +48,6 @@ public://--- ゲッター ---
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc; }
 	ID3D12DescriptorHeap* GetDsvDescriptorHeap() const { return dsvDescriptorHeap.Get(); }
-	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap.Get(); }
 
 private://--- 内部初期化関数 ---
 	/** \brief デバッグレイヤーの有効化 */
@@ -96,7 +95,6 @@ private://--- メンバ変数 ---
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle{};
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
 
 	//同期・その他
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence = nullptr;
