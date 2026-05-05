@@ -52,6 +52,8 @@ public://--- ライフサイクル ---
 	 */
 	void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
+	void Finalize();
+
 public://--- ゲッター ---
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap_.Get(); }
 
@@ -91,5 +93,5 @@ private://--- メンバ変数 ---
 
 	//管理用コンテナ
 	std::unordered_map<std::string, TextureData> textureDataMap_; //<! ファイルパスをキーにしたテクスチャデータ
-	std::vector< Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResource_; //<! 転送完了まで保持が必要な中間リソース
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResource_; //<! 転送完了まで保持が必要な中間リソース
 };

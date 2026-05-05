@@ -4,8 +4,7 @@
 #include "DebugUtil.h"
 #include "GraphicsPipeline.h"
 #include "Object3D.h"
-#include "Sprite.h"
-#include "Sphere.h"
+#include "Model.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
 #include "Transform.h"
@@ -80,13 +79,23 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			WinApp::GetInstance()->kClientHeight
 		);
 
-		//オブジェクト(三角形)を生成・初期化
-		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>();
-		sphere->Initialize(TextureManager::GetInstance()->GetSrvDescriptorHeap());
+		//スプライトのモデル
+		std::unique_ptr<Model> spriteModel = Model::CreateQuad();
+		spriteModel->SetTexture("resources/uvChecker.png");
 
-		//スプライトを生成・初期化
-		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(TextureManager::GetInstance()->GetSrvDescriptorHeap());
+		//球のモデル
+		std::unique_ptr<Model> sphereModel = Model::CreateSphere();
+		sphereModel->SetTexture("resources/uvChecker.png");
+
+		//スプライトの生成・初期化
+		Object3D sprite{};
+		sprite.Initialize();
+		sprite.SetModel(spriteModel.get());
+
+		//球の生成・初期化
+		Object3D sphere{};
+		sphere.Initialize();
+		sphere.SetModel(sphereModel.get());
 
 		//IMGUI
 #ifdef USE_IMGUI
@@ -106,8 +115,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		io.Fonts->Build();
 #endif
 
-		TextureManager::GetInstance()->Load("resource/uvChecker.png");
-
 		//ウィンドウの×ボタンが押されるまでループ
 		while (WinApp::GetInstance()->ProcessMessage() != 0) {
 			//==================================================
@@ -120,18 +127,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			//スプライトの座標変更
-			ImGui::DragFloat3("translateSprite", &sprite->GetTranslate().x, 1.0f);
+			//スプライト
+			ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f);
 #endif
 
 			//カメラの更新
+			camera2D->Update();
 			camera3D->Update();
 
-			//三角形の更新処理
-			sphere->Update(camera3D->GetViewProjMatrix());
+			//スプライト
+			sprite.Update(camera2D->GetViewProjMatrix());
 
-			//スプライトの更新処理
-			sprite->Update(camera2D->GetViewProjMatrix());
+			//球
+			sphere.Update(camera3D->GetViewProjMatrix());
+			sphere.SetRotation(sphere.GetRotation()+Vector3(0.0f, 0.01f, 0.0f));
 
 			//==================================================
 			//                       描画
@@ -155,11 +164,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 
-			//三角形の描画処理
-			sphere->Draw();
+			//スプライト
+			sprite.Draw();
 
-			//スプライトの描画
-			sprite->Draw();
+			//球
+			sphere.Draw();
 
 #ifdef USE_IMGUI
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList());
@@ -179,6 +188,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 #endif
+		//
+		TextureManager::GetInstance()->Finalize();
+
 		//DirectX12基盤の終了
 		DirectXCommon::GetInstance()->Finalize();
 
@@ -198,4 +210,4 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	return 0;
-}
+}	

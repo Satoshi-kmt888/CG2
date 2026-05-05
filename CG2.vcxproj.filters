@@ -56,22 +56,16 @@
     <Filter Include="Source\Object">
       <UniqueIdentifier>{f3945d5e-d23d-434c-9a8b-612d597426a0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Object\BaseObject">
-      <UniqueIdentifier>{255b8b44-5980-479e-8ce7-bed1aac21c2d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Object\Object3D">
       <UniqueIdentifier>{f8500415-75b8-4fdb-bcc4-0407ff34f328}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Object\Sprite">
-      <UniqueIdentifier>{44e246ee-1fb8-4c8b-8f78-130207868817}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Camera">
       <UniqueIdentifier>{68a40384-e3f6-46ca-8b78-7244fe4c2355}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Object\Sphere">
-      <UniqueIdentifier>{86d9efac-ddd6-4489-a66b-85383ba0d65e}</UniqueIdentifier>
+    <Filter Include="Source\Object\Model">
+      <UniqueIdentifier>{a9c94b20-c003-4bb4-931a-6d22f05c6990}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\TextureManager">
+    <Filter Include="Source\Object\TextureManager">
       <UniqueIdentifier>{756a848f-afa6-4772-a6ef-c7b42da0c175}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -124,23 +118,17 @@
     <ClCompile Include="GraphicsPipeline.cpp">
       <Filter>Source\DirectX\GraphicsPipeline</Filter>
     </ClCompile>
-    <ClCompile Include="BaseObject.cpp">
-      <Filter>Source\Object\BaseObject</Filter>
-    </ClCompile>
     <ClCompile Include="Object3D.cpp">
       <Filter>Source\Object\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Source\Object\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>Source\Object\Sphere</Filter>
-    </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>Source\TextureManager</Filter>
+      <Filter>Source\Object\TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source\Object\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -212,23 +200,17 @@
     <ClInclude Include="Vector2.h">
       <Filter>Source\Math\Vector</Filter>
     </ClInclude>
-    <ClInclude Include="BaseObject.h">
-      <Filter>Source\Object\BaseObject</Filter>
-    </ClInclude>
     <ClInclude Include="Object3D.h">
       <Filter>Source\Object\Object3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Source\Object\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Source\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Source\Object\Sphere</Filter>
-    </ClInclude>
     <ClInclude Include="TextureManager.h">
-      <Filter>Source\TextureManager</Filter>
+      <Filter>Source\Object\TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Source\Object\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

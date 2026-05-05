@@ -42,6 +42,15 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 	Log(std::format("TextureManager Initialize Succeeded. kMaxTextures : {}\n", kMaxTextures));
 }
 
+void TextureManager::Finalize(){
+	textureDataMap_.clear();
+	intermediateResource_.clear();
+
+	srvDescriptorHeap_.Reset();
+	commandList_.Reset();
+	device_.Reset();
+}
+
 const TextureData& TextureManager::Load(const std::string& filePath) {
 	//既に読み込み済みならそれを返す
 	if (textureDataMap_.contains(filePath)) {
