@@ -11,14 +11,14 @@
 
 #pragma comment(lib, "dxcompiler.lib")
 
-void ShaderCompiler::Initialize(){
-	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+void ShaderCompiler::Initialize() {
+	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr));
-	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_));
 	assert(SUCCEEDED(hr));
 
 	//現時点でincludeしないが、includeに対応するための設定を行っておく
-	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	hr = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
 	assert(SUCCEEDED(hr));
 
 	Log("ShaderCompiler Initialize Succeeded.\n");
@@ -27,9 +27,12 @@ void ShaderCompiler::Initialize(){
 Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* profile) {
 	//これからシェーダーをコンパイルする旨をログに出す
 	Log(ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
-	//hlslファイルを読む
+
+	/*
+	hlslを読み込む
+	------------------------------*/
 	Microsoft::WRL::ComPtr<IDxcBlobEncoding> shaderSource = nullptr;
-	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
+	HRESULT hr = dxcUtils_->LoadFile(filePath.c_str(), nullptr, &shaderSource);
 	//読めなかったら止める
 	assert(SUCCEEDED(hr));
 	//読み込んだファイルの内容を設定する
@@ -51,11 +54,11 @@ Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& fil
 	};
 	//実際にシェーダーをコンパイルする
 	Microsoft::WRL::ComPtr<IDxcResult> shaderResult = nullptr;
-	hr = dxcCompiler->Compile(
+	hr = dxcCompiler_->Compile(
 		&shaderSourceBuffer,		//読み込んだファイル
 		arguments,					//コンパイルオプション
 		_countof(arguments),		//コンパイルオプションの数
-		includeHandler.Get(),		//includeが含まれた諸々
+		includeHandler_.Get(),		//includeが含まれた諸々
 		IID_PPV_ARGS(&shaderResult) //コンパイル結果
 	);
 	//コンパイルエラーではなくdxcが起動できないほどの致命的な状況

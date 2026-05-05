@@ -1,12 +1,12 @@
 #pragma once
-#include <cstdint>
-
+#include <Windows.h>
 #include <d3d12.h>
-#include <dxgi1_6.h>
-#include <wrl/client.h>
 #include <dxgi1_2.h>
 #include <dxgi1_5.h>
-#include <Windows.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
+
+#include <cstdint>
 
 /**
  * \class DirectXCommon
@@ -18,18 +18,21 @@
  * - 各種ディスクリプターヒープの保持
  */
 class DirectXCommon {
-public://--- インスタンス制御 ---
+public:
+	//==================================================
+	// 公開関数
+	//==================================================
+
 	/**
 	 * \brief インスタンスの取得
 	 * \return DirectXCommon唯一のインスタンス
 	 */
 	static DirectXCommon* GetInstance();
 
-	//コピーガード
-	DirectXCommon(const DirectXCommon&) = delete;
-	DirectXCommon& operator=(const DirectXCommon&) = delete;
+	//==================================================
+	// ライフサイクル
+	//==================================================
 
-public://--- ライフサイクル ---
 	/** \brief 初期化処理 */
 	void Initialize();
 
@@ -39,17 +42,32 @@ public://--- ライフサイクル ---
 	/** \brief フレーム描画終了処理 */
 	void PostDraw();
 
-	/** \brief  終了処理*/
+	/** \brief 終了処理*/
 	void Finalize();
 
-public://--- ゲッター ---
-	ID3D12Device* GetDevice() const { return device.Get(); }
-	ID3D12GraphicsCommandList* GetCommandList() const { return commandList.Get(); }
-	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc; }
-	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc; }
-	ID3D12DescriptorHeap* GetDsvDescriptorHeap() const { return dsvDescriptorHeap.Get(); }
+	//==================================================
+	// ゲッター
+	//==================================================
 
-private://--- 内部初期化関数 ---
+	ID3D12Device* GetDevice() const { return device_.Get(); }
+	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
+	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc_; }
+	ID3D12DescriptorHeap* GetDsvDescriptorHeap() const { return dsvDescriptorHeap_.Get(); }
+
+private:
+	//==================================================
+	// 内部関数
+	//==================================================
+
+	//コンストラクタ・デストラクタ
+	DirectXCommon() = default;
+	~DirectXCommon() = default;
+
+	//コピーガード
+	DirectXCommon(const DirectXCommon&) = delete;
+	DirectXCommon& operator=(const DirectXCommon&) = delete;
+
 	/** \brief デバッグレイヤーの有効化 */
 	void EnableDebugLayer();
 
@@ -68,38 +86,37 @@ private://--- 内部初期化関数 ---
 	/** \brief GPUとの同期用フェンスの作成 */
 	void CreateFence();
 
-private://--- コンストラクタ・デストラクタ
-	DirectXCommon() = default;
-	~DirectXCommon() = default;
+	//==================================================
+	// メンバ変数
+	//==================================================
 
-private://--- メンバ変数 ---
 	//基盤
-	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory = nullptr;
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Device> device = nullptr;
+	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
+	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 
 	//コマンド関連
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
 	//表示関連
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain = nullptr;
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
+	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2] = { nullptr };
 
 	//ディスクリプターヒープ関連
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2]{};
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle{};
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2]{};
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc_{};
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
 
 	//同期・その他
-	Microsoft::WRL::ComPtr<ID3D12Fence> fence = nullptr;
-	uint64_t fenceValue = 0;
-	HANDLE fenceEvent = nullptr;
-	uint32_t backBufferIndex = 0;
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;
+	uint64_t fenceValue_ = 0;
+	HANDLE fenceEvent_ = nullptr;
+	uint32_t backBufferIndex_ = 0;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 };

@@ -1,9 +1,8 @@
 #pragma once
-
-#include <string>
-
 #include <dxcapi.h>
 #include <wrl/client.h>
+
+#include <string>
 
 /**
  * \class ShaderCompiler
@@ -12,11 +11,11 @@
  * * 内部でデバッグ情報の埋め込みや最適化の無効化などの設定を行う
  */
 class ShaderCompiler {
-public://--- ライフサイクル ---
-	/** \brief 初期化処理 */
-	void Initialize();
+public:
+	//==================================================
+	// 公開関数
+	//==================================================
 
-public://--- 主要機能 ---
 	/**
 	 * \brief HLSLファイルを読み込み、コンパイルしてバイナリを取得する
 	 * \param[in] filePath コンパイル対象のシェーダーファイルパス
@@ -28,8 +27,19 @@ public://--- 主要機能 ---
 		const wchar_t* profile
 	);
 
-private://--- メンバ変数 ---
-	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils = nullptr;                //!< DXCユーティリティ
-	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler = nullptr;         //!< DXCコンパイラ
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler = nullptr; //!< インクルードハンドラ
+	//==================================================
+	// ライフサイクル
+	//==================================================
+
+	/** \brief 初期化処理 */
+	void Initialize();
+
+private:
+	//==================================================
+	// メンバ変数
+	//==================================================
+
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_ = nullptr;                //!< DXCユーティリティ
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;         //!< DXCコンパイラ
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_ = nullptr; //!< インクルードハンドラ
 };

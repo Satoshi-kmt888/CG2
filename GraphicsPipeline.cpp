@@ -11,10 +11,18 @@
 #pragma comment(lib, "dxcompiler.lib")
 
 void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
-	//==================================================
-	//RootSignature
-	//==================================================
+	CreateRootSignature();
+	CreateInputLayout();
+	CreateBlendState();
+	CreateRasterizerState();
+	CreateDepthStencilState();
 
+	CreatePipelineState(shaderCompiler);
+
+	Log("GraphicsPipeline Initialize Succeeded.\n");
+}
+
+void GraphicsPipeline::CreateRootSignature() {
 	//ディスクリプタレンジの設定
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0; //0から始まる
@@ -66,50 +74,48 @@ void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 	}
 	//バイナリをもとに作成
 	hr = DirectXCommon::GetInstance()->GetDevice()->CreateRootSignature(
-		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature)
+		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)
 	);
 	assert(SUCCEEDED(hr));
+}
 
-	//==================================================
-	//InputLayout
-	//==================================================
+void GraphicsPipeline::CreateInputLayout() {
+	inputElementDescs_[0].SemanticName = "POSITION";
+	inputElementDescs_[0].SemanticIndex = 0;
+	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescs_[1].SemanticName = "TEXCOORD";
+	inputElementDescs_[1].SemanticIndex = 0;
+	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
-	inputElementDescs[0].SemanticName = "POSITION";
-	inputElementDescs[0].SemanticIndex = 0;
-	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	inputElementDescs[1].SemanticName = "TEXCOORD";
-	inputElementDescs[1].SemanticIndex = 0;
-	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
+	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
+}
 
-	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
-	inputLayoutDesc.pInputElementDescs = inputElementDescs;
-	inputLayoutDesc.NumElements = _countof(inputElementDescs);
-
-	//==================================================
-	//BlendState
-	//==================================================
-
-	D3D12_BLEND_DESC blendDesc{};
+void GraphicsPipeline::CreateBlendState() {
 	//すべての色要素を書き込む
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+}
 
-	//==================================================
-	//RasterizerState
-	//==================================================
-
-	D3D12_RASTERIZER_DESC rasterizerDesc{};
+void GraphicsPipeline::CreateRasterizerState() {
 	//裏面(時計回り)を表示しない
-	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
 	//三角形の中を塗りつぶす
-	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
+}
 
-	//==================================================
-	//CompileShader
-	//==================================================
+void GraphicsPipeline::CreateDepthStencilState() {
+	//DepthStencilStateの設定
+	//Depthの機能を有効化する
+	depthStencilDesc_.DepthEnable = true;
+	//書き込み
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	//比較関数はLessEqual
+	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+}
 
+void GraphicsPipeline::CreatePipelineState(ShaderCompiler* shaderCompiler) {
 	//vertexShader
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = shaderCompiler->Compile(L"Object3D.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
@@ -118,34 +124,17 @@ void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = shaderCompiler->Compile(L"Object3D.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
-	//==================================================
-	//DepthStencilState
-	//==================================================
-
-	//DepthStencilStateの設定
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
-	//Depthの機能を有効化する
-	depthStencilDesc.DepthEnable = true;
-	//書き込み
-	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	//比較関数はLessEqual
-	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-
-	//==================================================
-	//PSOを作成
-	//==================================================
-
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();
-	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc_;
 	graphicsPipelineStateDesc.VS = {
 		vertexShaderBlob->GetBufferPointer(),vertexShaderBlob->GetBufferSize()
 	};
 	graphicsPipelineStateDesc.PS = {
 		pixelShaderBlob->GetBufferPointer(),pixelShaderBlob->GetBufferSize()
 	};
-	graphicsPipelineStateDesc.BlendState = blendDesc;
-	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;
+	graphicsPipelineStateDesc.BlendState = blendDesc_;
+	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc_;
 	//書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
 	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -155,13 +144,11 @@ void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	//DepthStencilの設定
-	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc_;
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	//実際に生成
-	hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(
-		&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState)
+	HRESULT hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(
+		&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_)
 	);
 	assert(SUCCEEDED(hr));
-
-	Log("GraphicsPipeline Initialize Succeeded.\n");
 }

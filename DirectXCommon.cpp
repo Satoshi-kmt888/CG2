@@ -27,7 +27,7 @@ void DirectXCommon::Initialize() {
 
 void DirectXCommon::PreDraw() {
 	//これから書き込むバックバッファのインデックスを取得
-	backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+	backBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 
 	//TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier{};
@@ -36,23 +36,23 @@ void DirectXCommon::PreDraw() {
 	//Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	//バリアを張る対象のリソース現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
+	barrier.Transition.pResource = swapChainResources_[backBufferIndex_].Get();
 	//遷移前(現在)のResourceState
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 	//遷移後のResourceState
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	//TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &barrier);
+	commandList_->ResourceBarrier(1, &barrier);
 
 	//描画先のRTVとDSVを設定する
-	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex_], false, &dsvHandle_);
 
 	//指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f }; //青っぽい色
-	commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex_], clearColor, 0, nullptr);
 
 	//指定した深度で画面全体をクリアする
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 void DirectXCommon::PostDraw() {
@@ -63,61 +63,61 @@ void DirectXCommon::PostDraw() {
 	//Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	//バリアを張る対象のリソース現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
+	barrier.Transition.pResource = swapChainResources_[backBufferIndex_].Get();
 
 	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 	//今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	//TransitionBarrierを張る
-	commandList->ResourceBarrier(1, &barrier);
+	commandList_->ResourceBarrier(1, &barrier);
 
 	//コマンドリストの内容を確定させる。すべてのコマンドを積んでからClose
-	HRESULT hr = commandList->Close();
+	HRESULT hr = commandList_->Close();
 	assert(SUCCEEDED(hr));
 
 	//GPUにコマンドリストの実行を行わせる
-	ID3D12CommandList* commandLists[] = { commandList.Get() };
-	commandQueue->ExecuteCommandLists(1, commandLists);
+	ID3D12CommandList* commandLists[] = { commandList_.Get() };
+	commandQueue_->ExecuteCommandLists(1, commandLists);
 	//GPUとOSに画面の交換を行うよう通知する
-	swapChain->Present(1, 0);
+	swapChain_->Present(1, 0);
 
 	//Fenceの値を更新
-	fenceValue++;
+	fenceValue_++;
 	//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
-	commandQueue->Signal(fence.Get(), fenceValue);
+	commandQueue_->Signal(fence_.Get(), fenceValue_);
 
 	//Fenceの値が指定したSignal値にたどり着いているかを確認する
-	if (fence->GetCompletedValue() < fenceValue) {
+	if (fence_->GetCompletedValue() < fenceValue_) {
 		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-		fence->SetEventOnCompletion(fenceValue, fenceEvent);
+		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
 		//イベントを待つ
-		WaitForSingleObject(fenceEvent, INFINITE);
+		WaitForSingleObject(fenceEvent_, INFINITE);
 	}
 
 	//次のフレーム用のコマンドリストを準備
-	hr = commandAllocator->Reset();
+	hr = commandAllocator_->Reset();
 	assert(SUCCEEDED(hr));
-	hr = commandList->Reset(commandAllocator.Get(), nullptr);
+	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr));
 }
 
 void DirectXCommon::Finalize() {
-	CloseHandle(fenceEvent);
+	CloseHandle(fenceEvent_);
 
-	depthStencilResource.Reset();
-	fence.Reset();
-	dsvDescriptorHeap.Reset();
-	rtvDescriptorHeap.Reset();
-	swapChainResources[0].Reset();
-	swapChainResources[1].Reset();
-	swapChain.Reset();
-	commandList.Reset();
-	commandAllocator.Reset();
-	commandQueue.Reset();
-	device.Reset();
-	useAdapter.Reset();
-	dxgiFactory.Reset();
+	depthStencilResource_.Reset();
+	fence_.Reset();
+	dsvDescriptorHeap_.Reset();
+	rtvDescriptorHeap_.Reset();
+	swapChainResources_[0].Reset();
+	swapChainResources_[1].Reset();
+	swapChain_.Reset();
+	commandList_.Reset();
+	commandAllocator_.Reset();
+	commandQueue_.Reset();
+	device_.Reset();
+	useAdapter_.Reset();
+	dxgiFactory_.Reset();
 }
 
 void DirectXCommon::EnableDebugLayer() {
@@ -135,16 +135,16 @@ void DirectXCommon::EnableDebugLayer() {
 
 void DirectXCommon::CreateDevice() {
 	//HRESULTはWindows系のエラーコードで、関数が成功したかどうかをSUCCEDEDマクロで判定できる
-	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
 	//初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、どうにもできない場合が多いのでassert
 	assert(SUCCEEDED(hr));
 
 	//パフォーマンスの高い順にアダプターをチェックする
-	for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-		IID_PPV_ARGS(&useAdapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
+	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+		IID_PPV_ARGS(&useAdapter_)) != DXGI_ERROR_NOT_FOUND; ++i) {
 		//アダプターの情報を取得する
 		DXGI_ADAPTER_DESC3 adapterDesc{};
-		hr = useAdapter->GetDesc3(&adapterDesc);
+		hr = useAdapter_->GetDesc3(&adapterDesc);
 		assert(SUCCEEDED(hr));
 
 		//ソフトウェアアダプタでなければ採用
@@ -154,10 +154,10 @@ void DirectXCommon::CreateDevice() {
 			break;
 		}
 		//ソフトウェアアダプタの場合は見なかったことにする
-		useAdapter = nullptr;
+		useAdapter_ = nullptr;
 	}
 	//適切なアダプタが見つからなったので起動できない
-	assert(useAdapter != nullptr);
+	assert(useAdapter_ != nullptr);
 
 	//機能レベルとログ出力用の文字列
 	D3D_FEATURE_LEVEL featureLevels[] = {
@@ -167,7 +167,7 @@ void DirectXCommon::CreateDevice() {
 	//高い順に生成できるか試していく
 	for (size_t i = 0; i < _countof(featureLevels); ++i) {
 		//採用したアダプターでデバイスを生成
-		hr = D3D12CreateDevice(useAdapter.Get(), featureLevels[i], IID_PPV_ARGS(&device));
+		hr = D3D12CreateDevice(useAdapter_.Get(), featureLevels[i], IID_PPV_ARGS(&device_));
 		//採用した機能レベルでデバイスが生成できたかを確認
 		if (SUCCEEDED(hr)) {
 			//生成できたのでログ出力を行ってループを抜ける
@@ -176,13 +176,13 @@ void DirectXCommon::CreateDevice() {
 		}
 	}
 	//デバイスの生成がうまくいかなかったので起動できない
-	assert(device != nullptr);
+	assert(device_ != nullptr);
 	//初期化完了のログを出す
 	Log("Create Device Succeeded.\n");
 
 #ifdef _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
-	if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		//やばいエラー時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		//エラー時に止まる
@@ -210,17 +210,17 @@ void DirectXCommon::CreateDevice() {
 void DirectXCommon::CreateCommand() {
 	//コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
-	HRESULT hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
+	HRESULT hr = device_->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue_));
 	//コマンドキューの生成がうまくいかなかったので起動できない
 	assert(SUCCEEDED(hr));
 
 	//コマンドアロケータを生成する
-	hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
+	hr = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_));
 	//コマンドアロケーターの生成がうまくいかなかったので起動できない
 	assert(SUCCEEDED(hr));
 
 	//コマンドリストを生成する
-	hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
+	hr = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&commandList_));
 	//コマンドリストがうまく生成できなかったので起動できない
 	assert(SUCCEEDED(hr));
 
@@ -229,26 +229,26 @@ void DirectXCommon::CreateCommand() {
 
 void DirectXCommon::CreateSwapChain() {
 	//スワップチェーンを生成する
-	swapChainDesc.Width = WinApp::GetInstance()->kClientWidth;   //画面の幅。ウィンドウのクライアント領域と同じものにしておく
-	swapChainDesc.Height = WinApp::GetInstance()->kClientHeight; //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;           //色の形式
-	swapChainDesc.SampleDesc.Count = 1;                          //マルチサンプルしない
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
-	swapChainDesc.BufferCount = 2;                               //ダブルバッファ
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;    //モニタにうつしたら中身を破棄
+	swapChainDesc_.Width = WinApp::GetInstance()->kClientWidth;   //画面の幅。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc_.Height = WinApp::GetInstance()->kClientHeight; //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;           //色の形式
+	swapChainDesc_.SampleDesc.Count = 1;                          //マルチサンプルしない
+	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
+	swapChainDesc_.BufferCount = 2;                               //ダブルバッファ
+	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;    //モニタにうつしたら中身を破棄
 	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
 	//コマンドキュー、ウィンドウハンドル、設定を渡して生成する
-	HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(
-		commandQueue.Get(),
+	HRESULT hr = dxgiFactory_->CreateSwapChainForHwnd(
+		commandQueue_.Get(),
 		WinApp::GetInstance()->GetHwnd(),
-		&swapChainDesc,
+		&swapChainDesc_,
 		nullptr,
 		nullptr,
 		&swapChain1
 	);
 	assert(SUCCEEDED(hr));
 
-	hr = swapChain1.As(&swapChain);
+	hr = swapChain1.As(&swapChain_);
 	assert(SUCCEEDED(hr));
 
 	Log("Create SwapChain Succeeded.\n");
@@ -256,65 +256,65 @@ void DirectXCommon::CreateSwapChain() {
 
 void DirectXCommon::CreateFinalRenderTargets() {
 	//RTVディスクリプターヒープの生成
-	rtvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 
 	//SwapChainからResourceを引っ張ってくる
-	HRESULT hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
+	HRESULT hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[0]));
 	//うまく取得できなければ起動できない
 	assert(SUCCEEDED(hr));
-	hr = swapChain->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
+	hr = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResources_[1]));
 	assert(SUCCEEDED(hr));
 
 	//RTVの設定
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	   //出力結果をSRGBに変換して書き込む
-	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; //2dテクスチャとして書き込む
+	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	   //出力結果をSRGBに変換して書き込む
+	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; //2dテクスチャとして書き込む
 
 	//ディスクリプタの先頭を取得する
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
 	//1つ目。作る場所をこちらで指定
-	rtvHandles[0] = rtvStartHandle;
-	device->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
+	rtvHandles_[0] = rtvStartHandle;
+	device_->CreateRenderTargetView(swapChainResources_[0].Get(), &rtvDesc_, rtvHandles_[0]);
 	//2つ目のディスクリプタハンドルを得る(自力で)
-	rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	rtvHandles_[1].ptr = rtvHandles_[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//2つ目を作る
-	device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
+	device_->CreateRenderTargetView(swapChainResources_[1].Get(), &rtvDesc_, rtvHandles_[1]);
 
 	//DSVディスクリプターヒープの生成
-	dsvDescriptorHeap = CreateDescriptorHeap(device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 	//
-	depthStencilResource = CreateDepthStencilTextureResource(
-		device.Get(),
+	depthStencilResource_ = CreateDepthStencilTextureResource(
+		device_.Get(),
 		WinApp::GetInstance()->kClientWidth,
 		WinApp::GetInstance()->kClientHeight
 	);
 
 	//DSVの設定
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //Format。基本的にはResourceに合わせる
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture
+	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //Format。基本的にはResourceに合わせる
+	dsvDesc_.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture
 	//DSVHeapの先頭にDSVを作る
-	device->CreateDepthStencilView(
-		depthStencilResource.Get(),
-		&dsvDesc,
-		dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
+	device_->CreateDepthStencilView(
+		depthStencilResource_.Get(),
+		&dsvDesc_,
+		dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart()
 	);
 
-	dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	dsvHandle_ = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
 	Log("Create FinalRenderTargets Succeeded.\n");
 }
 
 void DirectXCommon::CreateFence() {
 	//Fenceの生成
-	fence = nullptr;
-	fenceValue = 0;
-	HRESULT hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	fence_ = nullptr;
+	fenceValue_ = 0;
+	HRESULT hr = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
 	assert(SUCCEEDED(hr));
 
 	//FenceのSignalを待つためのイベントを作成する
-	fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(fenceEvent != nullptr);
+	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(fenceEvent_ != nullptr);
 
 	Log("Create Fence Succeeded.\n");
 }
