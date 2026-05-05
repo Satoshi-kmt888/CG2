@@ -7,16 +7,13 @@
 
 #include <d3d12.h>
 
-Object3D::Object3D(){
-}
-
-Object3D::~Object3D(){
-	// マテリアルリソースの Unmap
+Object3D::~Object3D() {
+	//マテリアルリソース
 	if (materialResource_) {
 		materialResource_->Unmap(0, nullptr);
 	}
 
-	// WVPリソースの Unmap
+	//WVPリソース
 	if (wvpResource_) {
 		wvpResource_->Unmap(0, nullptr);
 	}
@@ -52,27 +49,3 @@ void Object3D::Draw() {
 		model_->Draw(commandList);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//void Object3D::Initialize(ID3D12DescriptorHeap* descriptorHeap) {
-//	
-//
-
-//
-//	/*Transformの初期化*/
-//	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-//}

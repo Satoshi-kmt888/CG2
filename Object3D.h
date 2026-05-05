@@ -19,7 +19,7 @@ public:
 	// コンストラクタ・デストラクタ
 	//==================================================
 
-	Object3D();
+	Object3D() = default;
 	~Object3D();
 
 	//==================================================
@@ -63,7 +63,7 @@ private:
 	//==================================================
 	// メンバ変数
 	//==================================================
-	
+
 	//定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_ = nullptr;
