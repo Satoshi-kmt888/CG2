@@ -25,17 +25,22 @@ struct TextureData {
  * \brief テクスチャの読み込み・管理を行うシングルトンクラス
  */
 class TextureManager {
-public://--- 公開定数 ---
+public:
+	//==================================================
+	// 公開定数
+	//==================================================
 	static const uint32_t kMaxTextures = 128; //<! 最大テクスチャ数
 
-public://--- インスタンス制御 ---
+	//==================================================
+	// 公開関数
+	//==================================================
+
 	/**
 	 * \brief シングルトンインスタンスの取得
 	 * \return TextureManagerのインスタンスポインタ
 	 */
 	static TextureManager* GetInstance();
 
-public://--- 公開関数 ---
 	/**
 	 * \brief テクスチャを読み込む
 	 * \details 既に読み込み済みのパスが渡された場合、キャッシュからデータを返す
@@ -44,7 +49,10 @@ public://--- 公開関数 ---
 	 */
 	const TextureData& Load(const std::string& filePath);
 
-public://--- ライフサイクル ---
+	//==================================================
+	// ライフサイクル
+	//==================================================
+
 	/**
 	 * \brief 初期化処理
 	 * \param[in] device 使用するDirectX12デバイス
@@ -52,19 +60,29 @@ public://--- ライフサイクル ---
 	 */
 	void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
+	/**
+	 * \brief 終了処理
+	 */
 	void Finalize();
 
-public://--- ゲッター ---
+	//==================================================
+	// ゲッター
+	//==================================================
+
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap_.Get(); }
 
-private://--- 内部関数 ---
+private:
+	//==================================================
+	// 内部関数
+	//==================================================
+
 	//コンストラクタ・デストラクタ
 	TextureManager() = default;
 	~TextureManager() = default;
 
 	//コピーガード
 	TextureManager(const TextureManager&) = delete;
-	TextureManager& operator=(const TextureManager) = delete;
+	TextureManager& operator=(const TextureManager&) = delete;
 
 	/**
 	 * \brief ディスク上の画像ファイルをメモリに読み込む
@@ -81,7 +99,10 @@ private://--- 内部関数 ---
 	 */
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
-private://--- メンバ変数 ---
+	//==================================================
+	// メンバ変数
+	//==================================================
+
 	//DirectXCommonから参照するオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;

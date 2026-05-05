@@ -72,8 +72,8 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 	data.cpuHandle = srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	data.gpuHandle = srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart();
 	//先頭はImGuiが使っているのでその次を使う
-	data.cpuHandle.ptr += (descriptorSize_ * useCount_);
-	data.gpuHandle.ptr += (descriptorSize_ * useCount_);
+	data.cpuHandle.ptr += (static_cast<size_t>(descriptorSize_) * useCount_);
+	data.gpuHandle.ptr += (static_cast<size_t>(descriptorSize_) * useCount_);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
