@@ -15,11 +15,16 @@
  */
 class Object3D {
 public:
-	//--- コンストラクタ ---
+	//==================================================
+	// コンストラクタ・デストラクタ
+	//==================================================
+
 	Object3D();
 	~Object3D();
 
-	//--- ライフサイクル ---
+	//==================================================
+	// ライフサイクル
+	//==================================================
 	/**
 	 * \brief 初期化処理
 	 * \details マテリアル用、WVP用の定数バッファリソースを生成し、Mapを行う
@@ -39,17 +44,26 @@ public:
 	 */
 	void Draw();
 
-	//--- ゲッター ---
+	//==================================================
+	// ゲッター
+	//==================================================
+
 	Vector3 GetRotation() const { return transform_.rotation; }
 	const Vector3& GetTranslation() const { return transform_.translation; }
 	Vector3& GetTranslation() { return transform_.translation; }
 
-	//--- セッター ---
+	//==================================================
+	// セッター
+	//==================================================
+
 	void SetRotation(Vector3 rotation) { transform_.rotation = rotation; }
 	void SetModel(Model* model) { model_ = model; }
 
 private:
-	//--- メンバ変数 ---
+	//==================================================
+	// メンバ変数
+	//==================================================
+	
 	//定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_ = nullptr;

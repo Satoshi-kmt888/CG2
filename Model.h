@@ -1,5 +1,4 @@
 #pragma once
-
 #include <d3d12.h>
 #include <wrl/client.h>
 
@@ -26,12 +25,27 @@ struct VertexData {
  */
 class Model{
 public:
-	//--- コンストラクタ・デストラクタ ---
-	Model();
+	//==================================================
+	// コンストラクタ・デストラクタ
+	//==================================================
+
+	Model() = default;
 	~Model();
 
-	//--- 公開関数 ---
+	//==================================================
+	// 公開関数
+	//==================================================
+	
+	/**
+	 * \brief 三角形モデルのインスタンスを生成する
+	 * \return 生成されたModelのunique_ptr
+	 */
+	static std::unique_ptr<Model> CreateTriangle();
 
+	/**
+	 * \brief 矩形モデルのインスタンスを生成する
+	 * \return 生成されたModelのunique_ptr
+	 */
 	static std::unique_ptr<Model> CreateQuad();
 
 	/**
@@ -42,25 +56,36 @@ public:
 	 */
 	static std::unique_ptr<Model> CreateSphere(uint32_t divisionVertical = 16, uint32_t divisionHorizontal = 16);
 
-	//--- ライフサイクル ---
+	//==================================================
+	// ライフサイクル
+	//==================================================
+
 	/**
 	 * \brief 頂点バッファとテクスチャを描画コマンドにセットする
 	 * \param commandList 転送コマンドの記録に使用するコマンドリスト
 	 */
 	void Draw(ID3D12GraphicsCommandList* commandList);
 
-	//--- セッター ---
+	//==================================================
+	// セッター
+	//==================================================
+
 	void SetTexture(const std::string& filePath);
 
 private:
-	//--- 内部関数 ---
+	//==================================================
+	// 内部関数
+	//==================================================
+
 	/**
 	 * \brief 頂点バッファリソースを作成し、Mapを行う
 	 * \param vertexCount 生成する頂点数
 	 */
 	void CreateVertexBuffer(uint32_t vertexCount);
 
-	//--- メンバ変数 ---
+	//==================================================
+	// メンバ変数
+	//==================================================
 
 	//頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;

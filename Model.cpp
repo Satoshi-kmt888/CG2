@@ -6,14 +6,42 @@
 #include <numbers>
 #include <cmath>
 
-Model::Model(){
-
-}
-
 Model::~Model(){
 	if (vertexResource_ && vertexData_) {
 		vertexResource_->Unmap(0, nullptr);
 	}
+}
+
+std::unique_ptr<Model> Model::CreateTriangle(){
+	std::unique_ptr<Model> model = std::make_unique<Model>();
+
+	uint32_t vertexCount = 6;
+	model->CreateVertexBuffer(vertexCount);
+	model->vertexCount_ = vertexCount;
+
+	//--- 1枚目 ---
+	//左下
+	model->vertexData_[0].position = { -0.5f, -0.5f, 0.0f, 1.0f };
+	model->vertexData_[0].texCoord = { 0.0f, 1.0f };
+	//上
+	model->vertexData_[1].position = { 0.0f, 0.5f, 0.0f, 1.0f };
+	model->vertexData_[1].texCoord = { 0.5f, 0.0f };
+	//右下
+	model->vertexData_[2].position = { 0.5f, -0.5f, 0.0f, 1.0f };
+	model->vertexData_[2].texCoord = { 1.0f, 1.0f };
+
+	//--- 2枚目 ---
+	//左下
+	model->vertexData_[3].position = { -0.5f, -0.5f, 0.5f, 1.0f };
+	model->vertexData_[3].texCoord = { 0.0f, 1.0f };
+	//上
+	model->vertexData_[4].position = { 0.0f, 0.0f, 0.0f, 1.0f };
+	model->vertexData_[4].texCoord = { 0.5f, 0.0f };
+	//右下
+	model->vertexData_[5].position = { 0.5f, -0.5f, -0.5f, 1.0f };
+	model->vertexData_[5].texCoord = { 1.0f, 1.0f };
+
+	return model;
 }
 
 std::unique_ptr<Model> Model::CreateQuad(){

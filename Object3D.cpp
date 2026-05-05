@@ -71,27 +71,7 @@ void Object3D::Draw() {
 //void Object3D::Initialize(ID3D12DescriptorHeap* descriptorHeap) {
 //	
 //
-//	//--- 1枚目 ---
-//	//左下
-//	vertexData[0].position = { -0.5f, -0.5f, 0.0f, 1.0f };
-//	vertexData[0].texCoord = { 0.0f, 1.0f };
-//	//上
-//	vertexData[1].position = { 0.0f, 0.5f, 0.0f, 1.0f };
-//	vertexData[1].texCoord = { 0.5f, 0.0f };
-//	//右下
-//	vertexData[2].position = { 0.5f, -0.5f, 0.0f, 1.0f };
-//	vertexData[2].texCoord = { 1.0f, 1.0f };
-//
-//	//--- 2枚目 ---
-//	//左下
-//	vertexData[3].position = { -0.5f, -0.5f, 0.5f, 1.0f };
-//	vertexData[3].texCoord = { 0.0f, 1.0f };
-//	//上
-//	vertexData[4].position = { 0.0f, 0.0f, 0.0f, 1.0f };
-//	vertexData[4].texCoord = { 0.5f, 0.0f };
-//	//右下
-//	vertexData[5].position = { 0.5f, -0.5f, -0.5f, 1.0f };
-//	vertexData[5].texCoord = { 1.0f, 1.0f };
+
 //
 //	/*Transformの初期化*/
 //	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };

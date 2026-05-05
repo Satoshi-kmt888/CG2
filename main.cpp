@@ -1,14 +1,13 @@
 #include "DirectXCommon.h"
 #include "WinApp.h"
 
+#include "Camera.h"
 #include "DebugUtil.h"
 #include "GraphicsPipeline.h"
-#include "Object3D.h"
 #include "Model.h"
+#include "Object3D.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
-#include "Transform.h"
-#include "Camera.h"
 
 #ifdef USE_IMGUI
 #include <imgui.h>
@@ -38,7 +37,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SetUnhandledExceptionFilter(ExportDump);
 	{
 		//==================================================
-		//                     初期化
+		// 初期化
 		//==================================================
 
 		//ログファイル
@@ -58,7 +57,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		std::unique_ptr<GraphicsPipeline> graphicsPipeline = std::make_unique<GraphicsPipeline>();
 		graphicsPipeline->Initialize(shaderCompiler.get());
 
-		//
+		//テクスチャマネージャーを生成・初期化
 		TextureManager::GetInstance()->Initialize(
 			DirectXCommon::GetInstance()->GetDevice(),
 			DirectXCommon::GetInstance()->GetCommandList()
@@ -118,7 +117,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ウィンドウの×ボタンが押されるまでループ
 		while (WinApp::GetInstance()->ProcessMessage() != 0) {
 			//==================================================
-			//                       更新
+			// 更新
 			//==================================================
 
 			//IMGUI
@@ -140,10 +139,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 			//球
 			sphere.Update(camera3D->GetViewProjMatrix());
-			sphere.SetRotation(sphere.GetRotation()+Vector3(0.0f, 0.01f, 0.0f));
+			sphere.SetRotation(sphere.GetRotation() + Vector3(0.0f, 0.01f, 0.0f));
 
 			//==================================================
-			//                       描画
+			// 描画
 			//==================================================
 
 			//描画前処理
@@ -188,13 +187,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 #endif
-		//
+		//テクスチャマネージャーを終了
 		TextureManager::GetInstance()->Finalize();
 
-		//DirectX12基盤の終了
+		//DirectX12基盤を終了
 		DirectXCommon::GetInstance()->Finalize();
 
-		//ウィンドウズアプリケーションの終了
+		//ウィンドウズアプリケーションを終了
 		WinApp::GetInstance()->Finalize();
 	}
 
@@ -210,4 +209,4 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	return 0;
-}	
+}
