@@ -6,7 +6,18 @@
 #include "WinApp.h"
 
 #include <cassert>
+#include <cstdlib>
 #include <format>
+
+#include <Windows.h>
+#include <d3d12.h>
+#include <d3d12sdklayers.h>
+#include <d3dcommon.h>
+#include <dxgi.h>
+#include <dxgi1_2.h>
+#include <dxgi1_6.h>
+#include <dxgiformat.h>
+#include <wrl/client.h>
 
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;
@@ -257,6 +268,7 @@ void DirectXCommon::CreateSwapChain() {
 void DirectXCommon::CreateFinalRenderTargets() {
 	//RTVディスクリプターヒープの生成
 	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	//SwapChainからResourceを引っ張ってくる
 	HRESULT hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[0]));
@@ -282,6 +294,7 @@ void DirectXCommon::CreateFinalRenderTargets() {
 
 	//DSVディスクリプターヒープの生成
 	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//
 	depthStencilResource_ = CreateDepthStencilTextureResource(

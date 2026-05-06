@@ -105,13 +105,17 @@ private:
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources_[2] = { nullptr };
 
-	//ディスクリプターヒープ関連
+	//RTV(Render Target View)関連
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2]{};
+	uint32_t rtvDescriptorSize_ = 0;
+
+	//SRV(Shader Resource View)関連
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc_{};
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
+	uint32_t dsvDescriptorSize_ = 0;
 
 	//同期・その他
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;

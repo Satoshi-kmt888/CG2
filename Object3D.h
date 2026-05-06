@@ -1,11 +1,11 @@
 #pragma once
-
 #include <d3d12.h>
 #include <wrl/client.h>
 
 #include "Matrix4x4.h"
 #include "Model.h"
 #include "Transform.h"
+#include "Vector3.h"
 #include "Vector4.h"
 
 /**
@@ -51,6 +51,8 @@ public:
 	Vector3 GetRotation() const { return transform_.rotation; }
 	const Vector3& GetTranslation() const { return transform_.translation; }
 	Vector3& GetTranslation() { return transform_.translation; }
+	const Vector4& GetMaterialData() const { return *materialData_; }
+	Vector4& GetMaterialData() { return *materialData_; }
 
 	//==================================================
 	// セッター
@@ -68,13 +70,13 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_ = nullptr;
 
-	//描画に使用する形状データポインタ
-	Model* model_ = nullptr;
+	//トランスフォーム
+	Transform transform_{};
 
 	//書き込み用のデータアドレス
 	Vector4* materialData_ = nullptr;
 	Matrix4x4* wvpData_ = nullptr;
 
-	//トランスフォーム
-	Transform transform_;
+	//描画に使用する形状データポインタ
+	Model* model_ = nullptr;
 };

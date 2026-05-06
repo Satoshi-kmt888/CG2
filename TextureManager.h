@@ -109,8 +109,8 @@ private:
 
 	//リソース管理
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
-	uint32_t descriptorSize_ = 0; //<! ディスクリプタ1つ分のサイズ
-	uint32_t useCount_ = 0; //<! 現在使用中のディスクリプタ
+	uint32_t srvDescriptorSize_ = 0; //<! ディスクリプタ1つ分のサイズ
+	uint32_t srvDescriptorIndex_ = 0; //<! 現在使用中のディスクリプタ
 
 	//管理用コンテナ
 	std::unordered_map<std::string, TextureData> textureDataMap_; //<! ファイルパスをキーにしたテクスチャデータ

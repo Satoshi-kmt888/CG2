@@ -8,6 +8,7 @@
 #include "Object3D.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
+#include "Vector3.h"
 
 #ifdef USE_IMGUI
 #include <imgui.h>
@@ -85,6 +86,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//球のモデル
 		std::unique_ptr<Model> sphereModel = Model::CreateSphere();
 		sphereModel->SetTexture("resources/uvChecker.png");
+		bool useMonsterBall = true; //<! モンスターボールのテクスチャ判別フラグ
 
 		//スプライトの生成・初期化
 		Object3D sprite{};
@@ -127,7 +129,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::NewFrame();
 
 			//スプライト
-			ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f);
+			ImGui::ColorEdit4("material", &sphere.GetMaterialData().x); //<! RGBA
+			ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f); //<! 座標
+
+			//球のテクスチャ切り替え
+			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
+			if (useMonsterBall) {
+				sphereModel->SetTexture("resources/monsterball.png");
+				sphere.SetModel(sphereModel.get());
+			} else {
+				sphereModel->SetTexture("resources/uvChecker.png");
+				sprite.SetModel(spriteModel.get());
+			}
 #endif
 
 			//カメラの更新

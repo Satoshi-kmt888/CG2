@@ -4,8 +4,8 @@
 #include "DebugUtil.h"
 #include "StringUtil.h"
 
-#include <externals/DirectXTex/d3dx12.h>
 #include <externals/DirectXTex/DirectXTex.h>
+#include <externals/DirectXTex/d3dx12.h>
 
 #include <cassert>
 #include <cstdint>
@@ -14,8 +14,8 @@
 #include <utility>
 #include <vector>
 
-#include <d3d12.h>
 #include <Windows.h>
+#include <d3d12.h>
 #include <wrl/client.h>
 
 TextureManager* TextureManager::GetInstance() {
@@ -34,10 +34,11 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 		kMaxTextures,
 		true
 	);
-	descriptorSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	srvDescriptorSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	//先頭はImGuiが使用
-	useCount_ = 1;
+	srvDescriptorIndex_ = 1;
 
 	Log(std::format("TextureManager Initialize Succeeded. kMaxTextures : {}\n", kMaxTextures));
 }
@@ -57,7 +58,7 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 		return textureDataMap_[filePath];
 	}
 
-	assert(useCount_ < kMaxTextures && "テクスチャの最大数を超えました");
+	assert(srvDescriptorIndex_ < kMaxTextures && "テクスチャの最大数を超えました");
 
 	DirectX::ScratchImage mipImages = ReadFile(filePath);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
@@ -69,11 +70,8 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 	intermediateResource_.push_back(UploadTextureData(data.resource.Get(), mipImages));
 
 	//SRVを作成するDescriptorHeapの場所を決める
-	data.cpuHandle = srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	data.gpuHandle = srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart();
-	//先頭はImGuiが使っているのでその次を使う
-	data.cpuHandle.ptr += (static_cast<size_t>(descriptorSize_) * useCount_);
-	data.gpuHandle.ptr += (static_cast<size_t>(descriptorSize_) * useCount_);
+	data.cpuHandle = GetCPUDescriptorHandle(srvDescriptorHeap_.Get(), srvDescriptorSize_, srvDescriptorIndex_);
+	data.gpuHandle = GetGPUDescriptorHandle(srvDescriptorHeap_.Get(), srvDescriptorSize_, srvDescriptorIndex_);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
@@ -83,7 +81,7 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 	//SRVの生成
 	device_->CreateShaderResourceView(data.resource.Get(), &srvDesc, data.cpuHandle);
 	//次のテクスチャ用にカウントを進める
-	useCount_++;
+	srvDescriptorIndex_++;
 
 	textureDataMap_[filePath] = std::move(data);
 	return textureDataMap_[filePath];
