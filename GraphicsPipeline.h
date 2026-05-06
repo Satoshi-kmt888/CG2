@@ -1,7 +1,6 @@
 #pragma once
-#include <wrl/client.h>
 #include <d3d12.h>
-#include <dxcapi.h>
+#include <wrl/client.h>
 
 class ShaderCompiler;
 
@@ -67,7 +66,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
 
 	//設定データ
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[2]{}; //!< インプットレイアウトの要素実体
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3]{}; //!< インプットレイアウトの要素実体
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{}; //!< インプットレイアウトの設定
 	D3D12_BLEND_DESC blendDesc_{}; //!< ブレンドステートの設定
 	D3D12_RASTERIZER_DESC rasterizerDesc_{}; //!< ラスタライザステートの設定

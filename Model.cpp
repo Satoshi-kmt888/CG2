@@ -1,18 +1,24 @@
 #include "Model.h"
 
-#include "DirectXCommon.h"
 #include "D3D12Util.h"
+#include "DirectXCommon.h"
+#include "TextureManager.h"
 
-#include <numbers>
 #include <cmath>
+#include <cstdint>
+#include <memory>
+#include <numbers>
+#include <string>
 
-Model::~Model(){
+#include <d3d12.h>
+
+Model::~Model() {
 	if (vertexResource_ && vertexData_) {
 		vertexResource_->Unmap(0, nullptr);
 	}
 }
 
-std::unique_ptr<Model> Model::CreateTriangle(){
+std::unique_ptr<Model> Model::CreateTriangle() {
 	std::unique_ptr<Model> model = std::make_unique<Model>();
 
 	uint32_t vertexCount = 6;
@@ -44,27 +50,37 @@ std::unique_ptr<Model> Model::CreateTriangle(){
 	return model;
 }
 
-std::unique_ptr<Model> Model::CreateQuad(){
+std::unique_ptr<Model> Model::CreateQuad() {
 	std::unique_ptr<Model> model = std::make_unique<Model>();
+
 	uint32_t vertexCount = 6;
 	model->CreateVertexBuffer(vertexCount);
 	model->vertexCount_ = vertexCount;
 
+	model->CreateMaterialBuffer();
+	model->materialData_->enableLighting = false;
+
 	//1枚目の三角形
 	model->vertexData_[0].position = { 0.0f, 360.0f, 0.0f, 1.0f };//左下
 	model->vertexData_[0].texCoord = { 0.0f, 1.0f };
+	model->vertexData_[0].normal = { 0.0f, 0.0f, -1.0f };
 	model->vertexData_[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };//左上
 	model->vertexData_[1].texCoord = { 0.0f, 0.0f };
+	model->vertexData_[1].normal = { 0.0f, 0.0f, -1.0f };
 	model->vertexData_[2].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
 	model->vertexData_[2].texCoord = { 1.0f, 1.0f };
+	model->vertexData_[2].normal = { 0.0f, 0.0f, -1.0f };
 
 	//2枚目の三角形
 	model->vertexData_[3].position = { 0.0f, 0.0f, 0.0f, 1.0f };//左上
 	model->vertexData_[3].texCoord = { 0.0f, 0.0f };
+	model->vertexData_[3].normal = { 0.0f, 0.0f, 1.0f };
 	model->vertexData_[4].position = { 640.0f, 0.0f, 0.0f, 1.0f };//右上
 	model->vertexData_[4].texCoord = { 1.0f, 0.0f };
+	model->vertexData_[4].normal = { 0.0f, 0.0f, -1.0f };
 	model->vertexData_[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
 	model->vertexData_[5].texCoord = { 1.0f, 1.0f };
+	model->vertexData_[5].normal = { 0.0f, 0.0f, -1.0f };
 
 	return model;
 }
@@ -78,6 +94,8 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 
 	model->CreateVertexBuffer(vertexCount);
 	model->vertexCount_ = vertexCount;
+
+	model->CreateMaterialBuffer();
 
 	//緯度の方向に分割
 	for (uint32_t latIndex = 0; latIndex < divisionVertical; ++latIndex) {
@@ -102,6 +120,9 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 			model->vertexData_[start].position.z = std::cos(lat) * std::sin(lon);
 			model->vertexData_[start].position.w = 1.0f;
 			model->vertexData_[start].texCoord = { startU, startV };
+			model->vertexData_[start].normal.x = model->vertexData_[start].position.x;
+			model->vertexData_[start].normal.y = model->vertexData_[start].position.y;
+			model->vertexData_[start].normal.z = model->vertexData_[start].position.z;
 
 			//左上
 			model->vertexData_[start + 1].position.x = std::cos(lat + kLatEvery) * std::cos(lon);
@@ -109,6 +130,9 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 			model->vertexData_[start + 1].position.z = std::cos(lat + kLatEvery) * std::sin(lon);
 			model->vertexData_[start + 1].position.w = 1.0f;
 			model->vertexData_[start + 1].texCoord = { startU, nextV };
+			model->vertexData_[start + 1].normal.x = model->vertexData_[start + 1].position.x;
+			model->vertexData_[start + 1].normal.y = model->vertexData_[start + 1].position.y;
+			model->vertexData_[start + 1].normal.z = model->vertexData_[start + 1].position.z;
 
 			//右下
 			model->vertexData_[start + 2].position.x = std::cos(lat) * std::cos(lon + kLonEvery);
@@ -116,6 +140,9 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 			model->vertexData_[start + 2].position.z = std::cos(lat) * std::sin(lon + kLonEvery);
 			model->vertexData_[start + 2].position.w = 1.0f;
 			model->vertexData_[start + 2].texCoord = { nextU, startV };
+			model->vertexData_[start + 2].normal.x = model->vertexData_[start + 2].position.x;
+			model->vertexData_[start + 2].normal.y = model->vertexData_[start + 2].position.y;
+			model->vertexData_[start + 2].normal.z = model->vertexData_[start + 2].position.z;
 
 			//右上
 			model->vertexData_[start + 3].position.x = std::cos(lat + kLatEvery) * std::cos(lon + kLonEvery);
@@ -123,6 +150,9 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 			model->vertexData_[start + 3].position.z = std::cos(lat + kLatEvery) * std::sin(lon + kLonEvery);
 			model->vertexData_[start + 3].position.w = 1.0f;
 			model->vertexData_[start + 3].texCoord = { nextU, nextV };
+			model->vertexData_[start + 3].normal.x = model->vertexData_[start + 3].position.x;
+			model->vertexData_[start + 3].normal.y = model->vertexData_[start + 3].position.y;
+			model->vertexData_[start + 3].normal.z = model->vertexData_[start + 3].position.z;
 
 			//右下
 			model->vertexData_[start + 4].position.x = std::cos(lat) * std::cos(lon + kLonEvery);
@@ -130,6 +160,9 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 			model->vertexData_[start + 4].position.z = std::cos(lat) * std::sin(lon + kLonEvery);
 			model->vertexData_[start + 4].position.w = 1.0f;
 			model->vertexData_[start + 4].texCoord = { nextU, startV };
+			model->vertexData_[start + 4].normal.x = model->vertexData_[start + 4].position.x;
+			model->vertexData_[start + 4].normal.y = model->vertexData_[start + 4].position.y;
+			model->vertexData_[start + 4].normal.z = model->vertexData_[start + 4].position.z;
 
 			//左上
 			model->vertexData_[start + 5].position.x = std::cos(lat + kLatEvery) * std::cos(lon);
@@ -137,6 +170,9 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 			model->vertexData_[start + 5].position.z = std::cos(lat + kLatEvery) * std::sin(lon);
 			model->vertexData_[start + 5].position.w = 1.0f;
 			model->vertexData_[start + 5].texCoord = { startU, nextV };
+			model->vertexData_[start + 5].normal.x = model->vertexData_[start + 5].position.x;
+			model->vertexData_[start + 5].normal.y = model->vertexData_[start + 5].position.y;
+			model->vertexData_[start + 5].normal.z = model->vertexData_[start + 5].position.z;
 		}
 	}
 
@@ -154,7 +190,7 @@ void Model::Draw(ID3D12GraphicsCommandList* commandList) {
 	commandList->DrawInstanced(vertexCount_, 1, 0, 0);
 }
 
-void Model::SetTexture(const std::string& filePath){
+void Model::SetTexture(const std::string& filePath) {
 	textureData_ = &TextureManager::GetInstance()->Load(filePath);
 }
 
@@ -170,4 +206,15 @@ void Model::CreateVertexBuffer(uint32_t vertexCount) {
 
 	//書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+}
+
+void Model::CreateMaterialBuffer() {
+	//データ書き込み
+	materialResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(MaterialData));
+	//書き込むためのアドレスを取得
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+
+	//デフォルト値
+	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->enableLighting = true;
 }

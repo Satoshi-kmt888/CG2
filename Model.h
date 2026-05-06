@@ -2,12 +2,14 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
-#include "Vector2.h"
-#include "Vector4.h"
 #include "TextureManager.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
 
 /**
  * \struct VertexData
@@ -16,6 +18,16 @@
 struct VertexData {
 	Vector4 position; //<! 頂点座標
 	Vector2	texCoord; //<! uv座標
+	Vector3 normal;   //<! 法線
+};
+
+/**
+ * \struct MaterialData
+ * \brief GPUへ送るためのマテリアルデータ構造体
+ */
+struct MaterialData {
+	Vector4 color;          //<! RGBAの色データ
+	int32_t enableLighting; //<! ライティング有効フラグ
 };
 
 /**
@@ -23,15 +35,16 @@ struct VertexData {
  * \brief 3Dモデルの形状データを管理するクラス
  * \details 頂点バッファの生成や保持を行い、複数のObject3Dから共有
  */
-class Model{
+class Model {
 public:
 	//==================================================
 	// 公開関数
 	//==================================================
 
+	//コンストラクタ・デストラクタ
 	Model() = default;
 	~Model();
-	
+
 	/**
 	 * \brief 三角形モデルのインスタンスを生成する
 	 * \return 生成されたModelのunique_ptr
@@ -79,15 +92,22 @@ private:
 	 */
 	void CreateVertexBuffer(uint32_t vertexCount);
 
+	/** \brief マテリアルバッファリソースを作成し、Mapを行う */
+	void CreateMaterialBuffer();
+
 	//==================================================
 	// メンバ変数
 	//==================================================
 
-	//頂点
+	//頂点バッファ関連
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	uint32_t vertexCount_ = 0;
 	VertexData* vertexData_ = nullptr;
+
+	//マテリアルデータ関連
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
+	MaterialData* materialData_ = nullptr;
 
 	//テクスチャデータ
 	const TextureData* textureData_ = nullptr;

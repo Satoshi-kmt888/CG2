@@ -9,6 +9,15 @@
 #include "Vector4.h"
 
 /**
+ * \struct TransformationMatrix
+ * \brief GPUへ送るための座標変換行列データ構造体
+ */
+struct TransformationMatrix {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+};
+
+/**
  * \class Object3D
  * \brief 3Dオブジェクトの描画とデータを管理するクラス
  * \details 特定のモデルを参照し、個別の座標やマテリアル情報などを保持する
