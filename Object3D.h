@@ -60,8 +60,6 @@ public:
 	Vector3 GetRotation() const { return transform_.rotation; }
 	const Vector3& GetTranslation() const { return transform_.translation; }
 	Vector3& GetTranslation() { return transform_.translation; }
-	const Vector4& GetMaterialData() const { return *materialData_; }
-	Vector4& GetMaterialData() { return *materialData_; }
 
 	//==================================================
 	// セッター
@@ -76,15 +74,14 @@ private:
 	//==================================================
 
 	//定数バッファ
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
 
 	//トランスフォーム
 	Transform transform_{};
 
 	//書き込み用のデータアドレス
-	Vector4* materialData_ = nullptr;
-	Matrix4x4* wvpData_ = nullptr;
+	MaterialData* materialData_ = nullptr;
+	TransformationMatrix* transformationData_ = nullptr;
 
 	//描画に使用する形状データポインタ
 	Model* model_ = nullptr;

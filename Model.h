@@ -28,6 +28,13 @@ struct VertexData {
 struct MaterialData {
 	Vector4 color;          //<! RGBAの色データ
 	int32_t enableLighting; //<! ライティング有効フラグ
+	float padding[3];
+};
+
+struct DirectionalLight {
+	Vector4 color;     //<! ライトの色
+	Vector3 direction; //<! ライトの向き
+	float intensity;   //<! 輝度
 };
 
 /**
@@ -76,6 +83,17 @@ public:
 	void Draw(ID3D12GraphicsCommandList* commandList);
 
 	//==================================================
+	// ゲッター
+	//==================================================
+
+	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
+	ID3D12Resource* GetDirectionalLightResource() const { return directionalLightResource_.Get(); }
+
+	Vector4 GetDirectionalLightColor() const { return directionalLight_->color; }
+	Vector3 GetDirectionalLightDirection() const { return directionalLight_->direction; }
+	float GetDirectionalLightIntensity() const { return directionalLight_->intensity; }
+
+	//==================================================
 	// セッター
 	//==================================================
 
@@ -95,6 +113,8 @@ private:
 	/** \brief マテリアルバッファリソースを作成し、Mapを行う */
 	void CreateMaterialBuffer();
 
+	void CreateDirectionalLightBuffer();
+
 	//==================================================
 	// メンバ変数
 	//==================================================
@@ -108,6 +128,10 @@ private:
 	//マテリアルデータ関連
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	MaterialData* materialData_ = nullptr;
+
+	//ライティングデータ関連
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_ = nullptr;
+	DirectionalLight* directionalLight_ = nullptr;
 
 	//テクスチャデータ
 	const TextureData* textureData_ = nullptr;

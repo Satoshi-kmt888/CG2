@@ -8,33 +8,25 @@
 #include <d3d12.h>
 
 Object3D::~Object3D() {
-	//マテリアルリソース
-	if (materialResource_) {
-		materialResource_->Unmap(0, nullptr);
-	}
-
 	//WVPリソース
-	if (wvpResource_) {
-		wvpResource_->Unmap(0, nullptr);
+	if (transformationResource_) {
+		transformationResource_->Unmap(0, nullptr);
 	}
 }
 
 void Object3D::Initialize() {
-	materialResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Vector4));
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	*materialData_ = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-	wvpResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Matrix4x4));
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
-	*wvpData_ = Matrix4x4::Identity();
+	transformationResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
+	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
+	transformationData_->WVP = Matrix4x4::Identity();
+	transformationData_->World = Matrix4x4::Identity();
 
 	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f} };
 }
 
 void Object3D::Update(const Matrix4x4& viewProjectionMatrix) {
-	Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
+	transformationData_->World = Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
 
-	*wvpData_ = worldMatrix * viewProjectionMatrix;
+	transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
 }
 
 void Object3D::Draw() {
@@ -42,10 +34,12 @@ void Object3D::Draw() {
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(0, model_->GetMaterialResource()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 
 	if (model_) {
+		commandList->SetGraphicsRootConstantBufferView(3, model_->GetDirectionalLightResource()->GetGPUVirtualAddress());
+
 		model_->Draw(commandList);
 	}
 }

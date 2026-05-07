@@ -80,8 +80,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		);
 
 		//スプライトのモデル
-		std::unique_ptr<Model> spriteModel = Model::CreateQuad();
-		spriteModel->SetTexture("resources/uvChecker.png");
+		//std::unique_ptr<Model> spriteModel = Model::CreateQuad();
+		//spriteModel->SetTexture("resources/uvChecker.png");
 
 		//球のモデル
 		std::unique_ptr<Model> sphereModel = Model::CreateSphere();
@@ -89,9 +89,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		bool useMonsterBall = true; //<! モンスターボールのテクスチャ判別フラグ
 
 		//スプライトの生成・初期化
-		Object3D sprite{};
-		sprite.Initialize();
-		sprite.SetModel(spriteModel.get());
+		//Object3D sprite{};
+		//sprite.Initialize();
+		//sprite.SetModel(spriteModel.get());
 
 		//球の生成・初期化
 		Object3D sphere{};
@@ -129,8 +129,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::NewFrame();
 
 			//スプライト
-			ImGui::ColorEdit4("material", &sphere.GetMaterialData().x); //<! RGBA
-			ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f); //<! 座標
+			//ImGui::ColorEdit4("material", &sphere.GetMaterialData().x); //<! RGBA
+			//ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f); //<! 座標
 
 			//球のテクスチャ切り替え
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
@@ -139,7 +139,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				sphere.SetModel(sphereModel.get());
 			} else {
 				sphereModel->SetTexture("resources/uvChecker.png");
-				sprite.SetModel(spriteModel.get());
+				sphere.SetModel(sphereModel.get());
 			}
 #endif
 
@@ -148,7 +148,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			camera3D->Update();
 
 			//スプライト
-			sprite.Update(camera2D->GetViewProjMatrix());
+			//sprite.Update(camera2D->GetViewProjMatrix());
 
 			//球
 			sphere.Update(camera3D->GetViewProjMatrix());
@@ -177,7 +177,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 
 			//スプライト
-			sprite.Draw();
+			//sprite.Draw();
 
 			//球
 			sphere.Draw();

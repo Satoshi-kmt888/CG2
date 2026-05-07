@@ -89,6 +89,11 @@ inline Vector3 operator*(float scalar, const Vector3& v) {
 
 /*--------ベクトル演算--------*/
 
+//正規化
+inline Vector3 Normalize(const Vector3& vector) {
+	return vector.Normalized();
+}
+
 //内積
 inline float Dot(const Vector3& v1, const Vector3& v2) {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
