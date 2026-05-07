@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Vector3.h"
-#include "Matrix4x4.h"
-
 #include <d3d12.h>
+
+#include "Matrix4x4.h"
+#include "Vector3.h"
 
 /**
  *  \enum ProjectionType
@@ -48,6 +48,9 @@ private://--- 内部関数 ---
 public://--- ゲッター ---
 	const D3D12_VIEWPORT& GetViewport() const { return viewport_; }
 	const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
+
+	Vector3& GetRotation() { return rotation_; }
+	Vector3& GetTranslation() { return translation_; }
 
 	Matrix4x4 GetViewProjMatrix() const { return viewProjMatrix_; }
 

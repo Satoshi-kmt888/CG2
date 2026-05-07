@@ -80,18 +80,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		);
 
 		//スプライトのモデル
-		//std::unique_ptr<Model> spriteModel = Model::CreateQuad();
-		//spriteModel->SetTexture("resources/uvChecker.png");
+		std::unique_ptr<Model> spriteModel = Model::CreateQuad();
+		spriteModel->SetTexture("resources/uvChecker.png");
 
 		//球のモデル
 		std::unique_ptr<Model> sphereModel = Model::CreateSphere();
 		sphereModel->SetTexture("resources/uvChecker.png");
 		bool useMonsterBall = true; //<! モンスターボールのテクスチャ判別フラグ
+		bool enableLighting = true; //<! ライトの有効化
 
 		//スプライトの生成・初期化
-		//Object3D sprite{};
-		//sprite.Initialize();
-		//sprite.SetModel(spriteModel.get());
+		Object3D sprite{};
+		sprite.Initialize();
+		sprite.SetModel(spriteModel.get());
 
 		//球の生成・初期化
 		Object3D sphere{};
@@ -128,11 +129,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			//スプライト
-			//ImGui::ColorEdit4("material", &sphere.GetMaterialData().x); //<! RGBA
-			//ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f); //<! 座標
+			/*--- カメラ ---*/
+			//座標
+			ImGui::DragFloat3("CameraTranslation", &camera3D->GetTranslation().x, 0.01f);
+			ImGui::DragFloat3("CameraRotation", &camera3D->GetRotation().x, 0.01f);
 
-			//球のテクスチャ切り替え
+			//スプライト
+			ImGui::DragFloat3("sprite translate", &sprite.GetTranslation().x, 1.0f); //<! 座標
+
+			/*--- 球 ---*/
+			//色の変更
+			ImGui::ColorEdit4("materialColor", &sphere.GetMaterialColor().x); //<! RGBA
+
+			//ライティングの切り替え
+			ImGui::Checkbox("enableLighting", &enableLighting);
+			if (enableLighting) {
+				sphere.SetMaterialEnableLighting(true);
+			} else {
+				sphere.SetMaterialEnableLighting(false);
+			}
+
+			//テクスチャの切り替え
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 			if (useMonsterBall) {
 				sphereModel->SetTexture("resources/monsterball.png");
@@ -141,6 +158,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				sphereModel->SetTexture("resources/uvChecker.png");
 				sphere.SetModel(sphereModel.get());
 			}
+
+			/*--- ライト ---*/
+			//色の変更
+			ImGui::ColorEdit4("material", &sphere.GetDirectionalLightColor().x); //<! RGBA
+
+			//向き
+			ImGui::SliderFloat3("LightDirection", &sphere.GetDirectionalLightDirection().x, -1.0f, 1.0f, "%.3f");
+
+			//輝度
+			ImGui::DragFloat("Intensity", &sphere.GetDirectionalLightIntensity(), 0.001f, 0.0f, 1.0f, "%.3f");
 #endif
 
 			//カメラの更新

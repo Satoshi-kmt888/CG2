@@ -28,7 +28,6 @@ struct VertexData {
 struct MaterialData {
 	Vector4 color;          //<! RGBAの色データ
 	int32_t enableLighting; //<! ライティング有効フラグ
-	float padding[3];
 };
 
 struct DirectionalLight {
@@ -89,9 +88,8 @@ public:
 	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 	ID3D12Resource* GetDirectionalLightResource() const { return directionalLightResource_.Get(); }
 
-	Vector4 GetDirectionalLightColor() const { return directionalLight_->color; }
-	Vector3 GetDirectionalLightDirection() const { return directionalLight_->direction; }
-	float GetDirectionalLightIntensity() const { return directionalLight_->intensity; }
+	MaterialData* GetMaterialData() const { return materialData_; }
+	DirectionalLight* GetDirectionalLight() const { return directionalLight_; }
 
 	//==================================================
 	// セッター
