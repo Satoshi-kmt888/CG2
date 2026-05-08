@@ -175,11 +175,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			camera3D->Update();
 
 			//スプライト
-			//sprite.Update(camera2D->GetViewProjMatrix());
+			sprite.Update(camera2D->GetViewProjMatrix());
 
 			//球
-			sphere.Update(camera3D->GetViewProjMatrix());
-			sphere.SetRotation(sphere.GetRotation() + Vector3(0.0f, 0.01f, 0.0f));
+			//sphere.Update(camera3D->GetViewProjMatrix());
+			//sphere.SetRotation(sphere.GetRotation() + Vector3(0.0f, 0.01f, 0.0f));
 
 			//==================================================
 			// 描画
@@ -204,10 +204,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 
 			//スプライト
-			//sprite.Draw();
+			sprite.Draw();
 
 			//球
-			sphere.Draw();
+			//sphere.Draw();
 
 #ifdef USE_IMGUI
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList());

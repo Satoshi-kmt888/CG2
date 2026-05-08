@@ -11,6 +11,7 @@
 #include <string>
 
 #include <d3d12.h>
+#include <dxgiformat.h>
 
 Model::~Model() {
 	if (vertexResource_ && vertexData_) {
@@ -56,6 +57,14 @@ std::unique_ptr<Model> Model::CreateQuad() {
 	uint32_t vertexCount = 6;
 	model->CreateVertexBuffer(vertexCount);
 	model->vertexCount_ = vertexCount;
+
+	model->CreateIndexBuffer(vertexCount);
+	model->indexData_[0] = 0;
+	model->indexData_[1] = 1;
+	model->indexData_[2] = 2;
+	model->indexData_[3] = 1;
+	model->indexData_[4] = 3;
+	model->indexData_[5] = 2;
 
 	model->CreateMaterialBuffer();
 	model->materialData_->enableLighting = false;
@@ -187,6 +196,7 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 void Model::Draw(ID3D12GraphicsCommandList* commandList) {
 	//頂点をセット
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	commandList->IASetIndexBuffer(&indexBufferView_);
 
 	if (textureData_) {
 		commandList->SetGraphicsRootDescriptorTable(2, textureData_->gpuHandle);
@@ -233,4 +243,18 @@ void Model::CreateDirectionalLightBuffer(){
 	directionalLight_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLight_->direction = { 0.0f, -1.0f, 0.0f };
 	directionalLight_->intensity = 1.0f;
+}
+
+void Model::CreateIndexBuffer(uint32_t vertexCount){
+	//データ書き込み
+	indexResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(uint32_t) * vertexCount);
+
+	//リソースの先頭アドレスから使う
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	//使用するリソースサイズ
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * vertexCount;
+	//インデックスはuint32_t
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
 }

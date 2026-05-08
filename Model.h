@@ -113,6 +113,8 @@ private:
 
 	void CreateDirectionalLightBuffer();
 
+	void CreateIndexBuffer(uint32_t vertexCount);
+
 	//==================================================
 	// メンバ変数
 	//==================================================
@@ -122,6 +124,11 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	uint32_t vertexCount_ = 0;
 	VertexData* vertexData_ = nullptr;
+
+	//
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+	uint32_t* indexData_ = nullptr;
 
 	//マテリアルデータ関連
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
