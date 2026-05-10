@@ -8,88 +8,40 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{bf94fcab-98ee-4bef-a047-5520bc3b3776}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\DirectX">
-      <UniqueIdentifier>{e822d4c8-1b25-48ef-b22f-56ce7fb5ee3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\DirectX\ShaderCompiler">
-      <UniqueIdentifier>{62e39884-b869-408d-9dae-00b88fffda53}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Utils">
-      <UniqueIdentifier>{aacb24f2-43cd-4be4-b4cc-dd207c94a172}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Utils\DebugUtil">
-      <UniqueIdentifier>{426bfd59-b730-4ef5-8657-62995d492588}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Utils\StringUtil">
-      <UniqueIdentifier>{955ef733-f233-4e77-bbea-23eb12b352a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\System">
-      <UniqueIdentifier>{d6a38bd0-17d3-4462-9e86-98a7e99b2165}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Math">
-      <UniqueIdentifier>{68f0b603-0c8b-4cef-8676-210231178896}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Utils\D3D12Util">
-      <UniqueIdentifier>{66cb7f4c-0583-4686-8e1c-d7994a6f3f1e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Math\Matrix4x4">
-      <UniqueIdentifier>{c205a79d-205c-48cd-a92c-a69d92769750}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Math\Transform">
-      <UniqueIdentifier>{38101bc0-21af-4bc6-8d7a-81e6a6a7b83d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\DirectX\DirectXCommon">
-      <UniqueIdentifier>{0a3d31e8-8caf-4e4a-86eb-929deb0d716c}</UniqueIdentifier>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{5194fa2b-346b-4ec0-9b04-a45f4de8da6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\System\WinApp">
-      <UniqueIdentifier>{0bdaee3b-a1a3-46e1-845a-b4a11f793a38}</UniqueIdentifier>
+    <Filter Include="Engine\Math">
+      <UniqueIdentifier>{68f0b603-0c8b-4cef-8676-210231178896}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\DirectX\GraphicsPipeline">
-      <UniqueIdentifier>{9d5f7683-4719-4d1a-b035-379abf782415}</UniqueIdentifier>
+    <Filter Include="Engine\Utils">
+      <UniqueIdentifier>{aacb24f2-43cd-4be4-b4cc-dd207c94a172}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Math\Vector">
-      <UniqueIdentifier>{6a57ad6a-87ae-4049-aadf-18a489165abe}</UniqueIdentifier>
+    <Filter Include="Engine\Utils\DebugUtil">
+      <UniqueIdentifier>{426bfd59-b730-4ef5-8657-62995d492588}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Object">
-      <UniqueIdentifier>{f3945d5e-d23d-434c-9a8b-612d597426a0}</UniqueIdentifier>
+    <Filter Include="Engine\Utils\D3D12Util">
+      <UniqueIdentifier>{66cb7f4c-0583-4686-8e1c-d7994a6f3f1e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Object\Object3D">
-      <UniqueIdentifier>{f8500415-75b8-4fdb-bcc4-0407ff34f328}</UniqueIdentifier>
+    <Filter Include="Engine\Base">
+      <UniqueIdentifier>{674bbc06-173b-4e6e-908f-ecfac9e3119d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Camera">
-      <UniqueIdentifier>{68a40384-e3f6-46ca-8b78-7244fe4c2355}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Object\Model">
-      <UniqueIdentifier>{a9c94b20-c003-4bb4-931a-6d22f05c6990}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Object\TextureManager">
-      <UniqueIdentifier>{756a848f-afa6-4772-a6ef-c7b42da0c175}</UniqueIdentifier>
+    <Filter Include="Engine\3d">
+      <UniqueIdentifier>{8631f822-a8c6-461d-a8ef-00d0e7022b67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="WinApp.cpp">
-      <Filter>Source\System\WinApp</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>Source\DirectX\ShaderCompiler</Filter>
-    </ClCompile>
     <ClCompile Include="DebugUtil.cpp">
-      <Filter>Source\Utils\DebugUtil</Filter>
-    </ClCompile>
-    <ClCompile Include="StringUtil.cpp">
-      <Filter>Source\Utils\StringUtil</Filter>
+      <Filter>Engine\Utils\DebugUtil</Filter>
     </ClCompile>
     <ClCompile Include="D3D12Util.cpp">
-      <Filter>Source\Utils\D3D12Util</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix4x4.cpp">
-      <Filter>Source\Math\Matrix4x4</Filter>
+      <Filter>Engine\Utils\D3D12Util</Filter>
     </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
@@ -112,23 +64,38 @@
     <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
-      <Filter>Source\DirectX\DirectXCommon</Filter>
+    <ClCompile Include="MyEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4x4.cpp">
+      <Filter>Engine\Math</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>Source\DirectX\GraphicsPipeline</Filter>
+      <Filter>Engine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Object3D.cpp">
-      <Filter>Source\Object\Object3D</Filter>
+    <ClCompile Include="WinApp.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXCommon.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>Engine\Base</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Source\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Source\Object\TextureManager</Filter>
+      <Filter>Engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Source\Object\Model</Filter>
+      <Filter>Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3D.cpp">
+      <Filter>Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Engine\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,26 +107,11 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WinApp.h">
-      <Filter>Source\System\WinApp</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>Source\DirectX\ShaderCompiler</Filter>
-    </ClInclude>
     <ClInclude Include="DebugUtil.h">
-      <Filter>Source\Utils\DebugUtil</Filter>
-    </ClInclude>
-    <ClInclude Include="StringUtil.h">
-      <Filter>Source\Utils\StringUtil</Filter>
+      <Filter>Engine\Utils\DebugUtil</Filter>
     </ClInclude>
     <ClInclude Include="D3D12Util.h">
-      <Filter>Source\Utils\D3D12Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix4x4.h">
-      <Filter>Source\Math\Matrix4x4</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Source\Math\Transform</Filter>
+      <Filter>Engine\Utils\D3D12Util</Filter>
     </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>imgui</Filter>
@@ -185,32 +137,50 @@
     <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
-      <Filter>Source\DirectX\DirectXCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsPipeline.h">
-      <Filter>Source\DirectX\GraphicsPipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Source\Math\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Source\Math\Vector</Filter>
+    <ClInclude Include="MyEngine.h">
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.h">
-      <Filter>Source\Math\Vector</Filter>
+      <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Object3D.h">
-      <Filter>Source\Object\Object3D</Filter>
+    <ClInclude Include="Vector3.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXCommon.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="WinApp.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Source\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Source\Object\TextureManager</Filter>
+      <Filter>Engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>Source\Object\Model</Filter>
+      <Filter>Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D.h">
+      <Filter>Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
