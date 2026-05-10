@@ -54,22 +54,26 @@ std::unique_ptr<Model> Model::CreateTriangle() {
 std::unique_ptr<Model> Model::CreateQuad() {
 	std::unique_ptr<Model> model = std::make_unique<Model>();
 
-	uint32_t vertexCount = 6;
+	uint32_t vertexCount = 4;
 	model->CreateVertexBuffer(vertexCount);
 	model->vertexCount_ = vertexCount;
 
-	model->CreateIndexBuffer(vertexCount);
+	uint32_t indexCount = 6;
+	model->CreateIndexBuffer(indexCount);
+	model->indexCount_ = indexCount;
+
+
+	model->CreateMaterialBuffer();
+	model->materialData_->enableLighting = false;
+
+	model->CreateDirectionalLightBuffer();
+
 	model->indexData_[0] = 0;
 	model->indexData_[1] = 1;
 	model->indexData_[2] = 2;
 	model->indexData_[3] = 1;
 	model->indexData_[4] = 3;
 	model->indexData_[5] = 2;
-
-	model->CreateMaterialBuffer();
-	model->materialData_->enableLighting = false;
-
-	model->CreateDirectionalLightBuffer();
 
 	//1枚目の三角形
 	model->vertexData_[0].position = { 0.0f, 360.0f, 0.0f, 1.0f };//左下
@@ -81,17 +85,9 @@ std::unique_ptr<Model> Model::CreateQuad() {
 	model->vertexData_[2].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
 	model->vertexData_[2].texCoord = { 1.0f, 1.0f };
 	model->vertexData_[2].normal = { 0.0f, 0.0f, -1.0f };
-
-	//2枚目の三角形
-	model->vertexData_[3].position = { 0.0f, 0.0f, 0.0f, 1.0f };//左上
-	model->vertexData_[3].texCoord = { 0.0f, 0.0f };
-	model->vertexData_[3].normal = { 0.0f, 0.0f, 1.0f };
-	model->vertexData_[4].position = { 640.0f, 0.0f, 0.0f, 1.0f };//右上
-	model->vertexData_[4].texCoord = { 1.0f, 0.0f };
-	model->vertexData_[4].normal = { 0.0f, 0.0f, -1.0f };
-	model->vertexData_[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
-	model->vertexData_[5].texCoord = { 1.0f, 1.0f };
-	model->vertexData_[5].normal = { 0.0f, 0.0f, -1.0f };
+	model->vertexData_[3].position = { 640.0f, 0.0f, 0.0f, 1.0f };//右上
+	model->vertexData_[3].texCoord = { 1.0f, 0.0f };
+	model->vertexData_[3].normal = { 0.0f, 0.0f, -1.0f };
 
 	return model;
 }
@@ -202,7 +198,7 @@ void Model::Draw(ID3D12GraphicsCommandList* commandList) {
 		commandList->SetGraphicsRootDescriptorTable(2, textureData_->gpuHandle);
 	}
 
-	commandList->DrawInstanced(vertexCount_, 1, 0, 0);
+	commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
 }
 
 void Model::SetTexture(const std::string& filePath) {

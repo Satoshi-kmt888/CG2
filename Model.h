@@ -128,6 +128,7 @@ private:
 	//
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+	uint32_t indexCount_ = 0;
 	uint32_t* indexData_ = nullptr;
 
 	//マテリアルデータ関連
