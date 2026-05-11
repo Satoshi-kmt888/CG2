@@ -66,8 +66,6 @@ std::unique_ptr<Model> Model::CreateQuad() {
 	model->CreateMaterialBuffer();
 	model->materialData_->enableLighting = false;
 
-	model->CreateDirectionalLightBuffer();
-
 	model->indexData_[0] = 0;
 	model->indexData_[1] = 1;
 	model->indexData_[2] = 2;
@@ -104,8 +102,6 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t d
 
 	model->CreateMaterialBuffer();
 	model->materialData_->enableLighting = true;
-
-	model->CreateDirectionalLightBuffer();
 
 	//緯度の方向に分割
 	for (uint32_t latIndex = 0; latIndex < divisionVertical; ++latIndex) {
@@ -228,17 +224,6 @@ void Model::CreateMaterialBuffer() {
 	//デフォルト値
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
-}
-
-void Model::CreateDirectionalLightBuffer(){
-	//データ書き込み
-	directionalLightResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(DirectionalLight));
-	//書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
-
-	directionalLight_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLight_->direction = { 0.0f, -1.0f, 0.0f };
-	directionalLight_->intensity = 1.0f;
 }
 
 void Model::CreateIndexBuffer(uint32_t vertexCount){

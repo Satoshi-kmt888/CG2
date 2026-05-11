@@ -97,6 +97,9 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

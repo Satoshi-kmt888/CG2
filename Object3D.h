@@ -66,13 +66,6 @@ public:
 	const Vector4& GetMaterialColor() const { return model_->GetMaterialData()->color; }
 	Vector4& GetMaterialColor() { return model_->GetMaterialData()->color; }
 
-	Vector4 GetDirectionalLightColor() const { return model_->GetDirectionalLight()->color; }
-	Vector4& GetDirectionalLightColor() { return model_->GetDirectionalLight()->color; }
-	Vector3 GetDirectionalLightDirection() const { return model_->GetDirectionalLight()->direction; }
-	Vector3& GetDirectionalLightDirection() { return model_->GetDirectionalLight()->direction; }
-	float GetDirectionalLightIntensity() const { return model_->GetDirectionalLight()->intensity; }
-	float& GetDirectionalLightIntensity() { return model_->GetDirectionalLight()->intensity; }
-
 	//==================================================
 	// セッター
 	//==================================================

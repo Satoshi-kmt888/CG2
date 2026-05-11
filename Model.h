@@ -30,12 +30,6 @@ struct MaterialData {
 	int32_t enableLighting; //<! ライティング有効フラグ
 };
 
-struct DirectionalLight {
-	Vector4 color;     //<! ライトの色
-	Vector3 direction; //<! ライトの向き
-	float intensity;   //<! 輝度
-};
-
 /**
  * \class Model
  * \brief 3Dモデルの形状データを管理するクラス
@@ -86,10 +80,8 @@ public:
 	//==================================================
 
 	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
-	ID3D12Resource* GetDirectionalLightResource() const { return directionalLightResource_.Get(); }
 
 	MaterialData* GetMaterialData() const { return materialData_; }
-	DirectionalLight* GetDirectionalLight() const { return directionalLight_; }
 
 	//==================================================
 	// セッター
@@ -110,8 +102,6 @@ private:
 
 	/** \brief マテリアルバッファリソースを作成し、Mapを行う */
 	void CreateMaterialBuffer();
-
-	void CreateDirectionalLightBuffer();
 
 	void CreateIndexBuffer(uint32_t vertexCount);
 
@@ -134,10 +124,6 @@ private:
 	//マテリアルデータ関連
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	MaterialData* materialData_ = nullptr;
-
-	//ライティングデータ関連
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_ = nullptr;
-	DirectionalLight* directionalLight_ = nullptr;
 
 	//テクスチャデータ
 	const TextureData* textureData_ = nullptr;

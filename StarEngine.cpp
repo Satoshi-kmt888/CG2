@@ -6,6 +6,7 @@
 #include "GraphicsPipeline.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
+#include "DirectionalLight.h"
 #include "WinApp.h"
 
 #ifdef USE_IMGUI
@@ -28,6 +29,7 @@ namespace StarEngine {
 	static std::unique_ptr<ShaderCompiler> shaderCompiler = nullptr;
 	static std::unique_ptr<GraphicsPipeline> graphicsPipeline = nullptr;
 	static std::unique_ptr<Camera> camera = nullptr;
+	static std::unique_ptr<DirectionalLight> directionalLight = nullptr;
 
 	void Initialize() {
 		SetUnhandledExceptionFilter(ExportDump);
@@ -53,6 +55,10 @@ namespace StarEngine {
 		//カメラ
 		camera = std::make_unique<Camera>();
 		camera->Initialize(WinApp::GetInstance()->kClientWidth, WinApp::GetInstance()->kClientHeight);
+
+		//ライト
+		directionalLight = std::make_unique<DirectionalLight>();
+		directionalLight->Initialize();
 
 #ifdef USE_IMGUI
 		IMGUI_CHECKVERSION();
@@ -81,6 +87,8 @@ namespace StarEngine {
 
 		graphicsPipeline.reset();
 		shaderCompiler.reset();
+		camera.reset();
+		directionalLight.reset();
 
 		//テクスチャマネージャーを終了
 		TextureManager::GetInstance()->Finalize();
@@ -122,6 +130,7 @@ namespace StarEngine {
 		//RootSignatureを設定。PSOとは別途設定が必要
 		commandList->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 		commandList->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
+		commandList->SetGraphicsRootConstantBufferView(3, directionalLight->GetGPUVirtualAddress());
 	}
 
 	void EndFrame(){

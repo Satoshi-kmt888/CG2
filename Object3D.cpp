@@ -37,7 +37,7 @@ void Object3D::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 
 	if (model_) {
-		commandList->SetGraphicsRootConstantBufferView(3, model_->GetDirectionalLightResource()->GetGPUVirtualAddress());
+		
 
 		model_->Draw(commandList);
 	}
