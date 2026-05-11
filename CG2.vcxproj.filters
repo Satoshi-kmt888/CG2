@@ -64,7 +64,7 @@
     <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MyEngine.cpp">
+    <ClCompile Include="StarEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Matrix4x4.cpp">
@@ -137,7 +137,7 @@
     <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MyEngine.h">
+    <ClInclude Include="StarEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.h">

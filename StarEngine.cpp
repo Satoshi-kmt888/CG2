@@ -1,4 +1,4 @@
-#include "MyEngine.h"
+#include "StarEngine.h"
 
 #include "Camera.h"
 #include "DebugUtil.h"
@@ -23,10 +23,10 @@
 #include <d3d12sdklayers.h>
 #include <wrl/client.h>
 
-namespace MyEngine {
+namespace StarEngine {
+	//--- 内部静的変数 ---
 	static std::unique_ptr<ShaderCompiler> shaderCompiler = nullptr;
 	static std::unique_ptr<GraphicsPipeline> graphicsPipeline = nullptr;
-
 	static std::unique_ptr<Camera> camera = nullptr;
 
 	void Initialize() {
@@ -116,11 +116,12 @@ namespace MyEngine {
 		ID3D12DescriptorHeap* descriptorHeap[] = { TextureManager::GetInstance()->GetSrvDescriptorHeap() };
 		DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
-		//DirectXCommon::GetInstance()->GetCommandList()->RSSetViewports(1, &camera->GetViewport());
-		//DirectXCommon::GetInstance()->GetCommandList()->RSSetScissorRects(1, &camera->GetScissorRect());
+		auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+		commandList->RSSetViewports(1, &camera->GetViewport());
+		commandList->RSSetScissorRects(1, &camera->GetScissorRect());
 		//RootSignatureを設定。PSOとは別途設定が必要
-		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
-		DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
+		commandList->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
+		commandList->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 	}
 
 	void EndFrame(){
@@ -137,4 +138,4 @@ namespace MyEngine {
 	bool ProcessMessage(){
 		return WinApp::GetInstance()->ProcessMessage();
 	}
-}//namespace MyEngine
+}//namespace StarEngine

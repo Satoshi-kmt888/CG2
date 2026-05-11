@@ -1,4 +1,4 @@
-#include "MyEngine.h"
+#include "StarEngine.h"
 
 #ifdef USE_IMGUI
 #include <imgui.h>
@@ -9,17 +9,22 @@
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-
-	MyEngine::Initialize();
+	//エンジンの初期化
+	StarEngine::Initialize();
 
 	//ウィンドウの×ボタンが押されるまでループ
-	while (MyEngine::ProcessMessage()) {
-		MyEngine::BeginFrame();
+	while (StarEngine::ProcessMessage()) {
+		//フレーム開始処理
+		StarEngine::BeginFrame();
 
-		MyEngine::EndFrame();
+
+
+		//フレーム終了処理
+		StarEngine::EndFrame();
 	}
 
-	MyEngine::Finalize();
+	//エンジンの終了
+	StarEngine::Finalize();
 
 	return 0;
 }

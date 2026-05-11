@@ -127,7 +127,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix4x4.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="MyEngine.cpp" />
+    <ClCompile Include="StarEngine.cpp" />
     <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="StringUtil.cpp" />
@@ -164,7 +164,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="MyEngine.h" />
+    <ClInclude Include="StarEngine.h" />
     <ClInclude Include="Object3D.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="StringUtil.h" />
