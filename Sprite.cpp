@@ -1,45 +1,45 @@
 #include "Sprite.h"
 
+#include "D3D12Util.h"
 #include "DirectXCommon.h"
+#include "Mesh.h"
+#include "Material.h"
 
-void Sprite::Initialize(ID3D12DescriptorHeap* descriptorHeap) {
-	CreateVertexBuffer(6);
+void Sprite::Initialize() {
+    //座標変換用の定数バッファ作成
+    transformationResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
+    transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
 
-	//1枚目の三角形
-	vertexData[0].position = { 0.0f, 360.0f, 0.0f, 1.0f };//左下
-	vertexData[0].texCoord = { 0.0f, 1.0f };
-	vertexData[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };//左上
-	vertexData[1].texCoord = { 0.0f, 0.0f };
-	vertexData[2].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
-	vertexData[2].texCoord = { 1.0f, 1.0f };
+    //単位行列で初期化
+    transformationData_->WVP = Matrix4x4::Identity();
+    transformationData_->World = Matrix4x4::Identity();
 
-	//2枚目の三角形
-	vertexData[3].position = { 0.0f, 0.0f, 0.0f, 1.0f };//左上
-	vertexData[3].texCoord = { 0.0f, 0.0f };
-	vertexData[4].position = { 640.0f, 0.0f, 0.0f, 1.0f };//右上
-	vertexData[4].texCoord = { 1.0f, 0.0f };
-	vertexData[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
-	vertexData[5].texCoord = { 1.0f, 1.0f };
-
-	CreateWVPBuffer();
-
-	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+    //Materialの生成・初期化
+    material_ = std::make_unique<Material>();
+    material_->Initialize();
+    material_->SetEnableLighting(false); // スプライトは基本ライティングOFF
 }
 
 void Sprite::Update(const Matrix4x4& viewProjectionMatrix) {
-	//ワールド行列更新
-	Matrix4x4 worldMatrix = Matrix4x4::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
+    transformationData_->World = Matrix4x4::MakeAffineMatrix({size_.x, size_.y, 1.0f}, {rotation_, 0.0f, 0.0f}, {position_.x, position_.y, 0.0f});
 
-	Matrix4x4 worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
-	*wvpData = worldViewProjectionMatrix;
+    transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
 }
 
 void Sprite::Draw() {
-	DirectXCommon::GetInstance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
-	//形状を設定。PSOとは別途設定。同じものを設定
-	DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//wvp用のCBufferの場所を設定
-	DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-	//描画(DrawCall)
-	DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+    auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+
+    //メッシュ(形状)をセット
+    mesh_->Bind(commandList);
+
+    //マテリアル(素材/テクスチャ)をセット
+    material_->Bind(commandList, 0, 2);
+
+    commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
+
+    if (mesh_->GetIndexCount() > 0) {
+        commandList->DrawIndexedInstanced(static_cast<UINT>(mesh_->GetIndexCount()), 1, 0, 0, 0);
+    } else {
+        commandList->DrawInstanced(static_cast<UINT>(mesh_->GetVertexCount()), 1, 0, 0);
+    }
 }

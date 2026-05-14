@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "Sprite.h"
 
 #ifdef USE_IMGUI
 #include <imgui.h>
@@ -19,8 +20,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	StarEngine::Initialize();
 
 	//カメラの生成・初期化
+	std::unique_ptr<Camera> camera2D = std::make_unique<Camera>();
+	camera2D->Initialize(1280, 720);
+	camera2D->SetProjectionType(ProjectionType::Orthographic);
 	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>();
 	camera3D->Initialize(1280, 720);
+
+	//スプライト(矩形)を生成・初期化
+	std::unique_ptr<Mesh> quadMesh = Mesh::CreateQuad();
+	std::unique_ptr<Sprite> quadSprite = std::make_unique<Sprite>();
+	quadSprite->Initialize();
+	quadSprite->SetMesh(quadMesh.get());
+	quadSprite->SetTexture("resources/uvChecker.png");
 
 	//球を生成・初期化
 	std::unique_ptr<Mesh> sphereMesh = Mesh::CreateSphere();
@@ -34,22 +45,46 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//フレーム開始処理
 		StarEngine::BeginFrame();
 
+		//====================
+		// ↓更新処理↓
+		//====================
+
 		//カメラの更新
 		camera3D->Update();
+
+		//スプライトの更新
+		quadSprite->Update(camera2D->GetViewProjMatrix());
 
 		//球の更新
 		sphereModel->Update(camera3D->GetViewProjMatrix());
 
+		//====================
+		// ↑更新処理↑
+		//====================
+
+		//====================
+		// ↓描画処理↓
+		//====================
+
+		//スプライトの描画
+		quadSprite->Draw();
+
 		//球の描画
 		sphereModel->Draw();
+
+		//====================
+		// ↑描画処理↑
+		//====================
 
 		//フレーム終了処理
 		StarEngine::EndFrame();
 	}
 
 	//生成したオブジェクトを明示的にリセット(リークチェックに引っかかるため)
-	sphereModel.reset();
+	quadMesh.reset();
+	quadSprite.reset();
 	sphereMesh.reset();
+	sphereModel.reset();
 
 	//エンジンの終了
 	StarEngine::Finalize();

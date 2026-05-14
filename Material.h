@@ -49,6 +49,7 @@ public:
 	//--- セッター ---
 
 	void SetColor(const Vector4& color) { materialData_->color = color; }
+	void SetEnableLighting(const uint32_t enableLighting) { materialData_->enableLighting; }
 	void SetTexture(const std::string& filePath);
 
 private:

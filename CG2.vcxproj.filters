@@ -32,6 +32,9 @@
     <Filter Include="Engine\3d">
       <UniqueIdentifier>{8631f822-a8c6-461d-a8ef-00d0e7022b67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\2d">
+      <UniqueIdentifier>{6ca295a4-2105-4029-a507-569468b74f4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -103,6 +106,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Engine\3d</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Engine\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -155,9 +161,6 @@
     <ClInclude Include="Vector4.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Matrix4x4.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
@@ -193,6 +196,15 @@
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Engine\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformationMatrix.h">
+      <Filter>Engine\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

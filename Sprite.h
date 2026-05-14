@@ -1,45 +1,38 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl/client.h>
-
 #include <memory>
-#include <string>
 
 #include "Material.h"
 #include "Matrix4x4.h"
-#include "Transform.h"
+#include "Vector2.h"
 #include "TransformationMatrix.h"
 
 class Mesh;
-class Material;
 
 /**
- * \class Model
- * \brief 3Dオブジェクトのインスタンスを管理するクラス
+ * \class Sprite
  */
-class Model {
+class Sprite {
 public:
 	//--- コンストラクタ・デストラクタ ---
 
-	Model() = default;
-	~Model() = default;
+	Sprite() = default;
+	~Sprite() = default;
 
 	//--- 公開関数 ---
 
 	/**
-	 * \brief 初期化処理
+	 * \brief 初期化
 	 */
 	void Initialize();
 
 	/**
 	 * \brief 更新処理
-	 * \param[in] viewProjectionMatrix ビュー・プロジェクション行列
+	 * 
 	 */
 	void Update(const Matrix4x4& viewProjectionMatrix);
 
 	/**
 	 * \brief 描画処理
-	 * \details セットされたMeshとMaterialを使用して描画コマンドを積む
 	 */
 	void Draw();
 
@@ -52,8 +45,10 @@ public:
 private:
 	//--- メンバ変数 ---
 
-	//トランスフォーム
-	Transform transform_{};
+	//2D用パラメータ
+	Vector2 position_ = { 0.0f, 0.0f };
+	float rotation_ = 0.0f;
+	Vector2 size_ = { 100.0f, 100.0f };
 
 	//座標変換リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;

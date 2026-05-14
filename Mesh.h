@@ -34,6 +34,12 @@ public:
 	//--- 公開関数 ---
 
 	/**
+	 * \brief 矩形メッシュを生成
+	 * \return
+	 */
+	static std::unique_ptr<Mesh> CreateQuad();
+
+	/**
 	 * \brief 球メッシュの生成
 	 * \param[in] divisionVertical 垂直方向の分割数
 	 * \param[in] divisionHorizontal 水平方向の分割数

@@ -9,6 +9,28 @@
 #include "D3D12Util.h"
 #include "DirectXCommon.h"
 
+std::unique_ptr<Mesh> Mesh::CreateQuad() {
+	std::vector<VertexData> vertices;
+	std::vector<uint32_t> indices;
+
+	vertices = {
+		{ {-0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f} }, // 左上
+		{ { 0.5f,  0.5f, 0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f} }, // 右上
+		{ {-0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f} }, // 左下
+		{ { 0.5f, -0.5f, 0.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} }, // 右下
+	};
+
+	indices = {
+		0, 1, 2,
+		1, 3, 2
+	};
+
+	auto mesh = std::make_unique<Mesh>();
+	mesh->Initialize(vertices, indices);
+
+	return mesh;
+}
+
 std::unique_ptr<Mesh> Mesh::CreateSphere(uint32_t divisionVertical, uint32_t divisionHorizontal) {
 	std::vector<VertexData> vertices;
 	std::vector<uint32_t> indices;
