@@ -49,7 +49,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
+#ifdef USE_IMGUI
+		ImGui::DragFloat3("Camera3D Translation", &camera3D->GetTranslation().x, 0.01f);
+		ImGui::DragFloat3("Camera2D Translation", &camera2D->GetTranslation().x, 0.1f);
+#endif
+
 		//カメラの更新
+		camera2D->Update();
 		camera3D->Update();
 
 		//スプライトの更新

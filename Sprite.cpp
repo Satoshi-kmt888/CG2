@@ -21,7 +21,11 @@ void Sprite::Initialize() {
 }
 
 void Sprite::Update(const Matrix4x4& viewProjectionMatrix) {
-    transformationData_->World = Matrix4x4::MakeAffineMatrix({size_.x, size_.y, 1.0f}, {rotation_, 0.0f, 0.0f}, {position_.x, position_.y, 0.0f});
+    transformationData_->World = Matrix4x4::MakeAffineMatrix(
+        {size_.x, size_.y, 1.0f},
+        { 0.0f, 0.0f, rotation_ },
+        {position_.x, position_.y, 0.0f}
+    );
 
     transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
 }

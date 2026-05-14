@@ -52,6 +52,7 @@ public://--- ゲッター ---
 	Vector3& GetRotation() { return rotation_; }
 	Vector3& GetTranslation() { return translation_; }
 
+	Matrix4x4 GetProjMatrix() const { return projectionMatrix_; }
 	Matrix4x4 GetViewProjMatrix() const { return viewProjMatrix_; }
 
 public://--- セッター ---

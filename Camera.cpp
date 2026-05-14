@@ -55,7 +55,7 @@ void Camera::UpdateMatrix() {
 	//射影行列を作成
 	if (projectionType_ == ProjectionType::Perspective) {
 		//3D:透視投影
-		projectionMatrix_ = Matrix4x4::MakeProjectionFovMatrix(fovY_, aspectRatio_, nearClip_, farClip_);
+		projectionMatrix_ = Matrix4x4::MakePerspectiveMatrix(fovY_, aspectRatio_, nearClip_, farClip_);
 	} else {
 		//2D:正射影
 		projectionMatrix_ = Matrix4x4::MakeOrthographicMatrix(

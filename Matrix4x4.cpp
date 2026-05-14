@@ -252,14 +252,18 @@ Matrix4x4 Matrix4x4::MakeAffineMatrix(const Vector3& scale, const Vector3& rotat
 		Matrix4x4::MakeTranslateMatrix(translate);
 }
 
-Matrix4x4 Matrix4x4::MakeProjectionFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+Matrix4x4 Matrix4x4::MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	Matrix4x4 result{};
 
-	result.m[0][0] = (1.0f / aspectRatio) * (1.0f / (tanf(fovY / 2.0f)));
-	result.m[1][1] = 1.0f / (std::tanf(fovY / 2.0f));
-	result.m[2][2] = farClip / (farClip - nearClip);
+	float cot = 1.0f / std::tan(fovY * 0.5f);
+	float inverseRange = 1.0f / (farClip - nearClip);
+
+	result.m[0][0] = cot / aspectRatio;
+	result.m[1][1] = cot;
+	result.m[2][2] = farClip * inverseRange;
 	result.m[2][3] = 1.0f;
-	result.m[3][2] = (-nearClip * farClip) / (farClip - nearClip);
+	result.m[3][2] = -nearClip * farClip * inverseRange;
+	result.m[3][3] = 0.0f;
 
 	return result;
 }
@@ -267,12 +271,16 @@ Matrix4x4 Matrix4x4::MakeProjectionFovMatrix(float fovY, float aspectRatio, floa
 Matrix4x4 Matrix4x4::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
 	Matrix4x4 result{};
 
-	result.m[0][0] = 2.0f / (right - left);
-	result.m[1][1] = 2.0f / (top - bottom);
-	result.m[2][2] = 1.0f / (farClip - nearClip);
-	result.m[3][0] = (left + right) / (left - right);
-	result.m[3][1] = (top + bottom) / (bottom - top);
-	result.m[3][2] = nearClip / (nearClip - farClip);
+	float inverseWidth = 1.0f / (right - left);
+	float inverseHeight = 1.0f / (top - bottom);
+	float inverseDepth = 1.0f / (farClip - nearClip);
+
+	result.m[0][0] = 2.0f * inverseWidth;
+	result.m[1][1] = 2.0f * inverseHeight;
+	result.m[2][2] = inverseDepth;
+	result.m[3][0] = -(right + left) * inverseWidth;
+	result.m[3][1] = -(top + bottom) * inverseHeight;
+	result.m[3][2] = -nearClip * inverseDepth;
 	result.m[3][3] = 1.0f;
 
 	return result;

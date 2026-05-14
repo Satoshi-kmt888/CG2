@@ -29,7 +29,7 @@ public:
 	 * \brief 更新処理
 	 * 
 	 */
-	void Update(const Matrix4x4& viewProjectionMatrix);
+	void Update(const Matrix4x4& projectionMatrix);
 
 	/**
 	 * \brief 描画処理
@@ -48,7 +48,7 @@ private:
 	//2D用パラメータ
 	Vector2 position_ = { 0.0f, 0.0f };
 	float rotation_ = 0.0f;
-	Vector2 size_ = { 100.0f, 100.0f };
+	Vector2 size_ = { 512.0f, 512.0f };
 
 	//座標変換リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
