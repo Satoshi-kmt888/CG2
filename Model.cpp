@@ -2,240 +2,52 @@
 
 #include "D3D12Util.h"
 #include "DirectXCommon.h"
-#include "TextureManager.h"
+#include "Material.h"
+#include "Matrix4x4.h"
+#include "Mesh.h"
 
-#include <cmath>
-#include <cstdint>
 #include <memory>
-#include <numbers>
-#include <string>
 
+#include <Windows.h>
 #include <d3d12.h>
-#include <dxgiformat.h>
 
-Model::~Model() {
-	if (vertexResource_ && vertexData_) {
-		vertexResource_->Unmap(0, nullptr);
+void Model::Initialize() {
+	//座標変換用の定数バッファ作成
+	transformationResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
+	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
+
+	//単位行列で初期化
+	transformationData_->WVP = Matrix4x4::Identity();
+	transformationData_->World = Matrix4x4::Identity();
+
+	//Materialの生成・初期化
+	material_ = std::make_unique<Material>();
+	material_->Initialize();
+
+	//デフォルト値を設定
+	transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f} };
+}
+
+void Model::Update(const Matrix4x4& viewProjectionMatrix) {
+	transformationData_->World = Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
+
+	transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
+}
+
+void Model::Draw() {
+	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+
+	//メッシュ(形状)をセット
+	mesh_->Bind(commandList);
+
+	//マテリアル(素材)をセット
+	material_->Bind(commandList, 0, 2);
+
+	commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
+
+	if (mesh_->GetIndexCount() > 0) {
+		commandList->DrawIndexedInstanced(static_cast<UINT>(mesh_->GetIndexCount()), 1, 0, 0, 0);
+	} else {
+		commandList->DrawInstanced(static_cast<UINT>(mesh_->GetVertexCount()), 1, 0, 0);
 	}
-}
-
-std::unique_ptr<Model> Model::CreateTriangle() {
-	std::unique_ptr<Model> model = std::make_unique<Model>();
-
-	uint32_t vertexCount = 6;
-	model->CreateVertexBuffer(vertexCount);
-	model->vertexCount_ = vertexCount;
-
-	//--- 1枚目 ---
-	//左下
-	model->vertexData_[0].position = { -0.5f, -0.5f, 0.0f, 1.0f };
-	model->vertexData_[0].texCoord = { 0.0f, 1.0f };
-	//上
-	model->vertexData_[1].position = { 0.0f, 0.5f, 0.0f, 1.0f };
-	model->vertexData_[1].texCoord = { 0.5f, 0.0f };
-	//右下
-	model->vertexData_[2].position = { 0.5f, -0.5f, 0.0f, 1.0f };
-	model->vertexData_[2].texCoord = { 1.0f, 1.0f };
-
-	//--- 2枚目 ---
-	//左下
-	model->vertexData_[3].position = { -0.5f, -0.5f, 0.5f, 1.0f };
-	model->vertexData_[3].texCoord = { 0.0f, 1.0f };
-	//上
-	model->vertexData_[4].position = { 0.0f, 0.0f, 0.0f, 1.0f };
-	model->vertexData_[4].texCoord = { 0.5f, 0.0f };
-	//右下
-	model->vertexData_[5].position = { 0.5f, -0.5f, -0.5f, 1.0f };
-	model->vertexData_[5].texCoord = { 1.0f, 1.0f };
-
-	return model;
-}
-
-std::unique_ptr<Model> Model::CreateQuad() {
-	std::unique_ptr<Model> model = std::make_unique<Model>();
-
-	uint32_t vertexCount = 4;
-	model->CreateVertexBuffer(vertexCount);
-	model->vertexCount_ = vertexCount;
-
-	uint32_t indexCount = 6;
-	model->CreateIndexBuffer(indexCount);
-	model->indexCount_ = indexCount;
-
-
-	model->CreateMaterialBuffer();
-	model->materialData_->enableLighting = false;
-
-	model->indexData_[0] = 0;
-	model->indexData_[1] = 1;
-	model->indexData_[2] = 2;
-	model->indexData_[3] = 1;
-	model->indexData_[4] = 3;
-	model->indexData_[5] = 2;
-
-	//1枚目の三角形
-	model->vertexData_[0].position = { 0.0f, 360.0f, 0.0f, 1.0f };//左下
-	model->vertexData_[0].texCoord = { 0.0f, 1.0f };
-	model->vertexData_[0].normal = { 0.0f, 0.0f, -1.0f };
-	model->vertexData_[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };//左上
-	model->vertexData_[1].texCoord = { 0.0f, 0.0f };
-	model->vertexData_[1].normal = { 0.0f, 0.0f, -1.0f };
-	model->vertexData_[2].position = { 640.0f, 360.0f, 0.0f, 1.0f };//右下
-	model->vertexData_[2].texCoord = { 1.0f, 1.0f };
-	model->vertexData_[2].normal = { 0.0f, 0.0f, -1.0f };
-	model->vertexData_[3].position = { 640.0f, 0.0f, 0.0f, 1.0f };//右上
-	model->vertexData_[3].texCoord = { 1.0f, 0.0f };
-	model->vertexData_[3].normal = { 0.0f, 0.0f, -1.0f };
-
-	return model;
-}
-
-std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionVertical, uint32_t divisionHorizontal) {
-	std::unique_ptr<Model> model = std::make_unique<Model>();
-
-	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(divisionHorizontal);
-	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(divisionVertical);
-	uint32_t vertexCount = divisionVertical * divisionHorizontal * 6;
-
-	model->CreateVertexBuffer(vertexCount);
-	model->vertexCount_ = vertexCount;
-
-	model->CreateMaterialBuffer();
-	model->materialData_->enableLighting = true;
-
-	//緯度の方向に分割
-	for (uint32_t latIndex = 0; latIndex < divisionVertical; ++latIndex) {
-		//現在の緯度
-		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * latIndex;
-
-		//経度の方向に分割
-		for (uint32_t lonIndex = 0; lonIndex < divisionHorizontal; ++lonIndex) {
-			uint32_t start = (latIndex * divisionHorizontal + lonIndex) * 6;
-			//現在の経度
-			float lon = lonIndex * kLonEvery;
-
-			//
-			float startU = static_cast<float>(lonIndex) / static_cast<float>(divisionHorizontal);
-			float startV = 1.0f - static_cast<float>(latIndex) / static_cast<float>(divisionVertical);
-			float nextU = static_cast<float>(lonIndex + 1) / static_cast<float>(divisionHorizontal);
-			float nextV = 1.0f - static_cast<float>(latIndex + 1) / static_cast<float>(divisionVertical);
-
-			//左下
-			model->vertexData_[start].position.x = std::cos(lat) * std::cos(lon);
-			model->vertexData_[start].position.y = std::sin(lat);
-			model->vertexData_[start].position.z = std::cos(lat) * std::sin(lon);
-			model->vertexData_[start].position.w = 1.0f;
-			model->vertexData_[start].texCoord = { startU, startV };
-			model->vertexData_[start].normal.x = model->vertexData_[start].position.x;
-			model->vertexData_[start].normal.y = model->vertexData_[start].position.y;
-			model->vertexData_[start].normal.z = model->vertexData_[start].position.z;
-
-			//左上
-			model->vertexData_[start + 1].position.x = std::cos(lat + kLatEvery) * std::cos(lon);
-			model->vertexData_[start + 1].position.y = std::sin(lat + kLatEvery);
-			model->vertexData_[start + 1].position.z = std::cos(lat + kLatEvery) * std::sin(lon);
-			model->vertexData_[start + 1].position.w = 1.0f;
-			model->vertexData_[start + 1].texCoord = { startU, nextV };
-			model->vertexData_[start + 1].normal.x = model->vertexData_[start + 1].position.x;
-			model->vertexData_[start + 1].normal.y = model->vertexData_[start + 1].position.y;
-			model->vertexData_[start + 1].normal.z = model->vertexData_[start + 1].position.z;
-
-			//右下
-			model->vertexData_[start + 2].position.x = std::cos(lat) * std::cos(lon + kLonEvery);
-			model->vertexData_[start + 2].position.y = std::sin(lat);
-			model->vertexData_[start + 2].position.z = std::cos(lat) * std::sin(lon + kLonEvery);
-			model->vertexData_[start + 2].position.w = 1.0f;
-			model->vertexData_[start + 2].texCoord = { nextU, startV };
-			model->vertexData_[start + 2].normal.x = model->vertexData_[start + 2].position.x;
-			model->vertexData_[start + 2].normal.y = model->vertexData_[start + 2].position.y;
-			model->vertexData_[start + 2].normal.z = model->vertexData_[start + 2].position.z;
-
-			//右上
-			model->vertexData_[start + 3].position.x = std::cos(lat + kLatEvery) * std::cos(lon + kLonEvery);
-			model->vertexData_[start + 3].position.y = std::sin(lat + kLatEvery);
-			model->vertexData_[start + 3].position.z = std::cos(lat + kLatEvery) * std::sin(lon + kLonEvery);
-			model->vertexData_[start + 3].position.w = 1.0f;
-			model->vertexData_[start + 3].texCoord = { nextU, nextV };
-			model->vertexData_[start + 3].normal.x = model->vertexData_[start + 3].position.x;
-			model->vertexData_[start + 3].normal.y = model->vertexData_[start + 3].position.y;
-			model->vertexData_[start + 3].normal.z = model->vertexData_[start + 3].position.z;
-
-			//右下
-			model->vertexData_[start + 4].position.x = std::cos(lat) * std::cos(lon + kLonEvery);
-			model->vertexData_[start + 4].position.y = std::sin(lat);
-			model->vertexData_[start + 4].position.z = std::cos(lat) * std::sin(lon + kLonEvery);
-			model->vertexData_[start + 4].position.w = 1.0f;
-			model->vertexData_[start + 4].texCoord = { nextU, startV };
-			model->vertexData_[start + 4].normal.x = model->vertexData_[start + 4].position.x;
-			model->vertexData_[start + 4].normal.y = model->vertexData_[start + 4].position.y;
-			model->vertexData_[start + 4].normal.z = model->vertexData_[start + 4].position.z;
-
-			//左上
-			model->vertexData_[start + 5].position.x = std::cos(lat + kLatEvery) * std::cos(lon);
-			model->vertexData_[start + 5].position.y = std::sin(lat + kLatEvery);
-			model->vertexData_[start + 5].position.z = std::cos(lat + kLatEvery) * std::sin(lon);
-			model->vertexData_[start + 5].position.w = 1.0f;
-			model->vertexData_[start + 5].texCoord = { startU, nextV };
-			model->vertexData_[start + 5].normal.x = model->vertexData_[start + 5].position.x;
-			model->vertexData_[start + 5].normal.y = model->vertexData_[start + 5].position.y;
-			model->vertexData_[start + 5].normal.z = model->vertexData_[start + 5].position.z;
-		}
-	}
-
-	return model;
-}
-
-void Model::Draw(ID3D12GraphicsCommandList* commandList) {
-	//頂点をセット
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
-	commandList->IASetIndexBuffer(&indexBufferView_);
-
-	if (textureData_) {
-		commandList->SetGraphicsRootDescriptorTable(2, textureData_->gpuHandle);
-	}
-
-	commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
-}
-
-void Model::SetTexture(const std::string& filePath) {
-	textureData_ = &TextureManager::GetInstance()->Load(filePath);
-}
-
-void Model::CreateVertexBuffer(uint32_t vertexCount) {
-	//データ書き込み
-	vertexResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * vertexCount);
-	//リソースの先頭アドレスから使う
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	//使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount;
-	//1頂点あたりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-
-	//書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-}
-
-void Model::CreateMaterialBuffer() {
-	//データ書き込み
-	materialResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(MaterialData));
-	//書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-
-	//デフォルト値
-	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
-}
-
-void Model::CreateIndexBuffer(uint32_t vertexCount){
-	//データ書き込み
-	indexResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(uint32_t) * vertexCount);
-
-	//リソースの先頭アドレスから使う
-	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-	//使用するリソースサイズ
-	indexBufferView_.SizeInBytes = sizeof(uint32_t) * vertexCount;
-	//インデックスはuint32_t
-	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
-
-	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
 }

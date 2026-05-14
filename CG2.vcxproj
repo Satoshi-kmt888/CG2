@@ -126,10 +126,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Matrix4x4.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="StarEngine.cpp" />
-    <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="StringUtil.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -164,10 +165,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="GraphicsPipeline.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="StarEngine.h" />
-    <ClInclude Include="Object3D.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="StringUtil.h" />
     <ClInclude Include="TextureManager.h" />

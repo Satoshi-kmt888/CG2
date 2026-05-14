@@ -3,10 +3,10 @@
 #include "Camera.h"
 #include "DebugUtil.h"
 #include "DirectXCommon.h"
+#include "DirectionalLight.h"
 #include "GraphicsPipeline.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
-#include "DirectionalLight.h"
 #include "WinApp.h"
 
 #ifdef USE_IMGUI
@@ -131,6 +131,11 @@ namespace StarEngine {
 		commandList->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 		commandList->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight->GetGPUVirtualAddress());
+
+		directionalLight->SetDirection({ 0.0f, -1.0f, 1.0f }); // 斜め下
+		directionalLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 白
+		directionalLight->SetIntensity(1.0f);
+		directionalLight->Update();
 	}
 
 	void EndFrame(){

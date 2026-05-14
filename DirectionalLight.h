@@ -22,6 +22,10 @@ public:
 		return resource_->GetGPUVirtualAddress();
 	}
 
+	void SetDirection(const Vector3& direction) { direction_ = direction; }
+	void SetColor(const Vector4& color) { color_ = color; }
+	void SetIntensity(const float intensity) { intensity_ = intensity; }
+
 private:
 	Vector3 direction_ = { 0.0f, -1.0f, 0.0f };
 	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };

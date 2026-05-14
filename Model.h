@@ -2,129 +2,53 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 
-#include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 
-#include "TextureManager.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-
-/**
- * \struct VertexData
- * \brief 3Dオブジェクトの頂点情報を保持する構造体
- */
-struct VertexData {
-	Vector4 position; //<! 頂点座標
-	Vector2	texCoord; //<! uv座標
-	Vector3 normal;   //<! 法線
-};
+#include "Material.h"
+#include "Matrix4x4.h"
+#include "Transform.h"
 
 /**
- * \struct MaterialData
- * \brief GPUへ送るためのマテリアルデータ構造体
+ * \struct TransformationMatrix
+ * \brief GPUへ送るための座標変換行列データ構造体
  */
-struct MaterialData {
-	Vector4 color;          //<! RGBAの色データ
-	int32_t enableLighting; //<! ライティング有効フラグ
+struct TransformationMatrix {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
 };
+
+class Mesh;
 
 /**
  * \class Model
- * \brief 3Dモデルの形状データを管理するクラス
- * \details 頂点バッファの生成や保持を行い、複数のObject3Dから共有
+ * \brief
  */
 class Model {
 public:
-	//==================================================
-	// 公開関数
-	//==================================================
+	//初期化
+	void Initialize();
 
-	//コンストラクタ・デストラクタ
-	Model() = default;
-	~Model();
+	//更新
+	void Update(const Matrix4x4& viewProjectionMatrix);
 
-	/**
-	 * \brief 三角形モデルのインスタンスを生成する
-	 * \return 生成されたModelのunique_ptr
-	 */
-	static std::unique_ptr<Model> CreateTriangle();
+	//描画
+	void Draw();
 
-	/**
-	 * \brief 矩形モデルのインスタンスを生成する
-	 * \return 生成されたModelのunique_ptr
-	 */
-	static std::unique_ptr<Model> CreateQuad();
-
-	/**
-	 * \brief 球体モデルのインスタンスを生成する
-	 * \param divisionVertical 水平方向の分割数
-	 * \param divisionHorizontal 垂直方向の分割数
-	 * \return 生成されたModelのunique_ptr
-	 */
-	static std::unique_ptr<Model> CreateSphere(uint32_t divisionVertical = 16, uint32_t divisionHorizontal = 16);
-
-	//==================================================
-	// ライフサイクル
-	//==================================================
-
-	/**
-	 * \brief 頂点バッファとテクスチャを描画コマンドにセットする
-	 * \param commandList 転送コマンドの記録に使用するコマンドリスト
-	 */
-	void Draw(ID3D12GraphicsCommandList* commandList);
-
-	//==================================================
-	// ゲッター
-	//==================================================
-
-	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
-
-	MaterialData* GetMaterialData() const { return materialData_; }
-
-	//==================================================
-	// セッター
-	//==================================================
-
-	void SetTexture(const std::string& filePath);
+	void SetMesh(Mesh* mesh) { mesh_ = mesh; }
+	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
+	void SetTexture(const std::string& filePath) { material_->SetTexture(filePath); }
 
 private:
-	//==================================================
-	// 内部関数
-	//==================================================
+	//座標変換リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
+	TransformationMatrix* transformationData_ = nullptr;
 
-	/**
-	 * \brief 頂点バッファリソースを作成し、Mapを行う
-	 * \param vertexCount 生成する頂点数
-	 */
-	void CreateVertexBuffer(uint32_t vertexCount);
+	//パーツへの参照・所有
+	Mesh* mesh_ = nullptr;
+	std::unique_ptr<Material> material_ = nullptr;
 
-	/** \brief マテリアルバッファリソースを作成し、Mapを行う */
-	void CreateMaterialBuffer();
-
-	void CreateIndexBuffer(uint32_t vertexCount);
-
-	//==================================================
-	// メンバ変数
-	//==================================================
-
-	//頂点バッファ関連
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	uint32_t vertexCount_ = 0;
-	VertexData* vertexData_ = nullptr;
-
-	//
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-	uint32_t indexCount_ = 0;
-	uint32_t* indexData_ = nullptr;
-
-	//マテリアルデータ関連
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
-	MaterialData* materialData_ = nullptr;
-
-	//テクスチャデータ
-	const TextureData* textureData_ = nullptr;
+	//トランスフォーム
+	Transform transform_{};
 };
