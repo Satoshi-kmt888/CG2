@@ -124,6 +124,8 @@ namespace StarEngine {
 		ID3D12DescriptorHeap* descriptorHeap[] = { TextureManager::GetInstance()->GetSrvDescriptorHeap() };
 		DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
+		directionalLight->Update();
+
 		auto commandList = DirectXCommon::GetInstance()->GetCommandList();
 		commandList->RSSetViewports(1, &camera->GetViewport());
 		commandList->RSSetScissorRects(1, &camera->GetScissorRect());
@@ -131,11 +133,6 @@ namespace StarEngine {
 		commandList->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 		commandList->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight->GetGPUVirtualAddress());
-
-		directionalLight->SetDirection({ 0.0f, -1.0f, 1.0f }); // 斜め下
-		directionalLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // 白
-		directionalLight->SetIntensity(1.0f);
-		directionalLight->Update();
 	}
 
 	void EndFrame(){

@@ -4,11 +4,6 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 
-#include <string>
-
-#include <Windows.h>
-#include <d3d12.h>
-
 Material::~Material() {
 	if (resource_ && materialData_) {
 		resource_->Unmap(0, nullptr);

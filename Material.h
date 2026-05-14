@@ -21,26 +21,40 @@ struct TextureData;
 
 /**
  * \class Material
- * \brief
+ * \brief 物体の質感、色、テクスチャを管理するクラス
  */
 class Material {
 public:
-	//コンストラクタ・デストラクタ
+	//--- コンストラクタ・デストラクタ ---
+
 	Material() = default;
 	~Material();
 
-	//初期化
+	//--- 公開関数 ---
+
+	/**
+	 * \brief マテリアルの初期化
+	 * \details 定数バッファの生成とMap、デフォルト値の設定
+	 */
 	void Initialize();
 
-	//描画準備
+	/**
+	 * \brief 描画コマンドのバインド
+	 * \param[in] commandList コマンドリスト
+	 * \param[in] rootParamIndexMaterial マテリアル用ルートパラメータ番号
+	 * \param[in] rootParamIndexTexture テクスチャ用ルートパラメータ番号
+	 */
 	void Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture);
+
+	//--- セッター ---
 
 	void SetColor(const Vector4& color) { materialData_->color = color; }
 	void SetTexture(const std::string& filePath);
 
 private:
+	//--- メンバ変数 ---
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
 	MaterialData* materialData_ = nullptr;
 	const TextureData* textureData_ = nullptr;
 };
-

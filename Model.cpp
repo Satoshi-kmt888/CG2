@@ -2,14 +2,9 @@
 
 #include "D3D12Util.h"
 #include "DirectXCommon.h"
-#include "Material.h"
-#include "Matrix4x4.h"
 #include "Mesh.h"
 
-#include <memory>
-
 #include <Windows.h>
-#include <d3d12.h>
 
 void Model::Initialize() {
 	//座標変換用の定数バッファ作成
