@@ -45,6 +45,14 @@ struct Vector3 {
 		return *this;
 	}
 
+	bool operator==(const Vector3& vector) const {
+		return (x == vector.x) && (y == vector.y) && (z == vector.z);
+	}
+
+	bool operator!=(const Vector3& vector) const {
+		return !(*this == vector);
+	}
+
 	/*--------基本操作--------*/
 
 	//ベクトルの長さを求める

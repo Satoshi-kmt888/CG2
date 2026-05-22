@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <Windows.h>
 
 struct _EXCEPTION_POINTERS;
 

@@ -1,85 +1,92 @@
 #pragma once
-
-#include <d3d12.h>
+#include <numbers>
 
 #include "Matrix4x4.h"
 #include "Vector3.h"
 
 /**
- *  \enum ProjectionType
- *  \brief カメラの投影方式を定義する列挙型
+ * \enum ProjectionType
+ * \brief 投影法式
  */
 enum class ProjectionType {
-	Perspective, //!< 3D
-	Orthographic //!< 2D
+	Perspective,
+	Orthographic
 };
 
 /**
-*  \class Camera
- * \brief ビュー行列とプロジェクション行列を管理するクラス
- * \details 透視投影(3D)と正射影(2D)の両方の行列を生成・保持
+ * \class Camera
+ * \brief 描画に必要な行列を管理するクラス
  */
 class Camera {
-public://--- コンストラクタ・デストラクタ ---
-	Camera();
+public:
+	//--- コンストラクタ・デストラクタ ---
+
+	Camera(float width, float height);
 	~Camera() = default;
 
-public://--- ライフサイクル ---
-	/**
-	 * \brief 初期化処理
-	 * \param[in] width クライアント領域の横幅
-	 * \param[in] height クライアント領域の縦幅
-	 */
-	void Initialize(int width, int height);
+	//--- 公開関数 ---
 
-	/**
-	 * \brief 更新処理
-	 * \details
-	 */
+	/** \brief 初期化 */
+	void Initialize(float width, float height);
+
+	/** \brief 更新処理 */
 	void Update();
 
-private://--- 内部関数 ---
-	/**
-	 * \brief 行列の更新
-	 * \details ビュー行列・プロジェクション行列から合成行列を求める
-	 */
+	//--- ゲッター ---
+
+	const Vector3& GetRotation() const { return rotation_; }
+	const Vector3& GetTranslation() const { return translation_; }
+
+	float GetFovY() const { return fovY_; }
+	float GetAspectRatio() const { return width_ / height_; }
+	float GetWidth() const { return width_; }
+	float GetHeight() const { return height_; }
+	float GetNearClip() const { return nearClip_; }
+	float GetFarClip() const { return farClip_; }
+
+	bool GetIsDirty() const { return isDirty_; }
+
+	ProjectionType GetProjectionType() const { return projectionType_; }
+
+	const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
+	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
+	const Matrix4x4& GetViewProjMatrix() const { return viewProjectionMatrix_; }
+
+	//--- セッター ---
+
+	void SetRotation(const Vector3& rotation);
+	void SetTranslation(const Vector3& translation);
+
+	void SetFovY(float fovY);
+	void SetWidth(float width);
+	void SetHeight(float height);
+
+	void SetProjectionType(ProjectionType projectionType);
+
+private:
+	//--- 内部関数 ---
+
+	/** \brief 行列の更新 */
 	void UpdateMatrix();
 
-public://--- ゲッター ---
-	const D3D12_VIEWPORT& GetViewport() const { return viewport_; }
-	const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
+	//--- 内部変数 ---
 
-	Vector3& GetRotation() { return rotation_; }
-	Vector3& GetTranslation() { return translation_; }
+	//ワールド変換
+	Vector3 rotation_ = { 0.0f, 0.0f, 0.0f };
+	Vector3 translation_ = { 0.0f, 0.0f, -10.0f };
 
-	Matrix4x4 GetProjMatrix() const { return projectionMatrix_; }
-	Matrix4x4 GetViewProjMatrix() const { return viewProjMatrix_; }
+	//投影パラメータ
+	float fovY_ = 45.0f * std::numbers::pi_v<float> / 180.0f;
+	float width_ = 1280.0f;
+	float height_ = 720.0f;
+	float nearClip_ = 0.1f;
+	float farClip_ = 1000.0f;
 
-public://--- セッター ---
-	void SetProjectionType(ProjectionType projectionType) { projectionType_ = projectionType; }
-
-private://--- メンバ変数 ---
-	//ワールド変換データ
-	Vector3 rotation_;
-	Vector3 translation_;
-
-	//透視投影
-	float fovY_;
-	float aspectRatio_;
-
-	//クリップ範囲
-	float nearClip_;
-	float farClip_;
-
-	//ビューポート・シザー矩形
-	D3D12_VIEWPORT viewport_{};
-	D3D12_RECT scissorRect_{};
-
-	//投影の種別
-	ProjectionType projectionType_;
+	ProjectionType projectionType_ = ProjectionType::Perspective;
+	bool isDirty_ = true;
 
 	//行列
-	Matrix4x4 viewMatrix_;
-	Matrix4x4 projectionMatrix_;
-	Matrix4x4 viewProjMatrix_;
+	Matrix4x4 viewMatrix_ = Matrix4x4::Identity();
+	Matrix4x4 projectionMatrix_ = Matrix4x4::Identity();
+	Matrix4x4 viewProjectionMatrix_ = Matrix4x4::Identity();
 };

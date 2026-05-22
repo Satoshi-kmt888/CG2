@@ -2,34 +2,41 @@
 
 #include "Camera.h"
 #include "DebugUtil.h"
-#include "DirectXCommon.h"
 #include "DirectionalLight.h"
+#include "DirectXCommon.h"
 #include "GraphicsPipeline.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
 #include "WinApp.h"
 
 #ifdef USE_IMGUI
-#include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
+#include <imgui.h>
 #endif
 
 #include <memory>
 
-#include <Windows.h>
-#include <dxgidebug.h>
-#include <dxgi1_3.h>
 #include <d3d12.h>
 #include <d3d12sdklayers.h>
+#include <dxgi1_3.h>
+#include <dxgidebug.h>
+#include <Windows.h>
 #include <wrl/client.h>
 
 namespace StarEngine {
 	//--- 内部静的変数 ---
+
 	static std::unique_ptr<ShaderCompiler> shaderCompiler = nullptr;
 	static std::unique_ptr<GraphicsPipeline> graphicsPipeline = nullptr;
 	static std::unique_ptr<Camera> camera = nullptr;
 	static std::unique_ptr<DirectionalLight> directionalLight = nullptr;
+
+	//シザー矩形の設定
+	static D3D12_RECT scissorRect{};
+
+	//クライアント領域のサイズと一緒にして画面全体に表示
+	static D3D12_VIEWPORT viewport{};
 
 	void Initialize() {
 		SetUnhandledExceptionFilter(ExportDump);
@@ -39,6 +46,12 @@ namespace StarEngine {
 		//基盤システムの初期化
 		WinApp::GetInstance()->Initialize();
 		DirectXCommon::GetInstance()->Initialize();
+
+		LONG width = static_cast<LONG>(WinApp::GetInstance()->kClientWidth);
+		LONG height = static_cast<LONG>(WinApp::GetInstance()->kClientHeight);
+
+		scissorRect = D3D12_RECT{ 0, 0, width, height };
+		viewport = D3D12_VIEWPORT{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f };
 
 		//コンパイラとパイプラインの生成・初期化
 		shaderCompiler = std::make_unique<ShaderCompiler>();
@@ -51,10 +64,6 @@ namespace StarEngine {
 
 		//マネージャー(とりあえずテクスチャのみ)
 		TextureManager::GetInstance()->Initialize(device, commandList);
-
-		//カメラ
-		camera = std::make_unique<Camera>();
-		camera->Initialize(WinApp::GetInstance()->kClientWidth, WinApp::GetInstance()->kClientHeight);
 
 		//ライト
 		directionalLight = std::make_unique<DirectionalLight>();
@@ -111,7 +120,7 @@ namespace StarEngine {
 		}
 	}
 
-	void BeginFrame(){
+	void BeginFrame() {
 		//IMGUI
 #ifdef USE_IMGUI
 		ImGui_ImplDX12_NewFrame();
@@ -127,15 +136,15 @@ namespace StarEngine {
 		directionalLight->Update();
 
 		auto commandList = DirectXCommon::GetInstance()->GetCommandList();
-		commandList->RSSetViewports(1, &camera->GetViewport());
-		commandList->RSSetScissorRects(1, &camera->GetScissorRect());
+		commandList->RSSetViewports(1, &viewport);
+		commandList->RSSetScissorRects(1, &scissorRect);
 		//RootSignatureを設定。PSOとは別途設定が必要
 		commandList->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 		commandList->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight->GetGPUVirtualAddress());
 	}
 
-	void EndFrame(){
+	void EndFrame() {
 #ifdef USE_IMGUI
 		//ImGUiの描画コマンドを確定させる
 		ImGui::Render();
@@ -146,7 +155,8 @@ namespace StarEngine {
 		DirectXCommon::GetInstance()->PostDraw();
 	}
 
-	bool ProcessMessage(){
+	bool ProcessMessage() {
 		return WinApp::GetInstance()->ProcessMessage();
 	}
 }//namespace StarEngine
+

@@ -5,7 +5,7 @@
 #include "Model.h"
 #include "Sprite.h"
 
-#ifdef USE_IMGUI
+#ifdef _DEBUG
 #include <imgui.h>
 #endif
 
@@ -20,10 +20,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	StarEngine::Initialize();
 
 	//カメラの生成・初期化
-	std::unique_ptr<Camera> camera2D = std::make_unique<Camera>();
+	std::unique_ptr<Camera> camera2D = std::make_unique<Camera>(1280.0f, 720.0f);
 	camera2D->Initialize(1280, 720);
 	camera2D->SetProjectionType(ProjectionType::Orthographic);
-	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>();
+	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>(1280.0f, 720.0f);
 	camera3D->Initialize(1280, 720);
 
 	//スプライト(矩形)を生成・初期化
@@ -49,9 +49,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-#ifdef USE_IMGUI
-		ImGui::DragFloat3("Camera3D Translation", &camera3D->GetTranslation().x, 0.01f);
-		ImGui::DragFloat3("Camera2D Translation", &camera2D->GetTranslation().x, 0.1f);
+#ifdef _DEBUG
+		Vector3 camera3DTranslation = camera3D->GetTranslation();
+		Vector3 camera2DTranslation = camera2D->GetTranslation();
+
+		ImGui::DragFloat3("Camera3D Translation", &camera3DTranslation.x, 0.01f);
+		ImGui::DragFloat3("Camera2D Translation", &camera2DTranslation.x, 0.1f);
+
+		camera3D->SetTranslation(camera3DTranslation);
+		camera2D->SetTranslation(camera2DTranslation);
 #endif
 
 		//カメラの更新
