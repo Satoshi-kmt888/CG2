@@ -28,6 +28,9 @@ void Sprite::Update(const Matrix4x4& viewProjectionMatrix) {
     );
 
     transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
+
+    //マテリアルの更新処理
+    material_->Update();
 }
 
 void Sprite::Draw() {

@@ -17,6 +17,20 @@ void Material::Initialize() {
 	//デフォルト値を設定
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = 1;
+	materialData_->uvTransform = Matrix4x4::Identity();
+
+	Update();
+}
+
+void Material::Update(){
+	if (!materialData_) {
+		return;
+	}
+
+	Matrix4x4 uvTransformMatrix = Matrix4x4::MakeScaleMatrix(uvTransform_.scale);
+	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeRotateZMatrix(uvTransform_.rotation.z);
+	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeTranslateMatrix(uvTransform_.translation);
+	materialData_->uvTransform = uvTransformMatrix;
 }
 
 void Material::SetTexture(const std::string& filePath) {

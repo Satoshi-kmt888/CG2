@@ -36,6 +36,10 @@ public:
 	 */
 	void Draw();
 
+	//--- ゲッター ---
+
+	Material& GetMaterial() const { return *material_.get(); }
+	
 	//--- セッター ---
 
 	void SetMesh(Mesh* mesh) { mesh_ = mesh; }
