@@ -2,7 +2,6 @@
 
 #include "D3D12Util.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
 
 #include <Windows.h>
 
@@ -10,13 +9,33 @@ std::unique_ptr<Model> Model::CreateSphere(const std::string& textureFilePath) {
 	auto model = std::make_unique<Model>();
 	
 	//メッシュセット
-	model->mesh_ = std::make_unique<Mesh>();
 	model->mesh_ = Mesh::CreateSphere();
 
 	//マテリアルをセット
 	model->material_ = std::make_unique<Material>();
 	model->material_->Initialize();
 	model->material_->SetTexture(textureFilePath);
+
+	model->Initialize();
+
+	return model;
+}
+
+std::unique_ptr<Model> Model::CreateFromObj(const std::string& filename) {
+	auto model = std::make_unique<Model>();
+
+	//メッシュをセット
+	model->mesh_ = std::make_unique<Mesh>();
+	model->mesh_ = Mesh::LoadObjFile("resources", filename);
+
+	//マテリアルをセット
+	model->material_ = std::make_unique<Material>();
+	model->material_ = model->mesh_->GetMaterial();
+	model->material_->Initialize();
+	std::string texturePath = model->material_->GetProperty().textureFilePath;
+	if (!texturePath.empty()) {
+		model->material_->SetTexture(texturePath);
+	}
 
 	model->Initialize();
 

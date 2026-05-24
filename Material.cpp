@@ -4,6 +4,10 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 
+#include <cassert>
+#include <fstream>
+#include <sstream>
+
 Material::~Material() {
 	if (constantBufferResource_ && constantBufferData_) {
 		constantBufferResource_->Unmap(0, nullptr);
@@ -43,4 +47,28 @@ void Material::Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexM
 	if (textureData_) {
 		commandList->SetGraphicsRootDescriptorTable(rootParamIndexTexture, textureData_->gpuHandle);
 	}
+}
+
+std::unique_ptr<Material> Material::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+	//必要な変数を宣言
+	auto material = std::make_unique<Material>();
+	std::string line; //ファイルから読み込んだ1行を格納
+	std::ifstream file(directoryPath + "/" + filename); //ファイルを開く
+	assert(file.is_open()); //開けなかったら止める
+
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier;
+
+		//identifierに応じた処理
+		if (identifier == "map_Kd") {
+			std::string textureFilename;
+			s >> textureFilename;
+			//連結してファイルパスにする
+			material->property_.textureFilePath = directoryPath + "/" + textureFilename;
+		}
+	}
+
+	return material;
 }

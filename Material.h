@@ -4,6 +4,7 @@
 #include <wrl/client.h>
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "Matrix4x4.h"
@@ -63,7 +64,17 @@ public:
 	 */
 	void Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture);
 
+	/**
+	 * \brief OBJファイルを読み込み、テクスチャデータを抽出
+	 * \param[in] directoryPath ディレクトリファイルのパス
+	 * \param[in] filename ファイル名(.objも含む)
+	 * \return テクスチャデータを格納したMaterialポインタ
+	 */
+	static std::unique_ptr<Material> LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+
 	//--- ゲッター ---
+
+	const Property& GetProperty() const { return property_; }
 
 	const Transform& GetUVTransform() const { return uvTransform_; }
 	Vector3 GetUVScale() const { return uvTransform_.scale; }

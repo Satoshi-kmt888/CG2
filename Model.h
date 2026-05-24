@@ -7,10 +7,9 @@
 
 #include "Material.h"
 #include "Matrix4x4.h"
+#include "Mesh.h"
 #include "Transform.h"
 #include "TransformationMatrix.h"
-
-class Mesh;
 
 /**
  * \class Model
@@ -18,6 +17,11 @@ class Mesh;
  */
 class Model {
 public:
+
+	struct MaterialData {
+		std::string textureFilePath;
+	};
+
 	//--- コンストラクタ・デストラクタ ---
 
 	Model() = default;
@@ -25,7 +29,19 @@ public:
 
 	//--- 公開関数 ---
 
+	/**
+	 * \brief 簡易的な球モデルを生成する
+	 * \param textureFilePath テクスチャファイルパス
+	 * \return 生成された球モデルデータ
+	 */
 	static std::unique_ptr<Model> CreateSphere(const std::string& textureFilePath);
+
+	/**
+	 * \brief OBJファイルからモデルを生成する
+	 * \param filename ファイル名(.objを含む)
+	 * \return 生成されたモデル
+	 */
+	static std::unique_ptr<Model> CreateFromObj(const std::string& filename);
 
 	/**
 	 * \brief 初期化処理
@@ -43,6 +59,14 @@ public:
 	 * \details セットされたMeshとMaterialを使用して描画コマンドを積む
 	 */
 	void Draw();
+
+	//--- ゲッター ---
+
+	const Vector3& GetRotation() const { return transform_.rotation; }
+
+	//--- セッター ---
+
+	void SetRotation(const Vector3& rotation) { transform_.rotation = rotation; }
 
 private:
 	//--- メンバ変数 ---

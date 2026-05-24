@@ -4,8 +4,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "Material.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -60,10 +62,24 @@ public:
 	 */
 	void CreateBuffers();
 
+	/**
+	 * \brief OBJファイルを読み込み、バッファを生成する
+	 * \param[in] directoryPath ディレクトリファイルのパス
+	 * \param[in] filename ファイル名(.objも含む)
+	 * \return 頂点データを格納したMeshポインタ
+	 */
+	static std::unique_ptr<Mesh> LoadObjFile(const std::string& directoryPath, const std::string& filename);
+
 	//--- ゲッター ---
 
 	const std::vector<VertexData>& GetVertices() const { return vertices_; }
 	const std::vector<uint32_t>& GetIndices() const { return indices_; }
+
+	std::unique_ptr<Material> GetMaterial() { return std::move(material_); }
+
+	//--- セッター ---
+
+	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
 
 private:
 	//--- メンバ変数 ---
@@ -77,4 +93,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 	std::vector<uint32_t> indices_{};
+
+	//マテリアルの参照
+	std::unique_ptr<Material> material_ = nullptr;
 };
