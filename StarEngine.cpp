@@ -1,6 +1,5 @@
 #include "StarEngine.h"
 
-#include "Camera.h"
 #include "DebugUtil.h"
 #include "DirectionalLight.h"
 #include "DirectXCommon.h"
@@ -18,18 +17,14 @@
 #include <memory>
 
 #include <d3d12.h>
-#include <d3d12sdklayers.h>
-#include <dxgi1_3.h>
-#include <dxgidebug.h>
+
 #include <Windows.h>
-#include <wrl/client.h>
 
 namespace StarEngine {
 	//--- 内部静的変数 ---
 
 	static std::unique_ptr<ShaderCompiler> shaderCompiler = nullptr;
 	static std::unique_ptr<GraphicsPipeline> graphicsPipeline = nullptr;
-	static std::unique_ptr<Camera> camera = nullptr;
 	static std::unique_ptr<DirectionalLight> directionalLight = nullptr;
 
 	//シザー矩形の設定
@@ -40,6 +35,7 @@ namespace StarEngine {
 
 	void Initialize() {
 		SetUnhandledExceptionFilter(ExportDump);
+
 		//ログファイル
 		InitializeLog();
 
@@ -94,30 +90,18 @@ namespace StarEngine {
 		ImGui::DestroyContext();
 #endif
 
+		//static変数を明示的にリセット(寿命の問題があるので必ず!)
 		graphicsPipeline.reset();
 		shaderCompiler.reset();
-		camera.reset();
 		directionalLight.reset();
 
-		//テクスチャマネージャーを終了
+		//基盤類を終了させる
 		TextureManager::GetInstance()->Finalize();
-
-		//DirectX12基盤を終了
 		DirectXCommon::GetInstance()->Finalize();
-
-		//ウィンドウズアプリケーションを終了
 		WinApp::GetInstance()->Finalize();
 
 		//ログファイルの終了
 		FinalizeLog();
-
-		//リソースリークチェック
-		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-		}
 	}
 
 	void BeginFrame() {

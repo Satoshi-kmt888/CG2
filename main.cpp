@@ -1,5 +1,6 @@
 #include "StarEngine.h"
 
+#include "D3D12ResourceLeakChecker.h"
 #include "Camera.h"
 #include "Model.h"
 
@@ -14,6 +15,9 @@
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+	//リークチェック(デストラクタでチェックが入る)
+	D3D12ResourceLeakChecker leakCheck;
+
 	//エンジンの初期化
 	StarEngine::Initialize();
 

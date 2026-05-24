@@ -14,10 +14,10 @@
  * \brief テクスチャ1枚当たりの管理データ構造体
  */
 struct TextureData {
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
-	DirectX::TexMetadata metadata;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle{};
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle{};
+	DirectX::TexMetadata metadata{};
 };
 
 /**

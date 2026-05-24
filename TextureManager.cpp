@@ -4,8 +4,8 @@
 #include "DebugUtil.h"
 #include "StringUtil.h"
 
-#include <externals/DirectXTex/DirectXTex.h>
 #include <externals/DirectXTex/d3dx12.h>
+#include <externals/DirectXTex/DirectXTex.h>
 
 #include <cassert>
 #include <cstdint>
@@ -14,8 +14,8 @@
 #include <utility>
 #include <vector>
 
-#include <Windows.h>
 #include <d3d12.h>
+#include <Windows.h>
 #include <wrl/client.h>
 
 TextureManager* TextureManager::GetInstance() {
@@ -29,7 +29,7 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 	commandList_ = commandList;
 
 	srvDescriptorHeap_ = CreateDescriptorHeap(
-		device_.Get(), 
+		device_.Get(),
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		kMaxTextures,
 		true
@@ -43,11 +43,10 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 	Log(std::format("TextureManager Initialize Succeeded. kMaxTextures : {}\n", kMaxTextures));
 }
 
-void TextureManager::Finalize(){
+void TextureManager::Finalize() {
 	textureDataMap_.clear();
 	intermediateResource_.clear();
 
-	srvDescriptorHeap_.Reset();
 	commandList_.Reset();
 	device_.Reset();
 }
