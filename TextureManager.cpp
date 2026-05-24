@@ -44,9 +44,10 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 }
 
 void TextureManager::Finalize() {
-	textureDataMap_.clear();
 	intermediateResource_.clear();
+	textureDataMap_.clear();
 
+	srvDescriptorHeap_.Reset();
 	commandList_.Reset();
 	device_.Reset();
 }

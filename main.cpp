@@ -1,7 +1,7 @@
 #include "StarEngine.h"
 
-#include "D3D12ResourceLeakChecker.h"
 #include "Camera.h"
+#include "D3D12ResourceLeakChecker.h"
 #include "Model.h"
 
 #ifdef _DEBUG

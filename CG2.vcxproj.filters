@@ -103,9 +103,6 @@
     <ClCompile Include="D3D12Util.cpp">
       <Filter>Engine\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="D3D12ResourceLeakChecker.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
