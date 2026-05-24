@@ -13,9 +13,7 @@ class ShaderCompiler;
  */
 class GraphicsPipeline {
 public:
-	//==================================================
-	// ライフサイクル
-	//==================================================
+	//--- 公開関数 ---
 
 	/**
 	 * \brief 初期化処理
@@ -23,17 +21,13 @@ public:
 	 */
 	void Initialize(ShaderCompiler* shaderCompiler);
 
-	//==================================================
-	// ゲッター
-	//==================================================
+	//--- ゲッター ---
 
 	ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
 	ID3D12PipelineState* GetGraphicsPipelineState() const { return graphicsPipelineState_.Get(); }
 
 private:
-	//==================================================
-	// 内部関数
-	//==================================================
+	//--- 内部関数 ---
 
 	/** \brief ルートシグネチャの作成*/
 	void CreateRootSignature();
@@ -57,9 +51,7 @@ private:
 	 */
 	void CreatePipelineState(ShaderCompiler* shaderCompiler);
 
-	//==================================================
-	// メンバ変数
-	//==================================================
+	//--- メンバ変数 ---
 
 	//パイプラインオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;

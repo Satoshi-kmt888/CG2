@@ -9,15 +9,10 @@
 #include <cstdlib>
 #include <format>
 
-#include <Windows.h>
-#include <d3d12.h>
 #include <d3d12sdklayers.h>
 #include <d3dcommon.h>
 #include <dxgi.h>
-#include <dxgi1_2.h>
-#include <dxgi1_6.h>
 #include <dxgiformat.h>
-#include <wrl/client.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")

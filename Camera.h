@@ -26,7 +26,7 @@ public:
 
 	//--- 公開関数 ---
 
-	/** \brief 初期化 */
+	/** \brief 初期化処理 */
 	void Initialize(float width, float height);
 
 	/** \brief 更新処理 */

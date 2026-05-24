@@ -20,12 +20,6 @@
     <Filter Include="Engine\Utils">
       <UniqueIdentifier>{aacb24f2-43cd-4be4-b4cc-dd207c94a172}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Utils\DebugUtil">
-      <UniqueIdentifier>{426bfd59-b730-4ef5-8657-62995d492588}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Utils\D3D12Util">
-      <UniqueIdentifier>{66cb7f4c-0583-4686-8e1c-d7994a6f3f1e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Base">
       <UniqueIdentifier>{674bbc06-173b-4e6e-908f-ecfac9e3119d}</UniqueIdentifier>
     </Filter>
@@ -39,12 +33,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugUtil.cpp">
-      <Filter>Engine\Utils\DebugUtil</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D12Util.cpp">
-      <Filter>Engine\Utils\D3D12Util</Filter>
     </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
@@ -109,6 +97,12 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Engine\2d</Filter>
     </ClCompile>
+    <ClCompile Include="DebugUtil.cpp">
+      <Filter>Engine\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12Util.cpp">
+      <Filter>Engine\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -119,12 +113,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DebugUtil.h">
-      <Filter>Engine\Utils\DebugUtil</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D12Util.h">
-      <Filter>Engine\Utils\D3D12Util</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -205,6 +193,12 @@
     </ClInclude>
     <ClInclude Include="TransformationMatrix.h">
       <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugUtil.h">
+      <Filter>Engine\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12Util.h">
+      <Filter>Engine\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

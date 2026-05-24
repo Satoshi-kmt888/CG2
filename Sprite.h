@@ -1,58 +1,58 @@
 #pragma once
+#include <d3d12.h>
+#include <wrl/client.h>
+
 #include <memory>
+#include <string>
 
 #include "Material.h"
 #include "Matrix4x4.h"
-#include "Vector2.h"
+#include "Mesh.h"
 #include "TransformationMatrix.h"
-
-class Mesh;
+#include "Vector2.h"
 
 /**
  * \class Sprite
+ * \brief 2Dスプライトを管理すクラス
  */
 class Sprite {
 public:
-	//--- コンストラクタ・デストラクタ ---
+	//--- デストラクタ ---
 
-	Sprite() = default;
-	~Sprite() = default;
+	~Sprite();
 
 	//--- 公開関数 ---
 
 	/**
-	 * \brief 初期化
+	 * \brief 簡易的なスプライトを生成する
+	 * \param[in] scale スプライトのスケール
+	 * \param[in] textureFilePath テクスチャファイルパス
+	 * \return 生成されたスプライト
 	 */
-	void Initialize(const std::string& textureFilePath);
+	static std::unique_ptr<Sprite> CreateQuad(const Vector2& scale, const std::string& textureFilePath);
 
-	/**
-	 * \brief 更新処理
-	 * 
-	 */
+	/** \brief 更新処理 */
 	void Update(const Matrix4x4& projectionMatrix);
 
-	/**
-	 * \brief 描画処理
-	 */
+	/** \brief 描画処理 */
 	void Draw();
 
-	//--- ゲッター ---
-
-	Material& GetMaterial() const { return *material_.get(); }
-	
-	//--- セッター ---
-
-	void SetMesh(std::unique_ptr<Mesh> mesh) { mesh_ = std::move(mesh); }
-	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
-	void SetTexture(const std::string& filePath) { material_->SetTexture(filePath); }
-
 private:
+	//--- コンストラクタ ---
+
+	Sprite() = default;
+
+	//--- 内部関数 ---
+
+	/** \brief 初期化処理 */
+	void Initialize();
+
 	//--- メンバ変数 ---
 
 	//2D用パラメータ
-	Vector2 position_ = { 0.0f, 0.0f };
+	Vector2 translation_ = { 0.0f, 0.0f };
 	float rotation_ = 0.0f;
-	Vector2 size_ = { 512.0f, 512.0f };
+	Vector2 scale_ = { 1.0f, 1.0f };
 
 	//座標変換リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;

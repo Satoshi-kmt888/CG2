@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "Transform.h"
 #include "TransformationMatrix.h"
+#include "Vector3.h"
 
 /**
  * \class Model
@@ -17,36 +18,25 @@
  */
 class Model {
 public:
+	//--- デストラクタ ---
 
-	struct MaterialData {
-		std::string textureFilePath;
-	};
-
-	//--- コンストラクタ・デストラクタ ---
-
-	Model() = default;
-	~Model() = default;
+	~Model();
 
 	//--- 公開関数 ---
 
 	/**
 	 * \brief 簡易的な球モデルを生成する
-	 * \param textureFilePath テクスチャファイルパス
-	 * \return 生成された球モデルデータ
+	 * \param[in] textureFilePath テクスチャファイルパス
+	 * \return 生成された球モデル
 	 */
 	static std::unique_ptr<Model> CreateSphere(const std::string& textureFilePath);
 
 	/**
 	 * \brief OBJファイルからモデルを生成する
-	 * \param filename ファイル名(.objを含む)
+	 * \param[in] filename ファイル名(.objを含む)
 	 * \return 生成されたモデル
 	 */
 	static std::unique_ptr<Model> CreateFromObj(const std::string& filename);
-
-	/**
-	 * \brief 初期化処理
-	 */
-	void Initialize();
 
 	/**
 	 * \brief 更新処理
@@ -69,10 +59,19 @@ public:
 	void SetRotation(const Vector3& rotation) { transform_.rotation = rotation; }
 
 private:
+	//--- コンストラクタ ---
+
+	Model() = default;
+
+	//--- 内部関数 ---
+
+	/** \brief 初期化処理 */
+	void Initialize();
+
 	//--- メンバ変数 ---
 
 	//トランスフォーム
-	Transform transform_{};
+	Transform transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f} };
 
 	//座標変換リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;

@@ -1,10 +1,10 @@
 #pragma once
-#include <cmath>
 #include <cassert>
+#include <cmath>
 
-/// <summary>
-/// 3次元ベクトル
-/// </summary>
+/**
+ * \struct Vector3
+ */
 struct Vector3 {
 	float x, y, z;
 

@@ -30,9 +30,8 @@ public:
 		Vector3 normal;   //<! 法線ベクトル
 	};
 
-	//--- コンストラクタ・デストラクタ ---
+	//--- デストラクタ ---
 
-	Mesh() = default;
 	~Mesh() = default;
 
 	//--- 公開関数 ---
@@ -52,23 +51,18 @@ public:
 	static std::unique_ptr<Mesh> CreateSphere(uint32_t divisionVertical = 16, uint32_t divisionHorizontal = 16);
 
 	/**
-	 * \brief コマンドリストにバッファをセットし、描画準備を行う
-	 * \param[in] commandList セット対象のコマンドリスト
-	 */
-	void Bind(ID3D12GraphicsCommandList* commandList) const;
-
-	/**
-	 * \brief 頂点とインデックスのバッファ生成
-	 */
-	void CreateBuffers();
-
-	/**
 	 * \brief OBJファイルを読み込み、バッファを生成する
 	 * \param[in] directoryPath ディレクトリファイルのパス
 	 * \param[in] filename ファイル名(.objも含む)
 	 * \return 頂点データを格納したMeshポインタ
 	 */
 	static std::unique_ptr<Mesh> LoadObjFile(const std::string& directoryPath, const std::string& filename);
+
+	/**
+	 * \brief コマンドリストにバッファをセットし、描画準備を行う
+	 * \param[in] commandList セット対象のコマンドリスト
+	 */
+	void Bind(ID3D12GraphicsCommandList* commandList) const;
 
 	//--- ゲッター ---
 
@@ -82,6 +76,15 @@ public:
 	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
 
 private:
+	//--- コンストラクタ ---
+
+	Mesh() = default;
+
+	//--- 内部関数 ---
+
+	/** \brief 頂点とインデックスのバッファ生成 */
+	void CreateBuffers();
+
 	//--- メンバ変数 ---
 
 	//頂点バッファ

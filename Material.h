@@ -23,9 +23,9 @@ public:
 	//--- 内部データ構造体 ---
 
 	/**
-    * \struct ConstantBufferData
-    * \brief GPUへ送るためのマテリアルデータ構造体
-    */
+	* \struct ConstantBufferData
+	* \brief GPUへ送るためのマテリアルデータ構造体
+	*/
 	struct ConstantBufferData {
 		Vector4 color;          //<! RGBAの色データ
 		int32_t enableLighting; //<! ライティング有効フラグ
@@ -41,20 +41,19 @@ public:
 		std::string textureFilePath;
 	};
 
-	//--- コンストラクタ・デストラクタ ---
+	//--- デストラクタ ---
 
-	Material() = default;
 	~Material();
 
 	//--- 公開関数 ---
 
 	/**
-	 * \brief マテリアルの初期化
-	 * \details 定数バッファの生成とMap、デフォルト値の設定
+	 * \brief OBJファイルを読み込み、テクスチャデータを抽出
+	 * \param[in] directoryPath ディレクトリファイルのパス
+	 * \param[in] filename ファイル名(.objも含む)
+	 * \return テクスチャデータを格納したMaterialポインタ
 	 */
-	void Initialize();
-
-	void Update();
+	static std::unique_ptr<Material> LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	/**
 	 * \brief 描画コマンドのバインド
@@ -64,13 +63,11 @@ public:
 	 */
 	void Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture);
 
-	/**
-	 * \brief OBJファイルを読み込み、テクスチャデータを抽出
-	 * \param[in] directoryPath ディレクトリファイルのパス
-	 * \param[in] filename ファイル名(.objも含む)
-	 * \return テクスチャデータを格納したMaterialポインタ
-	 */
-	static std::unique_ptr<Material> LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	/** \brief 初期化　*/
+	void Initialize();
+
+	/** \brief 更新処理 */
+	void Update();
 
 	//--- ゲッター ---
 
@@ -90,6 +87,10 @@ public:
 	void SetTexture(const std::string& filePath);
 
 private:
+	//--- コンストラクタ ---
+
+	Material() = default;
+
 	//--- メンバ変数 ---
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> constantBufferResource_ = nullptr;

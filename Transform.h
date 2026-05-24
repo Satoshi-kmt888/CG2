@@ -1,10 +1,10 @@
 #pragma once
-
 #include "Vector3.h"
 
-/// <summary>
-/// オブジェクト変換データ
-/// </summary>
+/**
+ * \struct Transform
+ * \brief ワールド変換データ
+ */
 struct Transform {
 	Vector3 scale;
 	Vector3 rotation;

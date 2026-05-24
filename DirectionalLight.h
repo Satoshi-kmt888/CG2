@@ -6,25 +6,27 @@
 #include "Vector4.h"
 
 /**
- * \struct DirectionalLightData
- * \brief GPU側の定数バッファへ転送するためのライトデータ構造体
- */
-struct DirectionalLightData {
-	Vector4 color;     //<! ライトの色
-	Vector3 direction; //<! ライトの向き
-	float intensity;   //<! 輝度
-};
-
-/**
  * \class DirectionalLight
  * \brief 平行光源を管理するクラス
  */
 class DirectionalLight {
 public:
+	//--- 内部データ構造体 ---
+
+	/**
+	* \struct DirectionalLightData
+	* \brief GPU側の定数バッファへ転送するためのライトデータ構造体
+	*/
+	struct ConstantBufferData {
+		Vector4 color;     //<! ライトの色
+		Vector3 direction; //<! ライトの向き
+		float intensity;   //<! 輝度
+	};
+
 	//--- コンストラクタ・デストラクタ ---
 
 	DirectionalLight() = default;
-	~DirectionalLight() = default;
+	~DirectionalLight();
 
 	//--- 公開関数 ---
 
@@ -43,15 +45,12 @@ public:
 	//--- ゲッター ---
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const {
-		return resource_->GetGPUVirtualAddress();
+		return constantBufferResource_->GetGPUVirtualAddress();
 	}
 
-	Vector3 GetDirection() const { return direction_; }
-	Vector3& GetDirection() { return direction_; }
-	Vector4 GetColor() const { return color_; }
-	Vector4& GetColor() { return color_; }
-	float GetIntensity() const { return intensity_; }
-	float& GetIntensity() { return intensity_; }
+	const Vector3& GetDirection() const { return direction_; }
+	const Vector4& GetColor() const { return color_; }
+	const float& GetIntensity() const { return intensity_; }
 
 	//--- セッター ---
 
@@ -68,6 +67,6 @@ private:
 	float intensity_ = 1.0f;
 
 	//GPUリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
-	DirectionalLightData* constBufferData_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> constantBufferResource_ = nullptr;
+	ConstantBufferData* constantBufferData_ = nullptr;
 };

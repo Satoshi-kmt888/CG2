@@ -13,7 +13,7 @@
 #include "DirectXCommon.h"
 
 std::unique_ptr<Mesh> Mesh::CreateQuad() {
-	auto mesh = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> mesh(new Mesh());
 
 	mesh->vertices_ = {
 		{ {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f} }, // 左上
@@ -33,7 +33,7 @@ std::unique_ptr<Mesh> Mesh::CreateQuad() {
 }
 
 std::unique_ptr<Mesh> Mesh::CreateSphere(uint32_t divisionVertical, uint32_t divisionHorizontal) {
-	auto mesh = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> mesh(new Mesh());
 
 	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(divisionHorizontal);
 	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(divisionVertical);
@@ -80,6 +80,81 @@ std::unique_ptr<Mesh> Mesh::CreateSphere(uint32_t divisionVertical, uint32_t div
 			mesh->indices_.push_back(start + 1);
 			mesh->indices_.push_back(start + (divisionHorizontal + 1));
 			mesh->indices_.push_back(start + (divisionHorizontal + 1) + 1);
+		}
+	}
+
+	mesh->CreateBuffers();
+
+	return mesh;
+}
+
+std::unique_ptr<Mesh> Mesh::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+	//必要な変数を宣言
+	std::unique_ptr<Mesh> mesh(new Mesh());
+	std::vector<Vector4> positions; //位置
+	std::vector<Vector3> normals; //法線
+	std::vector<Vector2> texCoords; //uv座標
+	std::string line; //ファイルから読み込んだ1行を格納
+	std::ifstream file(directoryPath + "/" + filename); //ファイルを開く
+	assert(file.is_open()); //開かなかったら止める
+
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier; //先頭の識別を読む
+
+		//identifierに応じた処理
+		if (identifier == "mtllib") {
+			//materialTemplateLibraryファイルの名前を取得する
+			std::string materialFilename;
+			s >> materialFilename;
+
+			//基本的にobjファイルと同じ改装にmtlは存在させるので、ディレクトリ名とファイル名を渡す
+			mesh->material_ = Material::LoadMaterialTemplateFile(directoryPath, materialFilename);
+		} else if (identifier == "v") {
+			Vector4 position{};
+			s >> position.x >> position.y >> position.z;
+			position.w = 1.0f;
+			positions.push_back(position);
+		} else if (identifier == "vt") {
+			Vector2 texCoord{};
+			s >> texCoord.x >> texCoord.y;
+			texCoords.push_back(texCoord);
+		} else if (identifier == "vn") {
+			Vector3 normal{};
+			s >> normal.x >> normal.y >> normal.z;
+			normals.push_back(normal);
+		} else if (identifier == "f") {
+			VertexData triangle[3]{};
+			//面は三角形限定。その他は未対応
+			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+				std::string vertexDefinition;
+				s >> vertexDefinition;
+				//頂点の要素へのIndexは「位置/UV/法線」で格納されているので、分解してIndexを取得する
+				std::istringstream v(vertexDefinition);
+				uint32_t elementIndices[3]{};
+				for (int32_t element = 0; element < 3; ++element) {
+					std::string index;
+					std::getline(v, index, '/'); // /区切りでインデックスを読んでいく
+					elementIndices[element] = std::stoi(index);
+				}
+
+				//要素へのIndexから、実際の要素の値を取得して、頂点を構築する
+				Vector4 position = positions[static_cast<size_t>(elementIndices[0]) - 1];
+				Vector2 texCoord = texCoords[static_cast<size_t>(elementIndices[1]) - 1];
+				Vector3 normal = normals[static_cast<size_t>(elementIndices[2]) - 1];
+				position.x *= -1.0f;
+				texCoord.y = 1.0f - texCoord.y;
+				normal.x *= -1.0f;
+				//VertexData vertex = { position, texCoord, normal };
+				//mesh->vertices_.push_back(vertex);
+				triangle[faceVertex] = { position, texCoord, normal };
+			}
+
+			//頂点を逆順で登録することで、周り順を逆にする
+			mesh->vertices_.push_back(triangle[2]);
+			mesh->vertices_.push_back(triangle[1]);
+			mesh->vertices_.push_back(triangle[0]);
 		}
 	}
 
@@ -136,79 +211,4 @@ void Mesh::CreateBuffers() {
 		indexBufferView_.SizeInBytes = static_cast<UINT>(indexSize);
 		indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 	}
-}
-
-std::unique_ptr<Mesh> Mesh::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
-	//必要な変数を宣言
-	auto mesh = std::make_unique<Mesh>();
-	std::vector<Vector4> positions; //位置
-	std::vector<Vector3> normals; //法線
-	std::vector<Vector2> texCoords; //uv座標
-	std::string line; //ファイルから読み込んだ1行を格納
-	std::ifstream file(directoryPath + "/" + filename); //ファイルを開く
-	assert(file.is_open()); //開かなかったら止める
-
-	while (std::getline(file, line)) {
-		std::string identifier;
-		std::istringstream s(line);
-		s >> identifier; //先頭の識別を読む
-
-		//identifierに応じた処理
-		if (identifier == "mtllib") {
-			//materialTemplateLibraryファイルの名前を取得する
-			std::string materialFilename;
-			s >> materialFilename;
-			
-			//基本的にobjファイルと同じ改装にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-			mesh->material_ = Material::LoadMaterialTemplateFile(directoryPath, materialFilename);
-		}else if (identifier == "v") {
-			Vector4 position{};
-			s >> position.x >> position.y >> position.z;
-			position.w = 1.0f;
-			positions.push_back(position);
-		} else if (identifier == "vt") {
-			Vector2 texCoord{};
-			s >> texCoord.x >> texCoord.y;
-			texCoords.push_back(texCoord);
-		} else if (identifier == "vn") {
-			Vector3 normal{};
-			s >> normal.x >> normal.y >> normal.z;
-			normals.push_back(normal);
-		} else if (identifier == "f") {
-			VertexData triangle[3]{};
-			//面は三角形限定。その他は未対応
-			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
-				std::string vertexDefinition;
-				s >> vertexDefinition;
-				//頂点の要素へのIndexは「位置/UV/法線」で格納されているので、分解してIndexを取得する
-				std::istringstream v(vertexDefinition);
-				uint32_t elementIndices[3]{};
-				for (int32_t element = 0; element < 3; ++element) {
-					std::string index;
-					std::getline(v, index, '/'); // /区切りでインデックスを読んでいく
-					elementIndices[element] = std::stoi(index);
-				}
-
-				//要素へのIndexから、実際の要素の値を取得して、頂点を構築する
-				Vector4 position = positions[static_cast<size_t>(elementIndices[0]) - 1];
-				Vector2 texCoord = texCoords[static_cast<size_t>(elementIndices[1]) - 1];
-				Vector3 normal = normals[static_cast<size_t>(elementIndices[2]) - 1];
-				position.x *= -1.0f;
-				texCoord.y = 1.0f - texCoord.y;
-				normal.x *= -1.0f;
-				//VertexData vertex = { position, texCoord, normal };
-				//mesh->vertices_.push_back(vertex);
-				triangle[faceVertex] = { position, texCoord, normal };
-			}
-
-			//頂点を逆順で登録することで、周り順を逆にする
-			mesh->vertices_.push_back(triangle[2]);
-			mesh->vertices_.push_back(triangle[1]);
-			mesh->vertices_.push_back(triangle[0]);
-		}
-	}
-
-	mesh->CreateBuffers();
-
-	return mesh;
 }

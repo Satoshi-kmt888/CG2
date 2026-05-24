@@ -1,9 +1,9 @@
 #pragma once
-#include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_2.h>
 #include <dxgi1_5.h>
 #include <dxgi1_6.h>
+#include <Windows.h>
 #include <wrl/client.h>
 
 #include <cstdint>
@@ -19,9 +19,7 @@
  */
 class DirectXCommon {
 public:
-	//==================================================
-	// 公開関数
-	//==================================================
+	//--- インスタンス管理 ---
 
 	/**
 	 * \brief インスタンスの取得
@@ -29,9 +27,11 @@ public:
 	 */
 	static DirectXCommon* GetInstance();
 
-	//==================================================
-	// ライフサイクル
-	//==================================================
+	//コピーガード
+	DirectXCommon(const DirectXCommon&) = delete;
+	DirectXCommon& operator=(const DirectXCommon&) = delete;
+
+	//--- 公開関数 ---
 
 	/** \brief 初期化処理 */
 	void Initialize();
@@ -45,9 +45,7 @@ public:
 	/** \brief 終了処理*/
 	void Finalize();
 
-	//==================================================
-	// ゲッター
-	//==================================================
+	//--- ゲッター ---
 
 	ID3D12Device* GetDevice() const { return device_.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
@@ -56,17 +54,12 @@ public:
 	ID3D12DescriptorHeap* GetDsvDescriptorHeap() const { return dsvDescriptorHeap_.Get(); }
 
 private:
-	//==================================================
-	// 内部関数
-	//==================================================
+	//--- コンストラクタ・デストラクタ ---
 
-	//コンストラクタ・デストラクタ
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 
-	//コピーガード
-	DirectXCommon(const DirectXCommon&) = delete;
-	DirectXCommon& operator=(const DirectXCommon&) = delete;
+	//--- 内部関数 ---
 
 	/** \brief デバッグレイヤーの有効化 */
 	void EnableDebugLayer();
@@ -86,9 +79,7 @@ private:
 	/** \brief GPUとの同期用フェンスの作成 */
 	void CreateFence();
 
-	//==================================================
-	// メンバ変数
-	//==================================================
+	//--- メンバ変数 ---
 
 	//基盤
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;

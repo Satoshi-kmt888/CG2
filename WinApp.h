@@ -1,8 +1,6 @@
 #pragma once
-//標準ライブラリ
 #include <cstdint>
 
-//OS・APIヘッダー
 #include <Windows.h>
 
 /**
@@ -11,11 +9,14 @@
  * \details ウィンドウの生成、メッセージループの制御、および各種ハンドルの管理を担当します。
  */
 class WinApp {
-public://--- 公開定数 ---
+public:
+	//--- 公開定数 ---
+
 	static const uint32_t kClientWidth = 1280; //!< クライアント領域の横幅
 	static const uint32_t kClientHeight = 720; //!< クライアント領域の縦幅
 
-public://--- インスタンス制御---
+	//--- インスタンス管理 ---
+
 	/**
 	 * \brief インスタンスの取得
 	 * \return WinAppの唯一のインスタンス
@@ -26,7 +27,8 @@ public://--- インスタンス制御---
 	WinApp(const WinApp&) = delete;            //!< コピーコンストラクタを禁止
 	WinApp& operator=(const WinApp&) = delete; //!< 代入演算子を禁止
 
-public://--- 静的メソッド ---
+    //--- 静的メソッド ---
+
 	/**
 	 * \brief ウィンドウプロシージャ
 	 * \details OSからのシステムメッセージを処理します
@@ -38,7 +40,6 @@ public://--- 静的メソッド ---
 	 */
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-public://--- ライフサイクル ---
 	/** \brief ウィンドウの初期化(クラス登録及びウィンドウ生成) */
 	void Initialize();
 
@@ -51,15 +52,19 @@ public://--- ライフサイクル ---
 	/** \brief ウィンドウの破棄および後処理 */
 	void Finalize();
 
-public://--- ゲッター ---
+    //--- ゲッター ---
+
 	HWND GetHwnd() const { return hwnd_; }
 	HINSTANCE GetHInstance() const { return hInstance_; }
 
-private://--- コンストラクタ・デストラクタ ---
+private:
+	//--- コンストラクタ・デストラクタ ---
+
 	WinApp() = default;
 	~WinApp() = default;
 
-private://--- メンバ変数 ---
+    //--- メンバ変数 ---
+
 	HWND hwnd_ = nullptr;           //!< ウィンドウハンドル
 	WNDCLASS wc_ = {};              //!< ウィンドウクラス構造体
 	HINSTANCE hInstance_ = nullptr; //!< アプリケーションインスタンスハンドル

@@ -5,9 +5,9 @@
 #include <cassert>
 #include <cstdint>
 
-#include <Windows.h>
 #include <d3d12.h>
 #include <dxgiformat.h>
+#include <Windows.h>
 #include <wrl/client.h>
 
 Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {

@@ -7,12 +7,10 @@
 #include <cassert>
 #include <cstdlib>
 
-#include <Windows.h>
-#include <d3d12.h>
 #include <d3dcommon.h>
 #include <dxcapi.h>
 #include <dxgiformat.h>
-#include <wrl/client.h>
+#include <Windows.h>
 
 #pragma comment(lib, "dxcompiler.lib")
 

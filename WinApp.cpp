@@ -1,12 +1,9 @@
 #include "WinApp.h"
 
-//自作ヘッダー
 #include "DebugUtil.h"
 
-//サードパーティ製ライブラリ
 #include "imgui.h"
 
-//標準ライブラリ
 #include <cassert>
 #include <format>
 

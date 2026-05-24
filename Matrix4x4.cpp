@@ -1,7 +1,7 @@
 #include <cmath>
 
-#include "Vector3.h"
 #include "Matrix4x4.h"
+#include "Vector3.h"
 
 Matrix4x4 Matrix4x4::Inversed() const {
 	Matrix4x4 result{};
