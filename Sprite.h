@@ -23,7 +23,7 @@ public:
 	/**
 	 * \brief 初期化
 	 */
-	void Initialize();
+	void Initialize(const std::string& textureFilePath);
 
 	/**
 	 * \brief 更新処理
@@ -42,7 +42,7 @@ public:
 	
 	//--- セッター ---
 
-	void SetMesh(Mesh* mesh) { mesh_ = mesh; }
+	void SetMesh(std::unique_ptr<Mesh> mesh) { mesh_ = std::move(mesh); }
 	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
 	void SetTexture(const std::string& filePath) { material_->SetTexture(filePath); }
 
@@ -59,6 +59,6 @@ private:
 	TransformationMatrix* transformationData_ = nullptr;
 
 	//パーツへの参照・所有
-	Mesh* mesh_ = nullptr;
+	std::unique_ptr<Mesh> mesh_ = nullptr;
 	std::unique_ptr<Material> material_ = nullptr;
 };

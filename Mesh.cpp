@@ -2,38 +2,35 @@
 
 #include <dxgiformat.h>
 
-#include <string.h>
-#include <numbers>
 #include <cmath>
+#include <numbers>
+#include <string.h>
 
 #include "D3D12Util.h"
 #include "DirectXCommon.h"
 
 std::unique_ptr<Mesh> Mesh::CreateQuad() {
-	std::vector<VertexData> vertices;
-	std::vector<uint32_t> indices;
+	auto mesh = std::make_unique<Mesh>();
 
-	vertices = {
+	mesh->vertices_ = {
 		{ {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f} }, // 左上
-        { {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f} }, // 右上
-        { {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f} }, // 左下
-        { {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} }, // 右下
+		{ {1.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f} }, // 右上
+		{ {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f} }, // 左下
+		{ {1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} }, // 右下
 	};
 
-	indices = {
+	mesh->indices_ = {
 		0, 1, 2,
 		1, 3, 2
 	};
 
-	auto mesh = std::make_unique<Mesh>();
-	mesh->Initialize(vertices, indices);
+	mesh->CreateBuffers();
 
 	return mesh;
 }
 
 std::unique_ptr<Mesh> Mesh::CreateSphere(uint32_t divisionVertical, uint32_t divisionHorizontal) {
-	std::vector<VertexData> vertices;
-	std::vector<uint32_t> indices;
+	auto mesh = std::make_unique<Mesh>();
 
 	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(divisionHorizontal);
 	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(divisionVertical);
@@ -61,7 +58,7 @@ std::unique_ptr<Mesh> Mesh::CreateSphere(uint32_t divisionVertical, uint32_t div
 			vertex.normal = { vertex.position.x, vertex.position.y, vertex.position.z };
 
 			//配列の末尾にデータを入れる
-			vertices.push_back(vertex);
+			mesh->vertices_.push_back(vertex);
 		}
 	}
 
@@ -72,19 +69,18 @@ std::unique_ptr<Mesh> Mesh::CreateSphere(uint32_t divisionVertical, uint32_t div
 			uint32_t start = latIndex * (divisionHorizontal + 1) + lonIndex;
 
 			//1つ目の三角形(左下->左上->右上)
-			indices.push_back(start);
-			indices.push_back(start + (divisionHorizontal + 1));
-			indices.push_back(start + 1);
+			mesh->indices_.push_back(start);
+			mesh->indices_.push_back(start + (divisionHorizontal + 1));
+			mesh->indices_.push_back(start + 1);
 
 			//2つ目の三角形(右上->左上->右下)
-			indices.push_back(start + 1);
-			indices.push_back(start + (divisionHorizontal + 1));
-			indices.push_back(start + (divisionHorizontal + 1) + 1);
+			mesh->indices_.push_back(start + 1);
+			mesh->indices_.push_back(start + (divisionHorizontal + 1));
+			mesh->indices_.push_back(start + (divisionHorizontal + 1) + 1);
 		}
 	}
 
-	auto mesh = std::make_unique<Mesh>();
-	mesh->Initialize(vertices, indices);
+	mesh->CreateBuffers();
 
 	return mesh;
 }
@@ -97,38 +93,44 @@ void Mesh::Bind(ID3D12GraphicsCommandList* commandList) const {
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
 
 	//インデックスバッファのセット(インデックスがある場合)
-	if (indexCount_ > 0) {
+	if (!indices_.empty()) {
 		commandList->IASetIndexBuffer(&indexBufferView_);
 	}
 }
 
-void Mesh::Initialize(const std::vector<VertexData>& vertices, const std::vector<uint32_t>& indices) {
-	vertexCount_ = static_cast<uint32_t>(vertices.size());
-	indexCount_ = static_cast<uint32_t>(indices.size());
-
+void Mesh::CreateBuffers() {
 	auto device = DirectXCommon::GetInstance()->GetDevice();
 
-	//頂点バッファの作成と転送
-	vertexResource_ = CreateBufferResource(device, sizeof(VertexData) * vertexCount_);
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount_;
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	//頂点バッファの作成
+	size_t vertexSize = sizeof(VertexData) * vertices_.size();
+	vertexResource_ = CreateBufferResource(device, vertexSize);
 
+	//頂点バッファの転送
 	void* vertexPtr = nullptr;
 	vertexResource_->Map(0, nullptr, &vertexPtr);
-	std::memcpy(vertexPtr, vertices.data(), sizeof(VertexData) * vertexCount_);
+	std::memcpy(vertexPtr, vertices_.data(), vertexSize);
 	vertexResource_->Unmap(0, nullptr);
 
-	//インデックスバッファの作成と転送(インデックスが存在する場合)
-	if (indexCount_ > 0) {
-		indexResource_ = CreateBufferResource(device, sizeof(uint32_t) * indexCount_);
-		indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-		indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount_;
-		indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+	//ビューの設定
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	vertexBufferView_.SizeInBytes = static_cast<UINT>(vertexSize);
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 
+	//インデックスバッファの作成と転送(インデックスが存在する場合)
+	if (!indices_.empty()) {
+		//インデックスバッファの作成
+		size_t indexSize = sizeof(uint32_t) * indices_.size();
+		indexResource_ = CreateBufferResource(device, indexSize);
+
+		//インデックスバッファの転送
 		void* indexPtr = nullptr;
 		indexResource_->Map(0, nullptr, &indexPtr);
-		std::memcpy(indexPtr, indices.data(), sizeof(uint32_t) * indexCount_);
+		std::memcpy(indexPtr, indices_.data(), indexSize);
 		indexResource_->Unmap(0, nullptr);
+
+		//ビューの設定
+		indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+		indexBufferView_.SizeInBytes = static_cast<UINT>(indexSize);
+		indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
 	}
 }

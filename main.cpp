@@ -12,8 +12,8 @@
 
 #include <memory>
 
-#include <Windows.h>
 #include <sal.h>
+#include <Windows.h>
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -26,18 +26,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>(1280.0f, 720.0f);
 
 	//スプライト(矩形)を生成・初期化
-	std::unique_ptr<Mesh> quadMesh = Mesh::CreateQuad();
 	std::unique_ptr<Sprite> quadSprite = std::make_unique<Sprite>();
-	quadSprite->Initialize();
-	quadSprite->SetMesh(quadMesh.get());
-	quadSprite->SetTexture("resources/uvChecker.png");
+	quadSprite->Initialize("resources/uvChecker.png");
 
 	//球を生成・初期化
-	std::unique_ptr<Mesh> sphereMesh = Mesh::CreateSphere();
-	std::unique_ptr<Model> sphereModel = std::make_unique<Model>();
-	sphereModel->Initialize();
-	sphereModel->SetMesh(sphereMesh.get());
-	sphereModel->SetTexture("resources/uvChecker.png");
+	std::unique_ptr<Model> sphereModel = Model::CreateSphere("resources/uvChecker.png");
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -103,9 +96,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	//生成したオブジェクトを明示的にリセット(リークチェックに引っかかるため)
-	quadMesh.reset();
 	quadSprite.reset();
-	sphereMesh.reset();
 	sphereModel.reset();
 
 	//エンジンの終了

@@ -2,10 +2,10 @@
 
 #include "D3D12Util.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
 #include "Material.h"
+#include "Mesh.h"
 
-void Sprite::Initialize() {
+void Sprite::Initialize(const std::string& textureFilePath) {
     //座標変換用の定数バッファ作成
     transformationResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
     transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
@@ -14,10 +14,15 @@ void Sprite::Initialize() {
     transformationData_->WVP = Matrix4x4::Identity();
     transformationData_->World = Matrix4x4::Identity();
 
-    //Materialの生成・初期化
+    //メッシュをセット
+    mesh_ = std::make_unique<Mesh>();
+    mesh_ = Mesh::CreateQuad(); //基本は矩形
+
+    //マテリアルをセット
     material_ = std::make_unique<Material>();
     material_->Initialize();
     material_->SetEnableLighting(false); // スプライトは基本ライティングOFF
+    material_->SetTexture(textureFilePath);
 }
 
 void Sprite::Update(const Matrix4x4& viewProjectionMatrix) {
@@ -44,9 +49,9 @@ void Sprite::Draw() {
 
     commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
 
-    if (mesh_->GetIndexCount() > 0) {
-        commandList->DrawIndexedInstanced(static_cast<UINT>(mesh_->GetIndexCount()), 1, 0, 0, 0);
+    if (!mesh_->GetIndices().empty()) {
+        commandList->DrawIndexedInstanced(static_cast<UINT>(mesh_->GetIndices().size()), 1, 0, 0, 0);
     } else {
-        commandList->DrawInstanced(static_cast<UINT>(mesh_->GetVertexCount()), 1, 0, 0);
+        commandList->DrawInstanced(static_cast<UINT>(mesh_->GetVertices().size()), 1, 0, 0);
     }
 }

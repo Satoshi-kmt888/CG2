@@ -11,7 +11,6 @@
 #include "TransformationMatrix.h"
 
 class Mesh;
-class Material;
 
 /**
  * \class Model
@@ -25,6 +24,8 @@ public:
 	~Model() = default;
 
 	//--- 公開関数 ---
+
+	static std::unique_ptr<Model> CreateSphere(const std::string& textureFilePath);
 
 	/**
 	 * \brief 初期化処理
@@ -43,12 +44,6 @@ public:
 	 */
 	void Draw();
 
-	//--- セッター ---
-
-	void SetMesh(Mesh* mesh) { mesh_ = mesh; }
-	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
-	void SetTexture(const std::string& filePath) { material_->SetTexture(filePath); }
-
 private:
 	//--- メンバ変数 ---
 
@@ -60,6 +55,6 @@ private:
 	TransformationMatrix* transformationData_ = nullptr;
 
 	//パーツへの参照・所有
-	Mesh* mesh_ = nullptr;
+	std::unique_ptr<Mesh> mesh_ = nullptr;
 	std::unique_ptr<Material> material_ = nullptr;
 };
