@@ -25,7 +25,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>(1280.0f, 720.0f);
 
 	//球を生成・初期化
-	std::unique_ptr<Model> model = Model::CreateFromObj("axis.obj");
+	std::unique_ptr<Model> model = Model::CreateSphere("resources/uvChecker.png");
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {

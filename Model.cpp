@@ -19,6 +19,7 @@ std::unique_ptr<Model> Model::CreateSphere(const std::string& textureFilePath) {
 	model->mesh_ = Mesh::CreateSphere();
 
 	//マテリアルをセット
+	model->material_ = std::make_unique<Material>();
 	model->material_->Initialize();
 	model->material_->SetTexture(textureFilePath);
 

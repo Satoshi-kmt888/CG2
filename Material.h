@@ -41,8 +41,9 @@ public:
 		std::string textureFilePath;
 	};
 
-	//--- デストラクタ ---
+	//--- コンストラクタ・デストラクタ ---
 
+	Material() = default;
 	~Material();
 
 	//--- 公開関数 ---
@@ -87,10 +88,6 @@ public:
 	void SetTexture(const std::string& filePath);
 
 private:
-	//--- コンストラクタ ---
-
-	Material() = default;
-
 	//--- メンバ変数 ---
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> constantBufferResource_ = nullptr;

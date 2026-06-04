@@ -29,6 +29,7 @@ std::unique_ptr<Sprite> Sprite::CreateQuad(const Vector2& size, const std::strin
 	sprite->mesh_ = Mesh::CreateQuad();
 
 	//マテリアルをセット
+	sprite->material_ = std::make_unique<Material>();
 	sprite->material_->Initialize();
 	sprite->material_->SetEnableLighting(false); //ライティングはオフにしておく
 	sprite->material_->SetTexture(textureFilePath);
