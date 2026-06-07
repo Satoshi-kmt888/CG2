@@ -1,5 +1,6 @@
 #include "StarEngine.h"
 
+#include "AudioManager.h"
 #include "DebugUtil.h"
 #include "DirectionalLight.h"
 #include "DirectXCommon.h"
@@ -60,6 +61,7 @@ namespace StarEngine {
 
 		//マネージャー(とりあえずテクスチャのみ)
 		TextureManager::GetInstance()->Initialize(device, commandList);
+		AudioManager::GetInstance()->Initialize();
 
 		//ライト
 		directionalLight = std::make_unique<DirectionalLight>();
@@ -96,6 +98,7 @@ namespace StarEngine {
 		directionalLight.reset();
 
 		//基盤類を終了させる
+		AudioManager::GetInstance()->Finalize();
 		TextureManager::GetInstance()->Finalize();
 		DirectXCommon::GetInstance()->Finalize();
 		WinApp::GetInstance()->Finalize();

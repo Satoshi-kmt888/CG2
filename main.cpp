@@ -1,8 +1,10 @@
 #include "StarEngine.h"
 
+#include "AudioManager.h"
 #include "Camera.h"
 #include "D3D12ResourceLeakChecker.h"
 #include "Model.h"
+#include "Vector3.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -20,6 +22,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//エンジンの初期化
 	StarEngine::Initialize();
+
+
+	//音声
+	AudioManager::SoundData soundData1 = AudioManager::GetInstance()->SoundLoadWave("resources/fanfare.wav");
+	AudioManager::GetInstance()->SoundPlayWave(soundData1);
+
 
 	//カメラの生成・初期化
 	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>(1280.0f, 720.0f);
@@ -80,9 +88,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//フレーム終了処理
 		StarEngine::EndFrame();
 	}
-
-	//生成したオブジェクトを明示的にリセット(リークチェックに引っかかるため)
-	model.reset();
 
 	//エンジンの終了
 	StarEngine::Finalize();
