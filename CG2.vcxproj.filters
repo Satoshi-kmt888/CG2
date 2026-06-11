@@ -106,6 +106,9 @@
     <ClCompile Include="AudioManager.cpp">
       <Filter>Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -207,6 +210,9 @@
       <Filter>Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
       <Filter>Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>

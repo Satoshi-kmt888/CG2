@@ -5,6 +5,7 @@
 #include "DirectionalLight.h"
 #include "DirectXCommon.h"
 #include "GraphicsPipeline.h"
+#include "InputManager.h"
 #include "ShaderCompiler.h"
 #include "TextureManager.h"
 #include "WinApp.h"
@@ -62,6 +63,7 @@ namespace StarEngine {
 		//マネージャー(とりあえずテクスチャのみ)
 		TextureManager::GetInstance()->Initialize(device, commandList);
 		AudioManager::GetInstance()->Initialize();
+		InputManager::GetInstance()->Initialize();
 
 		//ライト
 		directionalLight = std::make_unique<DirectionalLight>();
@@ -114,6 +116,8 @@ namespace StarEngine {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 #endif
+		InputManager::GetInstance()->Update();
+
 		DirectXCommon::GetInstance()->PreDraw();
 
 		//SRV用のヒープ

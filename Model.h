@@ -52,11 +52,15 @@ public:
 
 	//--- ゲッター ---
 
+	const Vector3& GetScale() const { return transform_.scale; }
 	const Vector3& GetRotation() const { return transform_.rotation; }
+	const Vector3& GetTranslation() const { return transform_.translation; }
 
 	//--- セッター ---
 
+	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotation(const Vector3& rotation) { transform_.rotation = rotation; }
+	void SetTranslation(const Vector3& translation) { transform_.translation = translation; }
 
 private:
 	//--- コンストラクタ ---

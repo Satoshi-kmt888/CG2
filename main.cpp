@@ -3,6 +3,7 @@
 #include "AudioManager.h"
 #include "Camera.h"
 #include "D3D12ResourceLeakChecker.h"
+#include "InputManager.h"
 #include "Model.h"
 #include "Vector3.h"
 
@@ -23,11 +24,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//エンジンの初期化
 	StarEngine::Initialize();
 
-
 	//音声
 	AudioManager::SoundData soundData1 = AudioManager::GetInstance()->SoundLoadWave("resources/fanfare.wav");
-	AudioManager::GetInstance()->SoundPlayWave(soundData1);
-
 
 	//カメラの生成・初期化
 	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>(1280.0f, 720.0f);
@@ -68,7 +66,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		camera3D->Update();
 
 		//球の更新
+		if (InputManager::GetInstance()->PushKey(DIK_A)) {
+			Vector3 t = model->GetTranslation();
+			t.x -= 0.01f;
+			model->SetTranslation(t);
+		}
+		if (InputManager::GetInstance()->PushKey(DIK_D)) {
+			Vector3 t = model->GetTranslation();
+			t.x += 1.0f;
+			model->SetTranslation(t);
+		}
 		model->Update(camera3D->GetViewProjMatrix());
+
+		//音を鳴らす
+		if (InputManager::GetInstance()->TriggerKey(DIK_SPACE)) {
+			AudioManager::GetInstance()->SoundPlayWave(soundData1);
+		}
 
 		//====================
 		// ↑更新処理↑
