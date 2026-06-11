@@ -58,9 +58,6 @@
     <ClCompile Include="StarEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix4x4.cpp">
-      <Filter>Engine\Math</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
       <Filter>Engine\Base</Filter>
     </ClCompile>
@@ -109,6 +106,9 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Math\Matrix4x4.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -145,18 +145,6 @@
     </ClInclude>
     <ClInclude Include="StarEngine.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix4x4.h">
-      <Filter>Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="DirectXCommon.h">
       <Filter>Engine\Base</Filter>
@@ -197,9 +185,6 @@
     <ClInclude Include="Transform.h">
       <Filter>Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="TransformationMatrix.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
     <ClInclude Include="DebugUtil.h">
       <Filter>Engine\Utils</Filter>
     </ClInclude>
@@ -214,6 +199,24 @@
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Matrix4x4.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Transform.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\TransformationMatrix.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vector2.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vector3.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Vector4.h">
+      <Filter>Engine\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

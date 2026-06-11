@@ -10,7 +10,8 @@ struct Matrix4x4 {
 
 	/*--------基本操作--------*/
 
-	//単位行列
+	/// @brief 
+	/// @return 
 	static Matrix4x4 Identity() {
 		Matrix4x4 result{};
 
@@ -22,7 +23,8 @@ struct Matrix4x4 {
 		return result;
 	}
 
-	//転置行列
+	//! @brief 
+	//! @return 
 	Matrix4x4 Transpose() const {
 		Matrix4x4 result{};
 
@@ -63,7 +65,12 @@ struct Matrix4x4 {
 
 	/*--------投影行列--------*/
 
-	//透視投影行列
+	//! @brief 
+	//! @param fovY 
+	//! @param aspectRatio 
+	//! @param nearClip 
+	//! @param farClip 
+	//! @return 
 	static Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
 
 	//正射影行列
