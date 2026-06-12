@@ -20,17 +20,20 @@
     <Filter Include="Engine\Utils">
       <UniqueIdentifier>{aacb24f2-43cd-4be4-b4cc-dd207c94a172}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Base">
+      <UniqueIdentifier>{674bbc06-173b-4e6e-908f-ecfac9e3119d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\3d">
       <UniqueIdentifier>{8631f822-a8c6-461d-a8ef-00d0e7022b67}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\2d">
       <UniqueIdentifier>{6ca295a4-2105-4029-a507-569468b74f4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Core">
-      <UniqueIdentifier>{3c234ee5-61a7-4328-8a0a-58714131bf5e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -55,11 +58,32 @@
     <ClCompile Include="StarEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Matrix4x4.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPipeline.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="WinApp.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXCommon.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Engine\Base</Filter>
     </ClCompile>
     <ClCompile Include="DirectionalLight.cpp">
       <Filter>Engine\3d</Filter>
@@ -73,38 +97,17 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\Matrix4x4.cpp">
-      <Filter>Engine\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\main.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\DirectXCommon.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\GraphicsPipeline.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\ShaderCompiler.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\StarEngine.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\TextureManager.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\WinApp.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Utility\D3D12Util.cpp">
+    <ClCompile Include="DebugUtil.cpp">
       <Filter>Engine\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utility\Logger.cpp">
+    <ClCompile Include="D3D12Util.cpp">
       <Filter>Engine\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utility\StringUtil.cpp">
-      <Filter>Engine\Utils</Filter>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Engine\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,11 +146,41 @@
     <ClInclude Include="StarEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4x4.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXCommon.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="WinApp.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="DirectionalLight.h">
       <Filter>Engine\3d</Filter>
@@ -164,56 +197,23 @@
     <ClInclude Include="Transform.h">
       <Filter>Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Matrix4x4.h">
+    <ClInclude Include="TransformationMatrix.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Transform.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Math\TransformationMatrix.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Math\Vector2.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Math\Vector3.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Math\Vector4.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix4x4Factory.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\D3D12ResourceLeakChecker.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\DirectXCommon.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\GraphicsPipeline.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\ShaderCompiler.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\StarEngine.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\TextureManager.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Core\WinApp.h">
-      <Filter>Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Utility\D3D12Util.h">
+    <ClInclude Include="DebugUtil.h">
       <Filter>Engine\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utility\Logger.h">
+    <ClInclude Include="D3D12Util.h">
       <Filter>Engine\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utility\StringUtil.h">
-      <Filter>Engine\Utils</Filter>
+    <ClInclude Include="D3D12ResourceLeakChecker.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioManager.h">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

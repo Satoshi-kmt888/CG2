@@ -1,15 +1,13 @@
 #include "WinApp.h"
 
-#include "Logger.h"
+#include "DebugUtil.h"
 
-#ifdef _DEBUG
 #include "imgui.h"
-#endif
 
 #include <cassert>
 #include <format>
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
@@ -19,15 +17,16 @@ WinApp* WinApp::GetInstance() {
 }
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
 #endif
 
 	//メッセージに応じてゲーム固有の処理を行う
-	//ウィンドウが破棄された
-	if (msg == WM_DESTROY) {
+	switch (msg) {
+		//ウィンドウが破棄された
+	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
 		return 0;
@@ -39,18 +38,19 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 void WinApp::Initialize() {
 	//COMの初期化
-	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-	assert(hr == S_OK || hr == S_FALSE);
+	HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
+	assert(SUCCEEDED(hr));
 
 	hInstance_ = GetModuleHandle(nullptr);
 
-	wc_.style = CS_HREDRAW | CS_VREDRAW; //サイズ変更時に再描画を要求
+	//ウィンドウプロシージャ
 	wc_.lpfnWndProc = WindowProc;
+	//ウィンドウクラス名
 	wc_.lpszClassName = L"CG2";
+	//インスタンスハンドル
 	wc_.hInstance = hInstance_;
+	//カーソル
 	wc_.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc_.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)); //ホワイトアウト対策：背景を黒ブラシで塗りつぶす
-
 	//ウィンドウクラスを登録する
 	RegisterClass(&wc_);
 
@@ -73,37 +73,27 @@ void WinApp::Initialize() {
 		hInstance_,           //インスタンスハンドル
 		nullptr               //オプション
 	);
-	assert(hwnd_ != nullptr);
 
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
 
-	Debug::Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", kClientWidth, kClientHeight));
+	Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", kClientWidth, kClientHeight));
 }
 
-bool WinApp::ProcessMessage() const {
+bool WinApp::ProcessMessage() {
 	MSG msg{};
 
-	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-
-		if (msg.message == WM_QUIT) {
-			return false;
-		}
 	}
 
-	return true;
+	return msg.message != WM_QUIT;
 }
 
 void WinApp::Finalize() {
-	if (hwnd_) {
-		DestroyWindow(hwnd_);
-		hwnd_ = nullptr;
-	}
-
-	//ウィンドウクラスの登録解除
-	UnregisterClass(wc_.lpszClassName, hInstance_);
+	//ウィンドウを最小化
+	CloseWindow(hwnd_);
 
 	//COMを終了
 	CoUninitialize();
