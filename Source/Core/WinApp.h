@@ -1,71 +1,61 @@
 #pragma once
+
 #include <cstdint>
 
 #include <Windows.h>
 
-/**
- * \class WinApp
- * \brief Windowsアプリケーションの基盤管理を行うシングルトンクラス
- * \details ウィンドウの生成、メッセージループの制御、および各種ハンドルの管理を担当します。
- */
+/// @brief Windowsアプリケーションの基盤管理を行うシングルトンクラス
 class WinApp {
 public:
-	//--- 公開定数 ---
+	/*--- 公開定数 ---*/
 
-	static const uint32_t kClientWidth = 1280; //!< クライアント領域の横幅
-	static const uint32_t kClientHeight = 720; //!< クライアント領域の縦幅
+	static const uint32_t kClientWidth = 1280; //クライアント領域の横幅
+	static const uint32_t kClientHeight = 720; //クライアント領域の縦幅
 
-	//--- インスタンス管理 ---
+	/*--- インスタンス管理 ---*/
 
-	/**
-	 * \brief インスタンスの取得
-	 * \return WinAppの唯一のインスタンス
-	 */
+	/// @brief インスタンスの取得
+	/// @return 
 	static WinApp* GetInstance();
 
 	//コピーガード
-	WinApp(const WinApp&) = delete;            //!< コピーコンストラクタを禁止
-	WinApp& operator=(const WinApp&) = delete; //!< 代入演算子を禁止
+	WinApp(const WinApp&) = delete;            //コピーコンストラクタを禁止
+	WinApp& operator=(const WinApp&) = delete; //代入演算子を禁止
 
-    //--- 静的メソッド ---
+	/*--- 静的メソッド ---*/
 
-	/**
-	 * \brief ウィンドウプロシージャ
-	 * \details OSからのシステムメッセージを処理します
-	 * \param[in] hwnd   ウィンドウハンドル
-	 * \param[in] msg    メッセージID
-	 * \param[in] wparam パラメータ1
-	 * \param[in] lparam パラメータ2
-	 * \return メッセージ処理の結果
-	 */
+	/// @brief 
+	/// @param[in] hwnd 
+	/// @param[in] msg 
+	/// @param[in] wparam 
+	/// @param[in] lparam 
+	/// @return 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	/** \brief ウィンドウの初期化(クラス登録及びウィンドウ生成) */
+	/// @brief ウィンドウの初期化
 	void Initialize();
 
-	/**
-	 * \brief メッセージの受付処理
-	 * \return アプリケーションを続行する場合は true、終了する場合は false
-	 */
-	bool ProcessMessage();
+	/// @brief メッセージの受付処理
+	/// @return 
+	bool ProcessMessage() const;
 
-	/** \brief ウィンドウの破棄および後処理 */
+	/// @brief ウィンドウの破棄および後処理
 	void Finalize();
 
-    //--- ゲッター ---
+	/*--- ゲッター ---*/
 
 	HWND GetHwnd() const { return hwnd_; }
 	HINSTANCE GetHInstance() const { return hInstance_; }
 
 private:
-	//--- コンストラクタ・デストラクタ ---
+	/*--- コンストラクタ・デストラクタ ---*/
 
 	WinApp() = default;
 	~WinApp() = default;
 
-    //--- メンバ変数 ---
+	/*--- 内部変数 ---*/
 
-	HWND hwnd_ = nullptr;           //!< ウィンドウハンドル
-	WNDCLASS wc_ = {};              //!< ウィンドウクラス構造体
-	HINSTANCE hInstance_ = nullptr; //!< アプリケーションインスタンスハンドル
+	HWND hwnd_ = nullptr;           //ウィンドウハンドル
+	WNDCLASS wc_ = {};              //ウィンドウクラス構造体
+	HINSTANCE hInstance_ = nullptr; //アプリケーションインスタンスハンドル
 };
