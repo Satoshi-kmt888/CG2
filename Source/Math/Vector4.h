@@ -1,8 +1,9 @@
 #pragma once
 
-/**
- * \struct Vector4
- */
+/// @brief 4次元ベクトル
 struct Vector4 {
-	float x, y, z, w;
+	float x;
+	float y;
+	float z;
+	float w;
 };

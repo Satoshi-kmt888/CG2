@@ -1,50 +1,38 @@
 #pragma once
-#include <DirectXMath.h>
 
 #include <cassert>
 #include <cmath>
 
 /// @brief 3次元ベクトル
-struct alignas(16) Vector3 : public DirectX::XMFLOAT4 {
-	Vector3() = default;
-	constexpr Vector3(float inX, float inY, float inZ, float inW = 0.0f) noexcept
-		:DirectX::XMFLOAT4(inX, inY, inZ, inW) {
-	}
-
-	//XMVECTORからの読み込み
-	explicit Vector3(DirectX::FXMVECTOR v) noexcept {
-		DirectX::XMStoreFloat4(static_cast<DirectX::XMFLOAT4*>(this), v);
-	}
-
-	//XMVECTORへの変換
-	explicit operator DirectX::XMVECTOR() const noexcept {
-		return DirectX::XMLoadFloat4(static_cast<const DirectX::XMFLOAT4*>(this));
-	}
+struct Vector3 {
+	float x;
+	float y;
+	float z;
 
 	/*--- 複合代入演算子 ---*/
 
-	Vector3& __vectorcall operator+=(const Vector3& vector) noexcept {
+	Vector3& operator+=(const Vector3& vector) noexcept {
 		x += vector.x;
 		y += vector.y;
 		z += vector.z;
 		return *this;
 	}
 
-	Vector3& __vectorcall operator-=(const Vector3& vector) noexcept {
+	Vector3& operator-=(const Vector3& vector) noexcept {
 		x -= vector.x;
 		y -= vector.y;
 		z -= vector.z;
 		return *this;
 	}
 
-	Vector3& __vectorcall operator*=(float scalar) noexcept {
+	Vector3& operator*=(float scalar) noexcept {
 		x *= scalar;
 		y *= scalar;
 		z *= scalar;
 		return *this;
 	}
 
-	Vector3& __vectorcall operator/=(float scalar) noexcept {
+	Vector3& operator/=(float scalar) noexcept {
 		assert(scalar != 0.0f);
 		float inverse = 1.0f / scalar;
 
@@ -78,7 +66,7 @@ struct alignas(16) Vector3 : public DirectX::XMFLOAT4 {
 
 	/*--- 比較演算 ---*/
 
-	bool __vectorcall operator==(const Vector3& vector) const noexcept = default;
+	bool operator==(const Vector3& vector) const noexcept = default;
 
 	/*--- 基本操作 ---*/
 
