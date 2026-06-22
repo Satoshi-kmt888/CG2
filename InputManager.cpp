@@ -61,4 +61,3 @@ bool InputManager::TriggerKey(uint8_t key) {
 bool InputManager::ReleaseKey(uint8_t key) {
 	return ((key_[key] & 0x80) == 0) && ((preKey_[key] & 0x80) != 0);
 }
-

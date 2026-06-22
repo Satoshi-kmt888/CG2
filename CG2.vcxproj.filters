@@ -109,6 +109,9 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="DebugCamera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -215,6 +218,7 @@
     <ClInclude Include="InputManager.h">
       <Filter>Engine\Base</Filter>
     </ClInclude>
+    <ClInclude Include="DebugCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

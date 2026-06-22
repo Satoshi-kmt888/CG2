@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "Model.h"
 #include "Vector3.h"
+#include "DebugCamera.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -28,7 +29,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	AudioManager::SoundData soundData1 = AudioManager::GetInstance()->SoundLoadWave("resources/fanfare.wav");
 
 	//カメラの生成・初期化
-	std::unique_ptr<Camera> camera3D = std::make_unique<Camera>(1280.0f, 720.0f);
+	auto mainCamera = std::make_unique<Camera>(1280.0f, 720.0f);
+	auto debugCamera = std::make_unique<DebugCamera>();
+	Camera const* activeCamera = mainCamera.get();
+	bool enableDebug = false;
 
 	//球を生成・初期化
 	std::unique_ptr<Model> model = Model::CreateSphere("resources/uvChecker.png");
@@ -43,18 +47,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//====================
 
 #ifdef _DEBUG
-		//--- カメラ ---
-
-		//回転
-		Vector3 camera3DRotation = camera3D->GetRotation();
-		ImGui::DragFloat3("Camera3D Rotation", &camera3DRotation.x, 0.01f);
-		camera3D->SetRotation(camera3DRotation);
-
-		//平行移動
-		Vector3 camera3DTranslation = camera3D->GetTranslation();
-		ImGui::DragFloat3("Camera3D Translation", &camera3DTranslation.x, 0.01f);
-		camera3D->SetTranslation(camera3DTranslation);
-
 		//--- モデル ---
 
 		Vector3 planeRotation = model->GetRotation();
@@ -63,20 +55,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 		//カメラの更新
-		camera3D->Update();
+		if (InputManager::GetInstance()->TriggerKey(DIK_F1)) {
+			enableDebug = !enableDebug;
+			activeCamera = enableDebug ? &debugCamera->GetCamera() : mainCamera.get();
+		}
+
+		if (enableDebug) {
+			debugCamera->Update();
+		} else {
+			mainCamera->Update();
+		}
 
 		//球の更新
-		if (InputManager::GetInstance()->PushKey(DIK_A)) {
-			Vector3 t = model->GetTranslation();
-			t.x -= 0.01f;
-			model->SetTranslation(t);
-		}
-		if (InputManager::GetInstance()->PushKey(DIK_D)) {
-			Vector3 t = model->GetTranslation();
-			t.x += 1.0f;
-			model->SetTranslation(t);
-		}
-		model->Update(camera3D->GetViewProjMatrix());
+		model->Update(activeCamera->GetViewProjMatrix());
 
 		//音を鳴らす
 		if (InputManager::GetInstance()->TriggerKey(DIK_SPACE)) {

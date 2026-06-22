@@ -48,7 +48,7 @@ public:
 	 * \param[in] divisionHorizontal 水平方向の分割数
 	 * \return
 	 */
-	static std::unique_ptr<Mesh> CreateSphere(uint32_t divisionVertical = 16, uint32_t divisionHorizontal = 16);
+	static std::unique_ptr<Mesh> CreateSphere(uint32_t divisionVertical = 32, uint32_t divisionHorizontal = 32);
 
 	/**
 	 * \brief OBJファイルを読み込み、バッファを生成する
