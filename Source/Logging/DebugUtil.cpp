@@ -13,7 +13,7 @@ static std::ofstream gLogStream;
 
 void InitializeLog() {
 	//ログのディレクトリを用意
-	std::filesystem::create_directory("logs");
+	std::filesystem::create_directory("Projects/logs");
 
 	//現在時刻取得(UTC時刻)
 	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
@@ -25,7 +25,7 @@ void InitializeLog() {
 	//formatで年月日_時分秒に変換
 	std::string dateString = std::format("{:%Y%m%d_%H%M%S}", localTime);
 	//時刻からファイル名を決定
-	std::string logFilePath = std::string("logs/") + dateString + ".log";
+	std::string logFilePath = std::string("Projects/logs/") + dateString + ".log";
 	//ファイルを使って書き込み準備
 	gLogStream.open(logFilePath);
 }
@@ -35,7 +35,7 @@ void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
 }
 
-void FinalizeLog(){
+void FinalizeLog() {
 	if (gLogStream.is_open()) {
 		gLogStream.close();
 	}
