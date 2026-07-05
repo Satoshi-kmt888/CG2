@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{3753bf05-280a-4860-a9a5-abe52b252045}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Math">
+      <UniqueIdentifier>{92b13b15-d769-4eb7-b006-1d901a1d9c9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Logging">
+      <UniqueIdentifier>{6d113232-ca8e-4382-82ab-b144b243524d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{5105ae1e-f8f5-40ef-855d-2ca13ca8ae0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics">
+      <UniqueIdentifier>{6439c650-7d9e-47f6-86d3-02da203d86fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\FrameWork">
+      <UniqueIdentifier>{a8dca8af-4ce7-4ece-8f50-16def59810df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Camera">
+      <UniqueIdentifier>{364b625d-3c71-4bf0-9728-b520057b4d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Audio">
+      <UniqueIdentifier>{93a0d605-e66f-4b11-92c4-8ed34e3f858a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\imgui">
+      <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{c938937c-2b87-4d63-8ba7-2ef0dd5c6703}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="externals\imgui\imgui.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_demo.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_draw.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_tables.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>Source\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Audio\AudioManager.cpp">
+      <Filter>Source\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Camera\Camera.cpp">
+      <Filter>Source\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Camera\DebugCamera.cpp">
+      <Filter>Source\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\FrameWork\WinApp.cpp">
+      <Filter>Source\FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\FrameWork\StarEngine.cpp">
+      <Filter>Source\FrameWork</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\D3D12Util.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\DirectionalLight.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\Material.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\Mesh.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\Model.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\Sprite.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\TextureManager.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Input\InputManager.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logging\StringUtil.cpp">
+      <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logging\DebugUtil.cpp">
+      <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Math\Matrix4x4.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="externals\imgui\imconfig.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imgui.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imgui_internal.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_rectpack.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_textedit.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_truetype.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_win32.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
+      <Filter>Source\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Audio\AudioManager.h">
+      <Filter>Source\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Camera\Camera.h">
+      <Filter>Source\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Camera\DebugCamera.h">
+      <Filter>Source\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\FrameWork\WinApp.h">
+      <Filter>Source\FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\FrameWork\StarEngine.h">
+      <Filter>Source\FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\D3D12Util.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\DirectionalLight.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\DirectXCommon.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\Material.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\Mesh.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\Model.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\ShaderCompiler.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\Sprite.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\TextureManager.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Input\InputManager.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logging\StringUtil.h">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logging\DebugUtil.h">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logging\D3D12ResourceLeakChecker.h">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\Matrix4x4.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\Transform.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\TransformationMatrix.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\Vector2.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\Vector3.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\Vector4.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="externals\imgui\LICENSE.txt">
+      <Filter>Source\imgui</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shader\Object3d.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shader\Object3d.PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Object3d.VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

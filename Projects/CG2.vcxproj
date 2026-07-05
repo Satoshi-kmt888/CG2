@@ -54,7 +54,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Shader;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Shader;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MinSpace</Optimization>
     </ClCompile>
     <Link>
@@ -98,6 +98,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\Audio\AudioManager.cpp" />
+    <ClCompile Include="..\Source\Camera\Camera.cpp" />
+    <ClCompile Include="..\Source\Camera\DebugCamera.cpp" />
+    <ClCompile Include="..\Source\FrameWork\StarEngine.cpp" />
+    <ClCompile Include="..\Source\FrameWork\WinApp.cpp" />
+    <ClCompile Include="..\Source\Graphics\D3D12Util.cpp" />
+    <ClCompile Include="..\Source\Graphics\DirectionalLight.cpp" />
+    <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp" />
+    <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp" />
+    <ClCompile Include="..\Source\Graphics\Material.cpp" />
+    <ClCompile Include="..\Source\Graphics\Mesh.cpp" />
+    <ClCompile Include="..\Source\Graphics\Model.cpp" />
+    <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp" />
+    <ClCompile Include="..\Source\Graphics\Sprite.cpp" />
+    <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
+    <ClCompile Include="..\Source\Input\InputManager.cpp" />
+    <ClCompile Include="..\Source\Logging\DebugUtil.cpp" />
+    <ClCompile Include="..\Source\Logging\StringUtil.cpp" />
+    <ClCompile Include="..\Source\main.cpp" />
+    <ClCompile Include="..\Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -121,6 +141,31 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\Audio\AudioManager.h" />
+    <ClInclude Include="..\Source\Camera\Camera.h" />
+    <ClInclude Include="..\Source\Camera\DebugCamera.h" />
+    <ClInclude Include="..\Source\FrameWork\StarEngine.h" />
+    <ClInclude Include="..\Source\FrameWork\WinApp.h" />
+    <ClInclude Include="..\Source\Graphics\D3D12Util.h" />
+    <ClInclude Include="..\Source\Graphics\DirectionalLight.h" />
+    <ClInclude Include="..\Source\Graphics\DirectXCommon.h" />
+    <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h" />
+    <ClInclude Include="..\Source\Graphics\Material.h" />
+    <ClInclude Include="..\Source\Graphics\Mesh.h" />
+    <ClInclude Include="..\Source\Graphics\Model.h" />
+    <ClInclude Include="..\Source\Graphics\ShaderCompiler.h" />
+    <ClInclude Include="..\Source\Graphics\Sprite.h" />
+    <ClInclude Include="..\Source\Graphics\TextureManager.h" />
+    <ClInclude Include="..\Source\Input\InputManager.h" />
+    <ClInclude Include="..\Source\Logging\D3D12ResourceLeakChecker.h" />
+    <ClInclude Include="..\Source\Logging\DebugUtil.h" />
+    <ClInclude Include="..\Source\Logging\StringUtil.h" />
+    <ClInclude Include="..\Source\Math\Matrix4x4.h" />
+    <ClInclude Include="..\Source\Math\Transform.h" />
+    <ClInclude Include="..\Source\Math\TransformationMatrix.h" />
+    <ClInclude Include="..\Source\Math\Vector2.h" />
+    <ClInclude Include="..\Source\Math\Vector3.h" />
+    <ClInclude Include="..\Source\Math\Vector4.h" />
     <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="externals\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
@@ -137,6 +182,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
       <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shader\Object3d.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shader\Object3d.PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Object3d.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

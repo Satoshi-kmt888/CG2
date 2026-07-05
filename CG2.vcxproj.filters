@@ -1,39 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{bf94fcab-98ee-4bef-a047-5520bc3b3776}</UniqueIdentifier>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{5194fa2b-346b-4ec0-9b04-a45f4de8da6d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Math">
-      <UniqueIdentifier>{68f0b603-0c8b-4cef-8676-210231178896}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Utils">
-      <UniqueIdentifier>{aacb24f2-43cd-4be4-b4cc-dd207c94a172}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Base">
-      <UniqueIdentifier>{674bbc06-173b-4e6e-908f-ecfac9e3119d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\3d">
-      <UniqueIdentifier>{8631f822-a8c6-461d-a8ef-00d0e7022b67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\2d">
-      <UniqueIdentifier>{6ca295a4-2105-4029-a507-569468b74f4e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -55,71 +27,6 @@
     <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="StarEngine.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix4x4.cpp">
-      <Filter>Engine\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="WinApp.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="StringUtil.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectionalLight.cpp">
-      <Filter>Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Engine\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Engine\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugUtil.cpp">
-      <Filter>Engine\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D12Util.cpp">
-      <Filter>Engine\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioManager.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Engine\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugCamera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -146,88 +53,10 @@
     <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="StarEngine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix4x4.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="WinApp.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsPipeline.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="StringUtil.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionalLight.h">
-      <Filter>Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Engine\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformationMatrix.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugUtil.h">
-      <Filter>Engine\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D12Util.h">
-      <Filter>Engine\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D12ResourceLeakChecker.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioManager.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
       <Filter>imgui</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Object3d.hlsli">
-      <Filter>Shader</Filter>
-    </None>
   </ItemGroup>
 </Project>
