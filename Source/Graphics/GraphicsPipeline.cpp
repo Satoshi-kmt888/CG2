@@ -1,8 +1,8 @@
 #include "GraphicsPipeline.h"
 
-#include "DebugUtil.h"
-#include "DirectXCommon.h"
-#include "ShaderCompiler.h"
+#include "Logging/DebugUtil.h"
+#include "Graphics/DirectXCommon.h"
+#include "Graphics/ShaderCompiler.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -128,11 +128,11 @@ void GraphicsPipeline::CreateDepthStencilState() {
 
 void GraphicsPipeline::CreatePipelineState(ShaderCompiler* shaderCompiler) {
 	//vertexShader
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = shaderCompiler->Compile(L"Object3D.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = shaderCompiler->Compile(L"Shader/Object3D.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
 
 	//pixelShader
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = shaderCompiler->Compile(L"Object3D.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = shaderCompiler->Compile(L"Shader/Object3D.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};

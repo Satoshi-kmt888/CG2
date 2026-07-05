@@ -1,6 +1,6 @@
 #include "WinApp.h"
 
-#include "DebugUtil.h"
+#include "Logging/DebugUtil.h"
 
 #include "imgui.h"
 

@@ -1,6 +1,6 @@
 #include <Windows.h>
 
-#include "StringUtil.h"
+#include "Logging/StringUtil.h"
 
 std::wstring ConvertString(const std::string& str) {
 	if (str.empty()) {

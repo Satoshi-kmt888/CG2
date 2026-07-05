@@ -1,6 +1,6 @@
-#include "D3D12Util.h"
+#include "Graphics/D3D12Util.h"
 
-#include "externals/DirectXTex/DirectXTex.h"
+#include "DirectXTex.h"
 
 #include <cassert>
 #include <cstdint>

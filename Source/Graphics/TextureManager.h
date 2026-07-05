@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <externals/DirectXTex/DirectXTex.h>
+#include <DirectXTex.h>
 
 /**
  * \struct TextureData

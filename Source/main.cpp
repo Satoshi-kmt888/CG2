@@ -1,12 +1,12 @@
-#include "StarEngine.h"
+#include "FrameWork/StarEngine.h"
 
-#include "AudioManager.h"
-#include "Camera.h"
-#include "D3D12ResourceLeakChecker.h"
-#include "InputManager.h"
-#include "Model.h"
-#include "Vector3.h"
-#include "DebugCamera.h"
+#include "Audio/AudioManager.h"
+#include "Camera/Camera.h"
+#include "Logging/D3D12ResourceLeakChecker.h"
+#include "Input/InputManager.h"
+#include "Graphics/Model.h"
+#include "Math/Vector3.h"
+#include "Camera/DebugCamera.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -45,14 +45,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//====================
 		// ↓更新処理↓
 		//====================
-
-#ifdef _DEBUG
-		//--- モデル ---
-
-		Vector3 planeRotation = model->GetRotation();
-		ImGui::DragFloat3("Plane Rotation", &planeRotation.x, 0.01f);
-		model->SetRotation(planeRotation);
-#endif
 
 		//カメラの更新
 		if (InputManager::GetInstance()->TriggerKey(DIK_F1)) {

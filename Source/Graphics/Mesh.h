@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-#include "Material.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
+#include "Graphics/Material.h"
+#include "Math/Vector2.h"
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 /**
  * \class Mesh

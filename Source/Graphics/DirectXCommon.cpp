@@ -1,9 +1,9 @@
 #include "DirectXCommon.h"
 
 #include "D3D12Util.h"
-#include "DebugUtil.h"
-#include "StringUtil.h"
-#include "WinApp.h"
+#include "Logging/DebugUtil.h"
+#include "Logging/StringUtil.h"
+#include "FrameWork/WinApp.h"
 
 #include <cassert>
 #include <cstdlib>

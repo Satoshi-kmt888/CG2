@@ -1,7 +1,7 @@
 #include "Model.h"
 
-#include "D3D12Util.h"
-#include "DirectXCommon.h"
+#include "Graphics/D3D12Util.h"
+#include "Graphics/DirectXCommon.h"
 
 #include <Windows.h>
 

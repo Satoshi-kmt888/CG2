@@ -1,6 +1,6 @@
-#include "DebugCamera.h"
+#include "Camera/DebugCamera.h"
 
-#include "InputManager.h"
+#include "Input/InputManager.h"
 
 #include <cmath>
 #include <numbers>

@@ -1,8 +1,8 @@
 #include <Windows.h> //ShaderCompiler.h内のdxcapi.hがWindows.hの内容を必要としているためこの位置
 #include "ShaderCompiler.h"
 
-#include "DebugUtil.h"
-#include "StringUtil.h"
+#include "Logging/DebugUtil.h"
+#include "Logging/StringUtil.h"
 
 #include <cassert>
 #include <format>

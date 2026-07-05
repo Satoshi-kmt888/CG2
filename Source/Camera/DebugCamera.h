@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Camera.h"
-#include "Vector3.h"
+#include "Camera/Camera.h"
+#include "Math/Vector3.h"
 
 /// <summary>
 /// デバッグカメラ

@@ -2,8 +2,8 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 
-#include "Vector3.h"
-#include "Vector4.h"
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 /**
  * \class DirectionalLight

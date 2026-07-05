@@ -9,8 +9,8 @@
 #include <numbers>
 #include <sstream>
 
-#include "D3D12Util.h"
-#include "DirectXCommon.h"
+#include "Graphics/D3D12Util.h"
+#include "Graphics/DirectXCommon.h"
 
 std::unique_ptr<Mesh> Mesh::CreateQuad() {
 	std::unique_ptr<Mesh> mesh(new Mesh());

@@ -5,12 +5,12 @@
 #include <memory>
 #include <string>
 
-#include "Material.h"
-#include "Matrix4x4.h"
-#include "Mesh.h"
-#include "Transform.h"
-#include "TransformationMatrix.h"
-#include "Vector3.h"
+#include "Graphics/Material.h"
+#include "Math/Matrix4x4.h"
+#include "Graphics/Mesh.h"
+#include "Math/Transform.h"
+#include "Math/TransformationMatrix.h"
+#include "Math/Vector3.h"
 
 /**
  * \class Model

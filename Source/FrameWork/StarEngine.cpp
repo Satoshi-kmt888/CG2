@@ -1,14 +1,14 @@
 #include "StarEngine.h"
 
-#include "AudioManager.h"
-#include "DebugUtil.h"
-#include "DirectionalLight.h"
-#include "DirectXCommon.h"
-#include "GraphicsPipeline.h"
-#include "InputManager.h"
-#include "ShaderCompiler.h"
-#include "TextureManager.h"
-#include "WinApp.h"
+#include "Audio/AudioManager.h"
+#include "Logging/DebugUtil.h"
+#include "Graphics/DirectionalLight.h"
+#include "Graphics/DirectXCommon.h"
+#include "Graphics/GraphicsPipeline.h"
+#include "Input/InputManager.h"
+#include "Graphics/ShaderCompiler.h"
+#include "Graphics/TextureManager.h"
+#include "FrameWork/WinApp.h"
 
 #ifdef USE_IMGUI
 #include <backends/imgui_impl_dx12.h>

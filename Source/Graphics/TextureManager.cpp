@@ -1,11 +1,11 @@
 #include "TextureManager.h"
 
-#include "D3D12Util.h"
-#include "DebugUtil.h"
-#include "StringUtil.h"
+#include "Graphics/D3D12Util.h"
+#include "Logging/DebugUtil.h"
+#include "Logging/StringUtil.h"
 
-#include <externals/DirectXTex/d3dx12.h>
-#include <externals/DirectXTex/DirectXTex.h>
+#include <d3dx12.h>
+#include <DirectXTex.h>
 
 #include <cassert>
 #include <cstdint>

@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "Camera/Camera.h"
 
 Camera::Camera(float width, float height) {
 	Initialize(width, height);

@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-#include <externals/DirectXTex/DirectXTex.h>
+#include <DirectXTex.h>
 
 /**
  * \brief 定数バッファや頂点バッファなどの汎用バッファリソースを生成

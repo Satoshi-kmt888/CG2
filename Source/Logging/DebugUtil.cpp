@@ -5,7 +5,7 @@
 #include <chrono>
 #include <filesystem>
 
-#include "DebugUtil.h"
+#include "Logging/DebugUtil.h"
 
 #pragma comment(lib, "Dbghelp.lib")
 
