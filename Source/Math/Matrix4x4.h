@@ -2,16 +2,16 @@
 
 struct Vector3;
 
-/**
- * \struct Matrix4x4
- */
+/// <summary>
+/// 4x4行列
+/// </summary>
 struct Matrix4x4 {
 	float m[4][4];
 
 	/*--------基本操作--------*/
 
 	//単位行列
-	static Matrix4x4 Identity() {
+	static Matrix4x4 Identity() noexcept {
 		Matrix4x4 result{};
 
 		result.m[0][0] = 1.0f;
@@ -23,7 +23,7 @@ struct Matrix4x4 {
 	}
 
 	//転置行列
-	Matrix4x4 Transpose() const {
+	Matrix4x4 Transpose() const noexcept {
 		Matrix4x4 result{};
 
 		for (int row = 0; row < 4; ++row) {
@@ -36,78 +36,47 @@ struct Matrix4x4 {
 	}
 
 	//逆行列
-	Matrix4x4 Inversed() const;
+	Matrix4x4 Inversed() const noexcept;
 
-	/*--------Transform生成--------*/
+	/*--------基本演算子--------*/
 
-	//拡縮行列
-	static Matrix4x4 MakeScaleMatrix(const Vector3& scale);
+	friend Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) noexcept {
+		Matrix4x4 result{};
 
-	//X軸回転行列
-	static Matrix4x4 MakeRotateXMatrix(float radian);
+		for (int row = 0; row < 4; ++row) {
+			for (int column = 0; column < 4; ++column) {
+				result.m[row][column] = m1.m[row][column] + m2.m[row][column];
+			}
+		}
 
-	//Y軸回転行列
-	static Matrix4x4 MakeRotateYMatrix(float radian);
+		return result;
+	}
 
-	//Z軸回転行列
-	static Matrix4x4 MakeRotateZMatrix(float radian);
+	friend Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) noexcept {
+		Matrix4x4 result{};
 
-	//XYZ回転行列
-	static Matrix4x4 MakeRotateXYZMatrix(const Vector3& rotate);
+		for (int row = 0; row < 4; ++row) {
+			for (int column = 0; column < 4; ++column) {
+				result.m[row][column] = m1.m[row][column] - m2.m[row][column];
+			}
+		}
 
-	//平行移動行列
-	static Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
+		return result;
+	}
 
-	//アフィン変換行列
-	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+	friend Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) noexcept {
+		Matrix4x4 result{};
 
-	/*--------投影行列--------*/
+		for (int row = 0; row < 4; ++row) {
+			for (int column = 0; column < 4; ++column) {
+				result.m[row][column] =
+					m1.m[row][0] * m2.m[0][column] +
+					m1.m[row][1] * m2.m[1][column] +
+					m1.m[row][2] * m2.m[2][column] +
+					m1.m[row][3] * m2.m[3][column];
+			}
+		}
 
-	//透視投影行列
-	static Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
-
-	//正射影行列
-	static Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
+		return result;
+	}
 };
-
-/*--------基本演算子--------*/
-
-inline Matrix4x4 operator+(const Matrix4x4 m1, const Matrix4x4& m2) {
-	Matrix4x4 result{};
-
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 4; ++column) {
-			result.m[row][column] = m1.m[row][column] + m2.m[row][column];
-		}
-	}
-
-	return result;
-}
-
-inline Matrix4x4 operator-(const Matrix4x4 m1, const Matrix4x4& m2) {
-	Matrix4x4 result{};
-
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 4; ++column) {
-			result.m[row][column] = m1.m[row][column] - m2.m[row][column];
-		}
-	}
-
-	return result;
-}
-
-inline Matrix4x4 operator*(const Matrix4x4 m1, const Matrix4x4& m2) {
-	Matrix4x4 result{};
-
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 4; ++column) {
-			result.m[row][column] =
-				m1.m[row][0] * m2.m[0][column] +
-				m1.m[row][1] * m2.m[1][column] +
-				m1.m[row][2] * m2.m[2][column] +
-				m1.m[row][3] * m2.m[3][column];
-		}
-	}
-
-	return result;
-}

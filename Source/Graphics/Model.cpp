@@ -61,7 +61,7 @@ void Model::Initialize() {
 
 void Model::Update(const Matrix4x4& viewProjectionMatrix) {
 	//ワールド変換データを更新
-	transformationData_->World = Matrix4x4::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
+	transformationData_->World = Transform::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
 	transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
 
 	//マテリアルを更新

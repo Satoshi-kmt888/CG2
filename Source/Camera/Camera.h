@@ -69,6 +69,12 @@ private:
 	/** \brief 行列の更新 */
 	void UpdateMatrix();
 
+	//透視投影行列
+	Matrix4x4 MakePerspectiveMatrix() const noexcept;
+
+	//正射影行列
+	Matrix4x4 MakeOrthographicMatrix() const noexcept;
+
 	//--- 内部変数 ---
 
 	//ワールド変換

@@ -1,5 +1,8 @@
 #include "Camera/Camera.h"
 
+#include "Math/Transform.h"
+#include <cassert>
+
 Camera::Camera(float width, float height) {
 	Initialize(width, height);
 }
@@ -64,24 +67,64 @@ void Camera::SetProjectionType(ProjectionType projectionType) {
 
 void Camera::UpdateMatrix() {
 	//ビュー行列の作成
-	Matrix4x4 worldMatrix = Matrix4x4::MakeRotateXYZMatrix(rotation_) * Matrix4x4::MakeTranslateMatrix(translation_);
+	Matrix4x4 worldMatrix = Transform::MakeRotateXYZMatrix(rotation_) * Transform::MakeTranslateMatrix(translation_);
 	viewMatrix_ = worldMatrix.Inversed();
 
 	//プロジェクション行列の計算
 	if (projectionType_ == ProjectionType::Perspective) {
 		//透視投影行列を計算
-		projectionMatrix_ = Matrix4x4::MakePerspectiveMatrix(fovY_, width_ / height_, nearClip_, farClip_);
+		projectionMatrix_ = MakePerspectiveMatrix();
 	} else {
 		float halfWidth = width_ * 0.5f;
 		float halfHeight = height_ * 0.5f;
 
 		//正射影行列を計算
-		projectionMatrix_ = Matrix4x4::MakeOrthographicMatrix(
-			0.0f, 0.0f, width_, height_,
-			nearClip_, farClip_
-		);
+		projectionMatrix_ = MakeOrthographicMatrix();
 	}
 
 	//ビュー・プロジェクション行列を計算
 	viewProjectionMatrix_ = viewMatrix_ * projectionMatrix_;
+}
+
+Matrix4x4 Camera::MakePerspectiveMatrix() const noexcept {
+	Matrix4x4 result{};
+
+	float cot = 1.0f / std::tan(fovY_ * 0.5f);
+	float inverseRange = 1.0f / (farClip_ - nearClip_);
+
+	result.m[0][0] = cot / GetAspectRatio();
+	result.m[1][1] = cot;
+	result.m[2][2] = farClip_ * inverseRange;
+	result.m[2][3] = 1.0f;
+	result.m[3][2] = -nearClip_ * farClip_ * inverseRange;
+	result.m[3][3] = 0.0f;
+
+	return result;
+}
+
+Matrix4x4 Camera::MakeOrthographicMatrix() const noexcept {
+	assert(width_ != 0.0f);
+	assert(height_ != 0.0f);
+	assert(farClip_ != nearClip_);
+
+	Matrix4x4 result{};
+
+	float left = 0.0f;
+	float right = width_;
+	float top = height_;
+	float bottom = 0.0f;
+
+	float inverseWidth = 1.0f / (right - left);
+	float inverseHeight = 1.0f / (top - bottom);
+	float inverseDepth = 1.0f / (farClip_ - nearClip_);
+
+	result.m[0][0] = 2.0f * inverseWidth;
+	result.m[1][1] = 2.0f * inverseHeight;
+	result.m[2][2] = inverseDepth;
+	result.m[3][0] = -(right + left) * inverseWidth;
+	result.m[3][1] = -(top + bottom) * inverseHeight;
+	result.m[3][2] = -nearClip_ * inverseDepth;
+	result.m[3][3] = 1.0f;
+
+	return result;
 }

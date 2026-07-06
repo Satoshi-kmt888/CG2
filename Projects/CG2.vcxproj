@@ -154,6 +154,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="..\Source\Logging\StringUtil.cpp" />
     <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp" />
+    <ClCompile Include="..\Source\Math\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externals\imgui\backends\imgui_impl_dx12.h" />

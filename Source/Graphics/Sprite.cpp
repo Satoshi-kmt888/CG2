@@ -43,7 +43,7 @@ std::unique_ptr<Sprite> Sprite::CreateQuad(const Vector2& size, const std::strin
 }
 
 void Sprite::Update(const Matrix4x4& viewProjectionMatrix) {
-	transformationData_->World = Matrix4x4::MakeAffineMatrix(
+	transformationData_->World = Transform::MakeAffineMatrix(
 		{ scale_.x, scale_.y, 1.0f },
 		{ 0.0f, 0.0f, rotation_ },
 		{ translation_.x, translation_.y, 0.0f }

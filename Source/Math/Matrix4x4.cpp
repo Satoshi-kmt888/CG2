@@ -1,9 +1,6 @@
-#include <cmath>
-
 #include "Math/Matrix4x4.h"
-#include "Math/Vector3.h"
 
-Matrix4x4 Matrix4x4::Inversed() const {
+Matrix4x4 Matrix4x4::Inversed() const noexcept {
 	Matrix4x4 result{};
 
 	//行列式
@@ -184,104 +181,6 @@ Matrix4x4 Matrix4x4::Inversed() const {
 			result.m[row][column] *= invDet;
 		}
 	}
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeScaleMatrix(const Vector3& scale) {
-	Matrix4x4 result = Matrix4x4::Identity();
-
-	result.m[0][0] = scale.x;
-	result.m[1][1] = scale.y;
-	result.m[2][2] = scale.z;
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeRotateXMatrix(float radian) {
-	Matrix4x4 result = Matrix4x4::Identity();
-
-	result.m[1][1] = std::cosf(radian);
-	result.m[1][2] = std::sinf(radian);
-	result.m[2][1] = -std::sinf(radian);
-	result.m[2][2] = std::cosf(radian);
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeRotateYMatrix(float radian) {
-	Matrix4x4 result = Matrix4x4::Identity();
-
-	result.m[0][0] = std::cosf(radian);
-	result.m[0][2] = -std::sinf(radian);
-	result.m[2][0] = std::sinf(radian);
-	result.m[2][2] = std::cosf(radian);
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeRotateZMatrix(float radian) {
-	Matrix4x4 result = Matrix4x4::Identity();
-
-	result.m[0][0] = std::cosf(radian);
-	result.m[0][1] = std::sinf(radian);
-	result.m[1][0] = -std::sinf(radian);
-	result.m[1][1] = std::cosf(radian);
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeRotateXYZMatrix(const Vector3& rotate) {
-	return MakeRotateXMatrix(rotate.x) * MakeRotateYMatrix(rotate.y) * MakeRotateZMatrix(rotate.z);
-}
-
-Matrix4x4 Matrix4x4::MakeTranslateMatrix(const Vector3& translate) {
-	Matrix4x4 result = Matrix4x4::Identity();
-
-	result.m[3][0] = translate.x;
-	result.m[3][1] = translate.y;
-	result.m[3][2] = translate.z;
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
-	return
-		Matrix4x4::MakeScaleMatrix(scale) *
-		Matrix4x4::MakeRotateXYZMatrix(rotate) *
-		Matrix4x4::MakeTranslateMatrix(translate);
-}
-
-Matrix4x4 Matrix4x4::MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
-	Matrix4x4 result{};
-
-	float cot = 1.0f / std::tan(fovY * 0.5f);
-	float inverseRange = 1.0f / (farClip - nearClip);
-
-	result.m[0][0] = cot / aspectRatio;
-	result.m[1][1] = cot;
-	result.m[2][2] = farClip * inverseRange;
-	result.m[2][3] = 1.0f;
-	result.m[3][2] = -nearClip * farClip * inverseRange;
-	result.m[3][3] = 0.0f;
-
-	return result;
-}
-
-Matrix4x4 Matrix4x4::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
-	Matrix4x4 result{};
-
-	float inverseWidth = 1.0f / (right - left);
-	float inverseHeight = 1.0f / (top - bottom);
-	float inverseDepth = 1.0f / (farClip - nearClip);
-
-	result.m[0][0] = 2.0f * inverseWidth;
-	result.m[1][1] = 2.0f * inverseHeight;
-	result.m[2][2] = inverseDepth;
-	result.m[3][0] = -(right + left) * inverseWidth;
-	result.m[3][1] = -(top + bottom) * inverseHeight;
-	result.m[3][2] = -nearClip * inverseDepth;
-	result.m[3][3] = 1.0f;
 
 	return result;
 }

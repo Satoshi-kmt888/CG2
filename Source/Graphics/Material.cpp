@@ -70,8 +70,8 @@ void Material::Update() {
 	}
 
 	//uv座標変換データの計算
-	Matrix4x4 uvTransformMatrix = Matrix4x4::MakeScaleMatrix(uvTransform_.scale);
-	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeRotateZMatrix(uvTransform_.rotation.z);
-	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeTranslateMatrix(uvTransform_.translation);
+	Matrix4x4 uvTransformMatrix = Transform::MakeScaleMatrix(uvTransform_.scale);
+	uvTransformMatrix = uvTransformMatrix * Transform::MakeRotateZMatrix(uvTransform_.rotation.z);
+	uvTransformMatrix = uvTransformMatrix * Transform::MakeTranslateMatrix(uvTransform_.translation);
 	constantBufferData_->uvTransform = uvTransformMatrix;
 }

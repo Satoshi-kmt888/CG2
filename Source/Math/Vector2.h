@@ -1,8 +1,9 @@
 #pragma once
 
-/**
- * \struct Vector2
- */
+/// <summary>
+/// 2次元ベクトル
+/// </summary>
 struct Vector2 {
-	float x, y;
+	float x;
+	float y;
 };
