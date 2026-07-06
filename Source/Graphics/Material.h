@@ -1,44 +1,32 @@
 #pragma once
+
+#include "Math/Matrix4x4.h"
+#include "Math/Vector4.h"
+
+#include <array>
+#include <cstdint>
 #include <d3d12.h>
 #include <Windows.h>
 #include <wrl/client.h>
-
-#include <cstdint>
-#include <memory>
 #include <string>
 
-#include "Math/Matrix4x4.h"
-#include "Math/Transform.h"
-#include "Math/Vector3.h"
-#include "Math/Vector4.h"
+template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 struct TextureData;
 
-/**
- * \class Material
- * \brief 物体の質感、色、テクスチャを管理するクラス
- */
+/// <summary>
+/// 物体の質感、色、テクスチャを管理するクラス
+/// </summary>
 class Material {
 public:
 	//--- 内部データ構造体 ---
 
-	/**
-	* \struct ConstantBufferData
-	* \brief GPUへ送るためのマテリアルデータ構造体
-	*/
-	struct ConstantBufferData {
-		Vector4 color;          //<! RGBAの色データ
-		int32_t enableLighting; //<! ライティング有効フラグ
-		float padding[3];       //<! パディング
-		Matrix4x4 uvTransform;  //<! uv座標変換データ
-	};
-
-	/**
-	 * \struct Property
-	 * \brief マテリアルが保持するリソースデータ構造体
-	 */
-	struct Property {
-		std::string textureFilePath;
+	//GPUへ送るための表面データ
+	struct SurfaceData {
+		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; //RGBAの色データ
+		int32_t enableLighting = 1; //ライティング有効フラグ
+		std::array<float, 3> padding;       //パディング
+		Matrix4x4 uvTransform = Matrix4x4::Identity();  //uv座標変換データ
 	};
 
 	//--- コンストラクタ・デストラクタ ---
@@ -48,53 +36,32 @@ public:
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief OBJファイルを読み込み、テクスチャデータを抽出
-	 * \param[in] directoryPath ディレクトリファイルのパス
-	 * \param[in] filename ファイル名(.objも含む)
-	 * \return テクスチャデータを格納したMaterialポインタ
-	 */
-	static std::unique_ptr<Material> LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="device"></param>
+	void Build(ID3D12Device* device);
 
-	/**
-	 * \brief 描画コマンドのバインド
-	 * \param[in] commandList コマンドリスト
-	 * \param[in] rootParamIndexMaterial マテリアル用ルートパラメータ番号
-	 * \param[in] rootParamIndexTexture テクスチャ用ルートパラメータ番号
-	 */
-	void Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture);
-
-	/** \brief 初期化　*/
-	void Initialize();
-
-	/** \brief 更新処理 */
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
 
-	//--- ゲッター ---
+	/// <summary>
+	/// コマンドリストとの紐づけ
+	/// </summary>
+	/// <param name="commandList"></param>
+	/// <param name="rootParamIndexMaterial"></param>
+	/// <param name="rootParamIndexTexture"></param>
+	void Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture);
 
-	const Property& GetProperty() const { return property_; }
-
-	const Transform& GetUVTransform() const { return uvTransform_; }
-	Vector3 GetUVScale() const { return uvTransform_.scale; }
-	Vector3 GetUVRotation() const { return uvTransform_.rotation; }
-	Vector3 GetUVTranslation() const { return uvTransform_.translation; }
-
-	//--- セッター ---
-
-	void SetUVTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
-
-	void SetColor(const Vector4& color) { constantBufferData_->color = color; }
-	void SetEnableLighting(const uint32_t enableLighting) { constantBufferData_->enableLighting = enableLighting; }
 	void SetTexture(const std::string& filePath);
 
 private:
-	//--- メンバ変数 ---
+	//--- 内部変数 ---
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> constantBufferResource_ = nullptr;
-	ConstantBufferData* constantBufferData_ = nullptr;
-	Property property_;
+	ComPtr<ID3D12Resource> surfaceBuffer_ = nullptr;
+	SurfaceData* surfaceData_ = nullptr;
+	std::string textureFilePath;
 	const TextureData* textureData_ = nullptr;
-
-	//uv座標変換データ
-	Transform uvTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 };

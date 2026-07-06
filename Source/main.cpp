@@ -1,11 +1,8 @@
 #include "FrameWork/StarEngine.h"
 
-#include "Audio/AudioManager.h"
 #include "Camera/Camera.h"
 #include "Logging/D3D12ResourceLeakChecker.h"
 #include "Input/InputManager.h"
-#include "Graphics/Model.h"
-#include "Math/Vector3.h"
 #include "Camera/DebugCamera.h"
 
 #ifdef _DEBUG
@@ -25,17 +22,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//エンジンの初期化
 	StarEngine::Initialize();
 
-	//音声
-	AudioManager::SoundData soundData1 = AudioManager::GetInstance()->SoundLoadWave("resources/fanfare.wav");
-
 	//カメラの生成・初期化
 	auto mainCamera = std::make_unique<Camera>(1280.0f, 720.0f);
 	auto debugCamera = std::make_unique<DebugCamera>();
 	Camera const* activeCamera = mainCamera.get();
 	bool enableDebug = false;
-
-	//球を生成・初期化
-	std::unique_ptr<Model> model = Model::CreateSphere("resources/uvChecker.png");
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -58,14 +49,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			mainCamera->Update();
 		}
 
-		//球の更新
-		model->Update(activeCamera->GetViewProjMatrix());
-
-		//音を鳴らす
-		if (InputManager::GetInstance()->TriggerKey(DIK_SPACE)) {
-			AudioManager::GetInstance()->SoundPlayWave(soundData1);
-		}
-
 		//====================
 		// ↑更新処理↑
 		//====================
@@ -74,8 +57,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓描画処理↓
 		//====================
 
-		//球の描画
-		model->Draw();
+
 
 		//====================
 		// ↑描画処理↑

@@ -1,6 +1,6 @@
 #include "DirectXCommon.h"
 
-#include "D3D12Util.h"
+#include "Graphics/D3D12Utility.h"
 #include "Logging/Logger.h"
 #include "Logging/StringUtility.h"
 #include "FrameWork/WinApp.h"
@@ -261,7 +261,7 @@ void DirectXCommon::CreateSwapChain() {
 
 void DirectXCommon::CreateFinalRenderTargets() {
 	//RTVディスクリプターヒープの生成
-	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap_ = D3D12Utility::CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 	rtvDescriptorSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	//SwapChainからResourceを引っ張ってくる
@@ -287,11 +287,11 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	device_->CreateRenderTargetView(swapChainResources_[1].Get(), &rtvDesc_, rtvHandles_[1]);
 
 	//DSVディスクリプターヒープの生成
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_ = D3D12Utility::CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 	dsvDescriptorSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//
-	depthStencilResource_ = CreateDepthStencilTextureResource(
+	depthStencilResource_ = D3D12Utility::CreateDepthStencilTextureResource(
 		device_.Get(),
 		WinApp::GetInstance()->kClientWidth,
 		WinApp::GetInstance()->kClientHeight

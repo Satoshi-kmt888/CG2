@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-#include "Graphics/D3D12Util.h"
+#include "Graphics/D3D12Utility.h"
 #include "Logging/Logger.h"
 #include "Logging/StringUtility.h"
 
@@ -28,7 +28,7 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 	device_ = device;
 	commandList_ = commandList;
 
-	srvDescriptorHeap_ = CreateDescriptorHeap(
+	srvDescriptorHeap_ = D3D12Utility::CreateDescriptorHeap(
 		device_.Get(),
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		kMaxTextures,
@@ -63,13 +63,13 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 
 	TextureData data;
 	data.metadata = metadata;
-	data.resource = CreateTextureResource(device_.Get(), metadata);
+	data.resource = D3D12Utility::CreateTextureResource(device_.Get(), metadata);
 
 	intermediateResource_.push_back(UploadTextureData(data.resource.Get(), mipImages));
 
 	//SRVを作成するDescriptorHeapの場所を決める
-	data.cpuHandle = GetCPUDescriptorHandle(srvDescriptorHeap_.Get(), srvDescriptorSize_, srvDescriptorIndex_);
-	data.gpuHandle = GetGPUDescriptorHandle(srvDescriptorHeap_.Get(), srvDescriptorSize_, srvDescriptorIndex_);
+	data.cpuHandle = D3D12Utility::GetCPUDescriptorHandle(srvDescriptorHeap_.Get(), srvDescriptorSize_, srvDescriptorIndex_);
+	data.gpuHandle = D3D12Utility::GetGPUDescriptorHandle(srvDescriptorHeap_.Get(), srvDescriptorSize_, srvDescriptorIndex_);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
@@ -112,7 +112,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12R
 	);
 	assert(SUCCEEDED(hr));
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subResources.size()));
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = CreateBufferResource(device_.Get(), intermediateSize);
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = D3D12Utility::CreateBufferResource(device_.Get(), intermediateSize);
 
 	//データ転送をコマンドに積む
 	UpdateSubresources(

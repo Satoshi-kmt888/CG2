@@ -1,102 +1,77 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl/client.h>
 
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "Graphics/Material.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
 
-/**
- * \class Mesh
- * \brief GPU上の頂点バッファ・インデックスバッファを管理するクラス
- */
+#include <d3d12.h>
+#include <wrl/client.h>
+#include <cstdint>
+#include <vector>
+
+template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+/// <summary>
+///  GPU上の頂点バッファ・インデックスバッファを管理するクラス
+/// </summary>
 class Mesh {
 public:
 	//--- 内部データ構造体 ---
 
-	/**
-	* \struct VertexData
-	* \brief 頂点1つ分が保持するデータ構造体
-	*/
+	//頂点1つ分が保持するデータ構造体
 	struct VertexData {
-		Vector4 position; //<! ローカル座標
-		Vector2 texCoord; //<! uv座標
-		Vector3 normal;   //<! 法線ベクトル
+		Vector4 position; //ローカル座標
+		Vector2 texCoord; //uv座標
+		Vector3 normal;   //法線ベクトル
 	};
 
-	//--- デストラクタ ---
+	//--- インスタンス管理 ---
 
+	Mesh() = default;
 	~Mesh() = default;
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief 矩形メッシュを生成
-	 * \return
-	 */
-	static std::unique_ptr<Mesh> CreateQuad();
+	/// <summary>
+	/// 頂点データの追加
+	/// </summary>
+	/// <param name="vertex"></param>
+	void AddVertex(const VertexData& vertex);
 
-	/**
-	 * \brief 球メッシュの生成
-	 * \param[in] divisionVertical 垂直方向の分割数
-	 * \param[in] divisionHorizontal 水平方向の分割数
-	 * \return
-	 */
-	static std::unique_ptr<Mesh> CreateSphere(uint32_t divisionVertical = 32, uint32_t divisionHorizontal = 32);
+	/// <summary>
+	/// インデックスの追加
+	/// </summary>
+	/// <param name="index"></param>
+	void AddIndex(uint32_t index);
 
-	/**
-	 * \brief OBJファイルを読み込み、バッファを生成する
-	 * \param[in] directoryPath ディレクトリファイルのパス
-	 * \param[in] filename ファイル名(.objも含む)
-	 * \return 頂点データを格納したMeshポインタ
-	 */
-	static std::unique_ptr<Mesh> LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	/// <summary>
+	/// 頂点データをもとにバッファを生成
+	/// </summary>
+	/// <param name="device"></param>
+	void Build(ID3D12Device* device);
 
-	/**
-	 * \brief コマンドリストにバッファをセットし、描画準備を行う
-	 * \param[in] commandList セット対象のコマンドリスト
-	 */
+	/// <summary>
+	/// コマンドリストに紐づけ
+	/// </summary>
+	/// <param name="commandList"></param>
 	void Bind(ID3D12GraphicsCommandList* commandList) const;
 
-	//--- ゲッター ---
-
-	const std::vector<VertexData>& GetVertices() const { return vertices_; }
-	const std::vector<uint32_t>& GetIndices() const { return indices_; }
-
-	std::unique_ptr<Material> GetMaterial() { return std::move(material_); }
-
-	//--- セッター ---
-
-	void SetMaterial(std::unique_ptr<Material> material) { material_ = std::move(material); }
+	/// <summary>
+	/// ドローコールを実行
+	/// </summary>
+	/// <param name="commandList"></param>
+	void Draw(ID3D12GraphicsCommandList* commandList) const;
 
 private:
-	//--- コンストラクタ ---
-
-	Mesh() = default;
-
-	//--- 内部関数 ---
-
-	/** \brief 頂点とインデックスのバッファ生成 */
-	void CreateBuffers();
-
 	//--- メンバ変数 ---
 
 	//頂点バッファ
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+	ComPtr<ID3D12Resource> vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	std::vector<VertexData> vertices_{};
 
 	//インデックスバッファ
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
+	ComPtr<ID3D12Resource> indexResource_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 	std::vector<uint32_t> indices_{};
-
-	//マテリアルの参照
-	std::unique_ptr<Material> material_ = nullptr;
 };

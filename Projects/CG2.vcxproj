@@ -139,7 +139,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="..\Source\Camera\DebugCamera.cpp" />
     <ClCompile Include="..\Source\FrameWork\StarEngine.cpp" />
     <ClCompile Include="..\Source\FrameWork\WinApp.cpp" />
-    <ClCompile Include="..\Source\Graphics\D3D12Util.cpp" />
+    <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp" />
     <ClCompile Include="..\Source\Graphics\DirectionalLight.cpp" />
     <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp" />
@@ -171,7 +171,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\Source\Camera\DebugCamera.h" />
     <ClInclude Include="..\Source\FrameWork\StarEngine.h" />
     <ClInclude Include="..\Source\FrameWork\WinApp.h" />
-    <ClInclude Include="..\Source\Graphics\D3D12Util.h" />
+    <ClInclude Include="..\Source\Graphics\D3D12Utility.h" />
     <ClInclude Include="..\Source\Graphics\DirectionalLight.h" />
     <ClInclude Include="..\Source\Graphics\DirectXCommon.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h" />
@@ -188,7 +188,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\Source\Logging\StringUtility.h" />
     <ClInclude Include="..\Source\Math\Matrix4x4.h" />
     <ClInclude Include="..\Source\Math\Transform.h" />
-    <ClInclude Include="..\Source\Math\TransformationMatrix.h" />
     <ClInclude Include="..\Source\Math\Vector2.h" />
     <ClInclude Include="..\Source\Math\Vector3.h" />
     <ClInclude Include="..\Source\Math\Vector4.h" />

@@ -1,87 +1,125 @@
 #include "Model.h"
 
-#include "Graphics/D3D12Util.h"
+#include "Graphics/D3D12Utility.h"
 #include "Graphics/DirectXCommon.h"
 
-#include <Windows.h>
+#include <cassert>
+#include <numbers>
 
 Model::~Model() {
-	if (transformationResource_ && transformationData_) {
-		transformationResource_->Unmap(0, nullptr);
+	if (transformationBuffer_ && transformationData_) {
+		transformationBuffer_->Unmap(0, nullptr);
 		transformationData_ = nullptr;
 	}
 }
 
-std::unique_ptr<Model> Model::CreateSphere(const std::string& textureFilePath) {
+std::unique_ptr<Model> Model::CreateSphere(
+	uint32_t divisionHorizontal, uint32_t divisionVertical, const std::string& textureFilePath) {
 	std::unique_ptr<Model> model(new Model());
+	model->Build();
 
-	//メッシュセット
-	model->mesh_ = Mesh::CreateSphere();
+	model->mesh_ = std::make_unique<Mesh>();
 
-	//マテリアルをセット
-	model->material_ = std::make_unique<Material>();
-	model->material_->Initialize();
+	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(divisionHorizontal);
+	const float kLatEvery = std::numbers::pi_v<float> / static_cast<float>(divisionVertical);
+
+	//頂点データの作成
+	for (uint32_t latIndex = 0; latIndex <= divisionVertical; ++latIndex) {
+		//緯度の方向に分割
+		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * static_cast<float>(latIndex);
+		for (uint32_t lonIndex = 0; lonIndex <= divisionHorizontal; ++lonIndex) {
+			//軽度の方向に分割
+			float lon = static_cast<float>(lonIndex) * kLonEvery;
+
+			Mesh::VertexData vertex{};
+			//座標計算
+			vertex.position.x = std::cos(lat) * std::cos(lon);
+			vertex.position.y = std::sin(lat);
+			vertex.position.z = std::cos(lat) * std::sin(lon);
+			vertex.position.w = 1.0f;
+
+			//UV座標
+			vertex.texCoord.x = static_cast<float>(lonIndex / divisionHorizontal);
+			vertex.texCoord.y = 1.0f - static_cast<float>(latIndex / divisionVertical);
+
+			//法線
+			vertex.normal = { vertex.position.x, vertex.position.y, vertex.position.z };
+
+			//配列の末尾にデータを入れる
+			model->mesh_->AddVertex(vertex);
+		}
+	}
+
+	// インデックスデータの生成 (四角形を2つの三角形に分割)
+	for (uint32_t latIndex = 0; latIndex < divisionVertical; ++latIndex) {
+		for (uint32_t lonIndex = 0; lonIndex < divisionHorizontal; ++lonIndex) {
+			//格子の左下の頂点番号を算出
+			uint32_t start = latIndex * (divisionHorizontal + 1) + lonIndex;
+
+			// 1つ目の三角形 (左下->左上->右上)
+			model->mesh_->AddIndex(start);
+			model->mesh_->AddIndex(start + (divisionHorizontal + 1));
+			model->mesh_->AddIndex(start + 1);
+
+			// 2つ目の三角形 (右上->左上->右下)
+			model->mesh_->AddIndex(start + 1);
+			model->mesh_->AddIndex(start + (divisionHorizontal + 1));
+			model->mesh_->AddIndex(start + (divisionHorizontal + 1) + 1);
+		}
+	}
+
+	model->mesh_->Build(device_);
+
 	model->material_->SetTexture(textureFilePath);
 
-	//モデルを初期化
-	model->Initialize();
-
 	return model;
 }
 
-std::unique_ptr<Model> Model::CreateFromObj(const std::string& filename) {
-	std::unique_ptr<Model> model(new Model());
-
-	//メッシュをセット
-	model->mesh_ = Mesh::LoadObjFile("resources", filename);
-
-	//マテリアルをセット(meshから参照)
-	model->material_ = model->mesh_->GetMaterial();
-	std::string texturePath = model->material_->GetProperty().textureFilePath;
-	if (!texturePath.empty()) {
-		model->material_->SetTexture(texturePath);
-	}
-	model->material_->Initialize();
-
-	//モデルを初期化
-	model->Initialize();
-
-	return model;
-}
-
-void Model::Initialize() {
+void Model::Build() {
 	//座標変換用の定数バッファ作成
-	transformationResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
-	transformationResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationData_));
+	transformationBuffer_ = D3D12Utility::CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
+	void* transformationPtr = nullptr;
+	transformationBuffer_->Map(0, nullptr, &transformationPtr);
+
+	transformationData_ = static_cast<TransformationMatrix*>(transformationPtr);
+	if (transformationData_) {
+		*transformationData_ = TransformationMatrix();
+	}
 
 	//単位行列で初期化
-	transformationData_->WVP = Matrix4x4::Identity();
-	transformationData_->World = Matrix4x4::Identity();
+	transformationData_->wvp = Matrix4x4::Identity();
+	transformationData_->world = Matrix4x4::Identity();
 }
 
 void Model::Update(const Matrix4x4& viewProjectionMatrix) {
 	//ワールド変換データを更新
-	transformationData_->World = Transform::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
-	transformationData_->WVP = transformationData_->World * viewProjectionMatrix;
+	transformationData_->world = Transform::MakeAffineMatrix(transform_.scale, transform_.rotation, transform_.translation);
+	transformationData_->wvp = transformationData_->world * viewProjectionMatrix;
 
 	//マテリアルを更新
 	material_->Update();
 }
 
 void Model::Draw() {
-	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
-
-	//メッシュ(形状)をセット
-	mesh_->Bind(commandList);
+	commandList_->SetGraphicsRootConstantBufferView(1, transformationBuffer_->GetGPUVirtualAddress());
 
 	//マテリアル(素材)をセット
-	material_->Bind(commandList, 0, 2);
+	material_->Bind(commandList_, 0, 2);
 
-	commandList->SetGraphicsRootConstantBufferView(1, transformationResource_->GetGPUVirtualAddress());
+	//メッシュ(形状)をセット
+	mesh_->Bind(commandList_);
+	mesh_->Draw(commandList_);
+}
 
-	if (!mesh_->GetIndices().empty()) {
-		commandList->DrawIndexedInstanced(static_cast<UINT>(mesh_->GetIndices().size()), 1, 0, 0, 0);
-	} else {
-		commandList->DrawInstanced(static_cast<UINT>(mesh_->GetVertices().size()), 1, 0, 0);
-	}
+void Model::PreDraw(ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
+	assert(device != nullptr);
+	assert(commandList != nullptr);
+
+	device_ = device;
+	commandList_ = commandList;
+}
+
+void Model::PostDraw() {
+	device_ = nullptr;
+	commandList_ = nullptr;
 }

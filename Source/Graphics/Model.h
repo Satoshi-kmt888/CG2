@@ -1,66 +1,70 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl/client.h>
-
-#include <memory>
-#include <string>
 
 #include "Graphics/Material.h"
 #include "Math/Matrix4x4.h"
 #include "Graphics/Mesh.h"
 #include "Math/Transform.h"
-#include "Math/TransformationMatrix.h"
 #include "Math/Vector3.h"
+#include "Graphics/TextureManager.h"
 
-/**
- * \class Model
- * \brief 3Dオブジェクトのインスタンスを管理するクラス
- */
+#include <d3d12.h>
+#include <wrl/client.h>
+#include <memory>
+#include <string>
+
+template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+/// <summary>
+/// 3Dオブジェクトのインスタンスを管理するクラス
+/// </summary>
 class Model {
 public:
-	//--- デストラクタ ---
+
+	/// <summary>
+	/// GPUへ送るための座標変換行列データ
+	/// </summary>
+	struct TransformationMatrix {
+		Matrix4x4 wvp;
+		Matrix4x4 world;
+	};
+
+	//--- インスタンス管理 ---
 
 	~Model();
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief 簡易的な球モデルを生成する
-	 * \param[in] textureFilePath テクスチャファイルパス
-	 * \return 生成された球モデル
-	 */
-	static std::unique_ptr<Model> CreateSphere(const std::string& textureFilePath);
+	/// <summary>
+	/// 簡易的な球モデルを生成する
+	/// </summary>
+	/// <param name="textureFilePath"></param>
+	/// <returns></returns>
+	static std::unique_ptr<Model> CreateSphere(
+		uint32_t divisionHorizontal = 16, uint32_t divisionVertical = 16,
+		const std::string& textureFilePath = "resources/uvChecker.png");
 
-	/**
-	 * \brief OBJファイルからモデルを生成する
-	 * \param[in] filename ファイル名(.objを含む)
-	 * \return 生成されたモデル
-	 */
-	static std::unique_ptr<Model> CreateFromObj(const std::string& filename);
-
-	/**
-	 * \brief 更新処理
-	 * \param[in] viewProjectionMatrix ビュー・プロジェクション行列
-	 */
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	/// <param name="viewProjectionMatrix"></param>
 	void Update(const Matrix4x4& viewProjectionMatrix);
 
-	/**
-	 * \brief 描画処理
-	 * \details セットされたMeshとMaterialを使用して描画コマンドを積む
-	 */
+	/// <summary>
+	/// 描画処理
+	/// </summary>
 	void Draw();
 
-	//--- ゲッター ---
+	/// <summary>
+	/// モデル描画前処理
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="commandList"></param>
+	static void PreDraw(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
-	const Vector3& GetScale() const { return transform_.scale; }
-	const Vector3& GetRotation() const { return transform_.rotation; }
-	const Vector3& GetTranslation() const { return transform_.translation; }
-
-	//--- セッター ---
-
-	void SetScale(const Vector3& scale) { transform_.scale = scale; }
-	void SetRotation(const Vector3& rotation) { transform_.rotation = rotation; }
-	void SetTranslation(const Vector3& translation) { transform_.translation = translation; }
+	/// <summary>
+	/// モデル描画後処理
+	/// </summary>
+	static void PostDraw();
 
 private:
 	//--- コンストラクタ ---
@@ -69,19 +73,24 @@ private:
 
 	//--- 内部関数 ---
 
-	/** \brief 初期化処理 */
-	void Initialize();
+	/// <summary>
+	/// 
+	/// </summary>
+	void Build();
 
 	//--- メンバ変数 ---
 
 	//トランスフォーム
-	Transform transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f} };
+	Transform transform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
 	//座標変換リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationResource_ = nullptr;
+	ComPtr<ID3D12Resource> transformationBuffer_ = nullptr;
 	TransformationMatrix* transformationData_ = nullptr;
 
 	//パーツへの参照・所有
 	std::unique_ptr<Mesh> mesh_ = nullptr;
 	std::unique_ptr<Material> material_ = nullptr;
+
+	static ID3D12Device* device_;
+	static ID3D12GraphicsCommandList* commandList_;
 };

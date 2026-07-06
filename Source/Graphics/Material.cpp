@@ -1,46 +1,28 @@
 #include "Material.h"
 
-#include "Graphics/D3D12Util.h"
-#include "Graphics/DirectXCommon.h"
-#include "Graphics/TextureManager.h"
-
-#include <cassert>
-#include <fstream>
-#include <sstream>
+#include "D3D12Utility.h"
+#include "TextureManager.h"
 
 Material::~Material() {
-	if (constantBufferResource_ && constantBufferData_) {
-		constantBufferResource_->Unmap(0, nullptr);
-		constantBufferData_ = nullptr;
+	if (surfaceBuffer_ && surfaceData_) {
+		surfaceBuffer_->Unmap(0, nullptr);
+		surfaceData_ = nullptr;
 	}
 }
 
-std::unique_ptr<Material> Material::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
-	//必要な変数を宣言
-	std::unique_ptr<Material> material(new Material());
-	std::string line; //ファイルから読み込んだ1行を格納
-	std::ifstream file(directoryPath + "/" + filename); //ファイルを開く
-	assert(file.is_open()); //開けなかったら止める
+void Material::Build(ID3D12Device* device) {
+	surfaceBuffer_ = D3D12Utility::CreateBufferResource(device, sizeof(SurfaceData));
+	void* materialPtr = nullptr;
+	surfaceBuffer_->Map(0, nullptr, &materialPtr);
 
-	while (std::getline(file, line)) {
-		std::string identifier;
-		std::istringstream s(line);
-		s >> identifier;
-
-		//identifierに応じた処理
-		if (identifier == "map_Kd") {
-			std::string textureFilename;
-			s >> textureFilename;
-			//連結してファイルパスにする
-			material->property_.textureFilePath = directoryPath + "/" + textureFilename;
-		}
+	surfaceData_ = static_cast<SurfaceData*>(materialPtr);
+	if (surfaceData_) {
+		*surfaceData_ = SurfaceData();
 	}
-
-	return material;
 }
 
 void Material::Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture) {
-	commandList->SetGraphicsRootConstantBufferView(rootParamIndexMaterial, constantBufferResource_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndexMaterial, surfaceBuffer_->GetGPUVirtualAddress());
 
 	if (textureData_) {
 		commandList->SetGraphicsRootDescriptorTable(rootParamIndexTexture, textureData_->gpuHandle);
@@ -48,30 +30,11 @@ void Material::Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexM
 }
 
 void Material::SetTexture(const std::string& filePath) {
-	textureData_ = &TextureManager::GetInstance()->Load(filePath);
-}
-
-void Material::Initialize() {
-	constantBufferResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(ConstantBufferData));
-	constantBufferResource_->Map(0, nullptr, reinterpret_cast<void**>(&constantBufferData_));
-
-	//デフォルト値を設定
-	constantBufferData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	constantBufferData_->enableLighting = 1;
-	constantBufferData_->uvTransform = Matrix4x4::Identity();
-
-	//一度更新を行う
-	Update();
+	TextureManager::GetInstance()->Load(filePath);
 }
 
 void Material::Update() {
-	if (!constantBufferData_) {
+	if (!surfaceData_) {
 		return;
 	}
-
-	//uv座標変換データの計算
-	Matrix4x4 uvTransformMatrix = Transform::MakeScaleMatrix(uvTransform_.scale);
-	uvTransformMatrix = uvTransformMatrix * Transform::MakeRotateZMatrix(uvTransform_.rotation.z);
-	uvTransformMatrix = uvTransformMatrix * Transform::MakeTranslateMatrix(uvTransform_.translation);
-	constantBufferData_->uvTransform = uvTransformMatrix;
 }

@@ -48,7 +48,7 @@
     <ClCompile Include="..\Source\FrameWork\StarEngine.cpp">
       <Filter>Source\FrameWork</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Graphics\D3D12Util.cpp">
+    <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\DirectionalLight.cpp">
@@ -137,7 +137,7 @@
     <ClInclude Include="..\Source\FrameWork\StarEngine.h">
       <Filter>Source\FrameWork</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Graphics\D3D12Util.h">
+    <ClInclude Include="..\Source\Graphics\D3D12Utility.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\DirectionalLight.h">
@@ -177,9 +177,6 @@
       <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Transform.h">
-      <Filter>Source\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Math\TransformationMatrix.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Vector2.h">

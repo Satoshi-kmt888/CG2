@@ -1,6 +1,6 @@
 #include "DirectionalLight.h"
 
-#include "Graphics/D3D12Util.h"
+#include "Graphics/D3D12Utility.h"
 #include "Graphics/DirectXCommon.h"
 
 DirectionalLight::~DirectionalLight() {
@@ -12,7 +12,7 @@ DirectionalLight::~DirectionalLight() {
 
 void DirectionalLight::Initialize() {
 	//定数バッファリソースの作成
-	constantBufferResource_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(ConstantBufferData));
+	constantBufferResource_ = D3D12Utility::CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(ConstantBufferData));
 	//書き込むためのアドレスを取得
 	constantBufferResource_->Map(0, nullptr, reinterpret_cast<void**>(&constantBufferData_));
 
