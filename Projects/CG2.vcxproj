@@ -150,8 +150,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="..\Source\Graphics\Sprite.cpp" />
     <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
     <ClCompile Include="..\Source\Input\InputManager.cpp" />
-    <ClCompile Include="..\Source\Logging\DebugUtil.cpp" />
-    <ClCompile Include="..\Source\Logging\StringUtil.cpp" />
+    <ClCompile Include="..\Source\Logging\CrashHandler.cpp" />
+    <ClCompile Include="..\Source\Logging\Logger.cpp" />
+    <ClCompile Include="..\Source\Logging\StringUtility.cpp" />
     <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="..\Source\Math\Transform.cpp" />
@@ -181,9 +182,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\Source\Graphics\Sprite.h" />
     <ClInclude Include="..\Source\Graphics\TextureManager.h" />
     <ClInclude Include="..\Source\Input\InputManager.h" />
+    <ClInclude Include="..\Source\Logging\CrashHandler.h" />
     <ClInclude Include="..\Source\Logging\D3D12ResourceLeakChecker.h" />
-    <ClInclude Include="..\Source\Logging\DebugUtil.h" />
-    <ClInclude Include="..\Source\Logging\StringUtil.h" />
+    <ClInclude Include="..\Source\Logging\Logger.h" />
+    <ClInclude Include="..\Source\Logging\StringUtility.h" />
     <ClInclude Include="..\Source\Math\Matrix4x4.h" />
     <ClInclude Include="..\Source\Math\Transform.h" />
     <ClInclude Include="..\Source\Math\TransformationMatrix.h" />

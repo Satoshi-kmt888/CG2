@@ -4,10 +4,9 @@
 #include <dxgidebug.h>
 #include <wrl/client.h>
 
-/**
- * \class D3D12ResourceLeakChecker
- * \brief リークチェックを管理するクラス
- */
+/// <summary>
+/// リークチェックを管理するクラス
+/// </summary>
 class D3D12ResourceLeakChecker {
 public:
 	D3D12ResourceLeakChecker() = default;

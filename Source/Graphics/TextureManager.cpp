@@ -1,8 +1,8 @@
 #include "TextureManager.h"
 
 #include "Graphics/D3D12Util.h"
-#include "Logging/DebugUtil.h"
-#include "Logging/StringUtil.h"
+#include "Logging/Logger.h"
+#include "Logging/StringUtility.h"
 
 #include <d3dx12.h>
 #include <DirectXTex.h>
@@ -39,8 +39,6 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 
 	//先頭はImGuiが使用
 	srvDescriptorIndex_ = 1;
-
-	Log(std::format("TextureManager Initialize Succeeded. kMaxTextures : {}\n", kMaxTextures));
 }
 
 void TextureManager::Finalize() {
@@ -90,7 +88,7 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 DirectX::ScratchImage TextureManager::ReadFile(const std::string& filePath) {
 	//テクスチャを読み込んで扱えるようにする
 	DirectX::ScratchImage image{};
-	std::wstring filePathW = ConvertString(filePath);
+	std::wstring filePathW = StringUtility::ConvertString(filePath);
 	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	assert(SUCCEEDED(hr));
 

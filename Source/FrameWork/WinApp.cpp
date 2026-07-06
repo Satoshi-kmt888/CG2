@@ -1,6 +1,6 @@
 #include "WinApp.h"
 
-#include "Logging/DebugUtil.h"
+#include "Logging/Logger.h"
 
 #include "imgui.h"
 
@@ -76,8 +76,6 @@ void WinApp::Initialize() {
 
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
-
-	Log(std::format("WinApp Initialize Succeeded. ClientSize: {}x{}\n", kClientWidth, kClientHeight));
 }
 
 bool WinApp::ProcessMessage() {

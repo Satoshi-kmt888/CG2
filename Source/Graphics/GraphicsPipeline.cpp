@@ -1,6 +1,6 @@
 #include "GraphicsPipeline.h"
 
-#include "Logging/DebugUtil.h"
+#include "Logging/Logger.h"
 #include "Graphics/DirectXCommon.h"
 #include "Graphics/ShaderCompiler.h"
 
@@ -23,7 +23,6 @@ void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 
 	CreatePipelineState(shaderCompiler);
 
-	Log("GraphicsPipeline Initialize Succeeded.\n");
 }
 
 void GraphicsPipeline::CreateRootSignature() {
@@ -76,7 +75,6 @@ void GraphicsPipeline::CreateRootSignature() {
 		&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob
 	);
 	if (FAILED(hr)) {
-		Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
 	//バイナリをもとに作成

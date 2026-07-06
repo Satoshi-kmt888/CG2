@@ -1,7 +1,8 @@
 #include "StarEngine.h"
 
 #include "Audio/AudioManager.h"
-#include "Logging/DebugUtil.h"
+#include "Logging/Logger.h"
+#include "Logging/CrashHandler.h"
 #include "Graphics/DirectionalLight.h"
 #include "Graphics/DirectXCommon.h"
 #include "Graphics/GraphicsPipeline.h"
@@ -36,10 +37,10 @@ namespace StarEngine {
 	static D3D12_VIEWPORT viewport{};
 
 	void Initialize() {
-		SetUnhandledExceptionFilter(ExportDump);
+		CrashHandler::Register();
 
 		//ログファイル
-		InitializeLog();
+		Logger::Initialize();
 
 		//基盤システムの初期化
 		WinApp::GetInstance()->Initialize();
@@ -106,7 +107,7 @@ namespace StarEngine {
 		WinApp::GetInstance()->Finalize();
 
 		//ログファイルの終了
-		FinalizeLog();
+		Logger::Finalize();
 	}
 
 	void BeginFrame() {

@@ -81,12 +81,6 @@
     <ClCompile Include="..\Source\Input\InputManager.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Logging\StringUtil.cpp">
-      <Filter>Source\Logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Logging\DebugUtil.cpp">
-      <Filter>Source\Logging</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp">
       <Filter>Source\Math</Filter>
     </ClCompile>
@@ -116,6 +110,15 @@
     </ClCompile>
     <ClCompile Include="..\Source\Math\Transform.cpp">
       <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logging\CrashHandler.cpp">
+      <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logging\Logger.cpp">
+      <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Logging\StringUtility.cpp">
+      <Filter>Source\Logging</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,12 +170,6 @@
     <ClInclude Include="..\Source\Input\InputManager.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Logging\StringUtil.h">
-      <Filter>Source\Logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Logging\DebugUtil.h">
-      <Filter>Source\Logging</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Logging\D3D12ResourceLeakChecker.h">
       <Filter>Source\Logging</Filter>
     </ClInclude>
@@ -217,6 +214,15 @@
     </ClInclude>
     <ClInclude Include="..\Source\Math\Vector3.h">
       <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logging\CrashHandler.h">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logging\Logger.h">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Logging\StringUtility.h">
+      <Filter>Source\Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

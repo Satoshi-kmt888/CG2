@@ -1,8 +1,8 @@
 #include "DirectXCommon.h"
 
 #include "D3D12Util.h"
-#include "Logging/DebugUtil.h"
-#include "Logging/StringUtil.h"
+#include "Logging/Logger.h"
+#include "Logging/StringUtility.h"
 #include "FrameWork/WinApp.h"
 
 #include <cassert>
@@ -32,7 +32,6 @@ void DirectXCommon::Initialize() {
 	CreateFinalRenderTargets();
 	CreateFence();
 
-	Log("DirectXCommon Initialize Succeeded.\n");
 }
 
 void DirectXCommon::PreDraw() {
@@ -139,7 +138,7 @@ void DirectXCommon::EnableDebugLayer() {
 		//さらにGPU側でもチェックを行うようにする
 		debugController->SetEnableGPUBasedValidation(TRUE);
 	}
-	Log("Enable Debuger Layer Succeeded.\n");
+
 #endif
 }
 
@@ -160,7 +159,7 @@ void DirectXCommon::CreateDevice() {
 		//ソフトウェアアダプタでなければ採用
 		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
 			//採用したアダプタの情報をログに出力
-			Log(ConvertString(std::format(L"Use Adapater:{}\n", adapterDesc.Description)));
+
 			break;
 		}
 		//ソフトウェアアダプタの場合は見なかったことにする
@@ -181,14 +180,12 @@ void DirectXCommon::CreateDevice() {
 		//採用した機能レベルでデバイスが生成できたかを確認
 		if (SUCCEEDED(hr)) {
 			//生成できたのでログ出力を行ってループを抜ける
-			Log(std::format("FeatureLevel : {}\n", featureLevelStrings[i]));
 			break;
 		}
 	}
 	//デバイスの生成がうまくいかなかったので起動できない
 	assert(device_ != nullptr);
 	//初期化完了のログを出す
-	Log("Create Device Succeeded.\n");
 
 #ifdef _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
@@ -234,7 +231,6 @@ void DirectXCommon::CreateCommand() {
 	//コマンドリストがうまく生成できなかったので起動できない
 	assert(SUCCEEDED(hr));
 
-	Log("Create Command Succeeded.\n");
 }
 
 void DirectXCommon::CreateSwapChain() {
@@ -261,7 +257,6 @@ void DirectXCommon::CreateSwapChain() {
 	hr = swapChain1.As(&swapChain_);
 	assert(SUCCEEDED(hr));
 
-	Log("Create SwapChain Succeeded.\n");
 }
 
 void DirectXCommon::CreateFinalRenderTargets() {
@@ -314,7 +309,6 @@ void DirectXCommon::CreateFinalRenderTargets() {
 
 	dsvHandle_ = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
-	Log("Create FinalRenderTargets Succeeded.\n");
 }
 
 void DirectXCommon::CreateFence() {
@@ -328,5 +322,4 @@ void DirectXCommon::CreateFence() {
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent_ != nullptr);
 
-	Log("Create Fence Succeeded.\n");
 }

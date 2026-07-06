@@ -1,8 +1,8 @@
 #include <Windows.h> //ShaderCompiler.h内のdxcapi.hがWindows.hの内容を必要としているためこの位置
 #include "ShaderCompiler.h"
 
-#include "Logging/DebugUtil.h"
-#include "Logging/StringUtil.h"
+#include "Logging/Logger.h"
+#include "Logging/StringUtility.h"
 
 #include <cassert>
 #include <format>
@@ -20,13 +20,10 @@ void ShaderCompiler::Initialize() {
 	//現時点でincludeしないが、includeに対応するための設定を行っておく
 	hr = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
 	assert(SUCCEEDED(hr));
-
-	Log("ShaderCompiler Initialize Succeeded.\n");
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* profile) {
 	//これからシェーダーをコンパイルする旨をログに出す
-	Log(ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
 
 	/*
 	hlslを読み込む
@@ -71,7 +68,6 @@ Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& fil
 	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
 	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
-		Log(shaderError->GetStringPointer());
 		assert(false);
 	}
 
@@ -83,7 +79,6 @@ Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& fil
 	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
 	assert(SUCCEEDED(hr));
 	//成功したログを出す
-	Log(ConvertString(std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
 
 	//実行用のバイナリを返却
 	return shaderBlob;
