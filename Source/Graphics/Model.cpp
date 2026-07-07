@@ -15,9 +15,8 @@ Model::~Model() {
 
 std::unique_ptr<Model> Model::CreateSphere(
 	uint32_t divisionHorizontal, uint32_t divisionVertical, const std::string& textureFilePath) {
-	std::unique_ptr<Model> model(new Model());
-	model->Build();
-
+	auto model = std::make_unique<Model>();
+	model->material_ = std::make_unique<Material>();
 	model->mesh_ = std::make_unique<Mesh>();
 
 	const float kLonEvery = 2.0f * std::numbers::pi_v<float> / static_cast<float>(divisionHorizontal);
@@ -39,8 +38,8 @@ std::unique_ptr<Model> Model::CreateSphere(
 			vertex.position.w = 1.0f;
 
 			//UV座標
-			vertex.texCoord.x = static_cast<float>(lonIndex / divisionHorizontal);
-			vertex.texCoord.y = 1.0f - static_cast<float>(latIndex / divisionVertical);
+			vertex.texCoord.x = static_cast<float>(lonIndex) / static_cast<float>(divisionHorizontal);
+			vertex.texCoord.y = 1.0f - (static_cast<float>(latIndex) / static_cast<float>(divisionVertical));
 
 			//法線
 			vertex.normal = { vertex.position.x, vertex.position.y, vertex.position.z };
@@ -68,15 +67,17 @@ std::unique_ptr<Model> Model::CreateSphere(
 		}
 	}
 
-	model->mesh_->Build(device_);
+	model->mesh_->Build(DirectXCommon::GetInstance()->GetDevice());
 
 	model->material_->SetTexture(textureFilePath);
+	model->material_->Build(DirectXCommon::GetInstance()->GetDevice());
+
+	model->Build();
 
 	return model;
 }
 
 void Model::Build() {
-	//座標変換用の定数バッファ作成
 	transformationBuffer_ = D3D12Utility::CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
 	void* transformationPtr = nullptr;
 	transformationBuffer_->Map(0, nullptr, &transformationPtr);
@@ -101,25 +102,12 @@ void Model::Update(const Matrix4x4& viewProjectionMatrix) {
 }
 
 void Model::Draw() {
-	commandList_->SetGraphicsRootConstantBufferView(1, transformationBuffer_->GetGPUVirtualAddress());
-
+	DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationBuffer_->GetGPUVirtualAddress());
+	
 	//マテリアル(素材)をセット
-	material_->Bind(commandList_, 0, 2);
+	material_->Bind(DirectXCommon::GetInstance()->GetCommandList(), 0, 2);
 
 	//メッシュ(形状)をセット
-	mesh_->Bind(commandList_);
-	mesh_->Draw(commandList_);
-}
-
-void Model::PreDraw(ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
-	assert(device != nullptr);
-	assert(commandList != nullptr);
-
-	device_ = device;
-	commandList_ = commandList;
-}
-
-void Model::PostDraw() {
-	device_ = nullptr;
-	commandList_ = nullptr;
+	mesh_->Bind(DirectXCommon::GetInstance()->GetCommandList());
+	mesh_->Draw(DirectXCommon::GetInstance()->GetCommandList());
 }

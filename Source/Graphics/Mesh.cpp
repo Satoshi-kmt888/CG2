@@ -87,9 +87,9 @@ void Mesh::Draw(ID3D12GraphicsCommandList* commandList) const {
 		return;
 	}
 
-	if (!indices_.empty()) {
-		commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
-	} else {
+	if (indices_.empty()) {
 		commandList->DrawInstanced(static_cast<UINT>(vertices_.size()), 1, 0, 0);
+	} else {
+		commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 	}
 }

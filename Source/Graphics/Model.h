@@ -4,8 +4,6 @@
 #include "Math/Matrix4x4.h"
 #include "Graphics/Mesh.h"
 #include "Math/Transform.h"
-#include "Math/Vector3.h"
-#include "Graphics/TextureManager.h"
 
 #include <d3d12.h>
 #include <wrl/client.h>
@@ -30,6 +28,7 @@ public:
 
 	//--- インスタンス管理 ---
 
+	Model() = default;
 	~Model();
 
 	//--- 公開関数 ---
@@ -54,23 +53,7 @@ public:
 	/// </summary>
 	void Draw();
 
-	/// <summary>
-	/// モデル描画前処理
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="commandList"></param>
-	static void PreDraw(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
-
-	/// <summary>
-	/// モデル描画後処理
-	/// </summary>
-	static void PostDraw();
-
 private:
-	//--- コンストラクタ ---
-
-	Model() = default;
-
 	//--- 内部関数 ---
 
 	/// <summary>
@@ -90,7 +73,4 @@ private:
 	//パーツへの参照・所有
 	std::unique_ptr<Mesh> mesh_ = nullptr;
 	std::unique_ptr<Material> material_ = nullptr;
-
-	static ID3D12Device* device_;
-	static ID3D12GraphicsCommandList* commandList_;
 };

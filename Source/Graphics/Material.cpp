@@ -3,6 +3,7 @@
 #include "D3D12Utility.h"
 #include "TextureManager.h"
 
+
 Material::~Material() {
 	if (surfaceBuffer_ && surfaceData_) {
 		surfaceBuffer_->Unmap(0, nullptr);
@@ -30,11 +31,17 @@ void Material::Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexM
 }
 
 void Material::SetTexture(const std::string& filePath) {
-	TextureManager::GetInstance()->Load(filePath);
+	textureData_ = &TextureManager::GetInstance()->Load(filePath);
 }
 
 void Material::Update() {
 	if (!surfaceData_) {
 		return;
 	}
+
+	//uv座標変換データの計算
+	Matrix4x4 uvTransformMatrix = Transform::MakeScaleMatrix(transform_.scale);
+	uvTransformMatrix = uvTransformMatrix * Transform::MakeRotateZMatrix(transform_.rotation.z);
+	uvTransformMatrix = uvTransformMatrix * Transform::MakeTranslateMatrix(transform_.translation);
+	surfaceData_->uvTransform = uvTransformMatrix;
 }

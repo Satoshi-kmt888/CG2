@@ -2,6 +2,7 @@
 
 #include "Math/Matrix4x4.h"
 #include "Math/Vector4.h"
+#include "Math/Transform.h"
 
 #include <array>
 #include <cstdint>
@@ -64,4 +65,6 @@ private:
 	SurfaceData* surfaceData_ = nullptr;
 	std::string textureFilePath;
 	const TextureData* textureData_ = nullptr;
+
+	Transform transform_ = {};
 };
