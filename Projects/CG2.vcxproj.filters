@@ -31,6 +31,12 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Render">
+      <UniqueIdentifier>{e76c2537-b7d7-42bd-b504-547c986c7cb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Light">
+      <UniqueIdentifier>{20909cbb-1262-4a1c-b3ea-8e388afd45f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Audio\AudioManager.cpp">
@@ -51,28 +57,13 @@
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Graphics\DirectionalLight.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Graphics\Material.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\Mesh.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\Model.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\Sprite.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\TextureManager.cpp">
@@ -108,9 +99,6 @@
     <ClCompile Include="..\externals\imgui\backends\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Math\Transform.cpp">
-      <Filter>Source\Math</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Logging\CrashHandler.cpp">
       <Filter>Source\Logging</Filter>
     </ClCompile>
@@ -119,6 +107,24 @@
     </ClCompile>
     <ClCompile Include="..\Source\Logging\StringUtility.cpp">
       <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Math\Transform.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Render\Material.cpp">
+      <Filter>Source\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Render\Mesh.cpp">
+      <Filter>Source\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Render\Model.cpp">
+      <Filter>Source\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Render\Sprite.cpp">
+      <Filter>Source\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Light\DirectionalLight.cpp">
+      <Filter>Source\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,28 +146,13 @@
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Graphics\DirectionalLight.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\DirectXCommon.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Graphics\Material.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\Mesh.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\Model.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\ShaderCompiler.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\Sprite.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\TextureManager.h">
@@ -174,9 +165,6 @@
       <Filter>Source\Logging</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Matrix4x4.h">
-      <Filter>Source\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Math\Transform.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Vector2.h">
@@ -220,6 +208,24 @@
     </ClInclude>
     <ClInclude Include="..\Source\Logging\StringUtility.h">
       <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Math\Transform.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Render\Material.h">
+      <Filter>Source\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Render\Mesh.h">
+      <Filter>Source\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Render\Model.h">
+      <Filter>Source\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Render\Sprite.h">
+      <Filter>Source\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Light\DirectionalLight.h">
+      <Filter>Source\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

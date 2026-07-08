@@ -44,12 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)x64\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)x64\$(Configuration)\Intermediate\</IntDir>
+    <OutDir>$(SolutionDir)Output\x64\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Intermediate\$(ProjectName)\x64\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)x64\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)x64\$(Configuration)\Intermediate\</IntDir>
+    <OutDir>$(SolutionDir)Output\x64\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Intermediate\$(ProjectName)\x64\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -62,7 +62,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Source;$(SolutionDir)Shader;$(SolutionDir)externals\imgui;$(SolutionDir)externals\DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Source;$(SolutionDir)Shader;$(SolutionDir)Externals\imgui;$(SolutionDir)Externals\DirectXTex</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -72,7 +72,9 @@
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
+copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"
+xcopy "$(SolutionDir)Shader" "$(OutDir)Shader" /I /E /Y /D
+xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -90,7 +92,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Source;$(SolutionDir)Shader;$(SolutionDir)externals\imgui;$(SolutionDir)externals\DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Source;$(SolutionDir)Shader;$(SolutionDir)Externals\imgui;$(SolutionDir)Externals\DirectXTex</AdditionalIncludeDirectories>
       <Optimization>MinSpace</Optimization>
     </ClCompile>
     <Link>
@@ -99,7 +101,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
+copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"
+xcopy "$(SolutionDir)Shader" "$(OutDir)Shader" /I /E /Y /D
+xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     </PostBuildEvent>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -140,22 +144,22 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="..\Source\FrameWork\StarEngine.cpp" />
     <ClCompile Include="..\Source\FrameWork\WinApp.cpp" />
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp" />
-    <ClCompile Include="..\Source\Graphics\DirectionalLight.cpp" />
     <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp" />
-    <ClCompile Include="..\Source\Graphics\Material.cpp" />
-    <ClCompile Include="..\Source\Graphics\Mesh.cpp" />
-    <ClCompile Include="..\Source\Graphics\Model.cpp" />
     <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp" />
-    <ClCompile Include="..\Source\Graphics\Sprite.cpp" />
     <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
     <ClCompile Include="..\Source\Input\InputManager.cpp" />
+    <ClCompile Include="..\Source\Light\DirectionalLight.cpp" />
     <ClCompile Include="..\Source\Logging\CrashHandler.cpp" />
     <ClCompile Include="..\Source\Logging\Logger.cpp" />
     <ClCompile Include="..\Source\Logging\StringUtility.cpp" />
     <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="..\Source\Math\Transform.cpp" />
+    <ClCompile Include="..\Source\Render\Material.cpp" />
+    <ClCompile Include="..\Source\Render\Mesh.cpp" />
+    <ClCompile Include="..\Source\Render\Model.cpp" />
+    <ClCompile Include="..\Source\Render\Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externals\imgui\backends\imgui_impl_dx12.h" />
@@ -172,16 +176,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\Source\FrameWork\StarEngine.h" />
     <ClInclude Include="..\Source\FrameWork\WinApp.h" />
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h" />
-    <ClInclude Include="..\Source\Graphics\DirectionalLight.h" />
     <ClInclude Include="..\Source\Graphics\DirectXCommon.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h" />
-    <ClInclude Include="..\Source\Graphics\Material.h" />
-    <ClInclude Include="..\Source\Graphics\Mesh.h" />
-    <ClInclude Include="..\Source\Graphics\Model.h" />
     <ClInclude Include="..\Source\Graphics\ShaderCompiler.h" />
-    <ClInclude Include="..\Source\Graphics\Sprite.h" />
     <ClInclude Include="..\Source\Graphics\TextureManager.h" />
     <ClInclude Include="..\Source\Input\InputManager.h" />
+    <ClInclude Include="..\Source\Light\DirectionalLight.h" />
     <ClInclude Include="..\Source\Logging\CrashHandler.h" />
     <ClInclude Include="..\Source\Logging\D3D12ResourceLeakChecker.h" />
     <ClInclude Include="..\Source\Logging\Logger.h" />
@@ -191,6 +191,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="..\Source\Math\Vector2.h" />
     <ClInclude Include="..\Source\Math\Vector3.h" />
     <ClInclude Include="..\Source\Math\Vector4.h" />
+    <ClInclude Include="..\Source\Render\Material.h" />
+    <ClInclude Include="..\Source\Render\Mesh.h" />
+    <ClInclude Include="..\Source\Render\Model.h" />
+    <ClInclude Include="..\Source\Render\Sprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

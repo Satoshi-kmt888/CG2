@@ -33,15 +33,15 @@ public:
 	//--- コンストラクタ・デストラクタ ---
 
 	Material() = default;
-	~Material();
+	~Material() = default;
 
 	//--- 公開関数 ---
 
 	/// <summary>
-	/// 
+	/// バッファの生成
 	/// </summary>
 	/// <param name="device"></param>
-	void Build(ID3D12Device* device);
+	void CreateBuffer(ID3D12Device* device);
 
 	/// <summary>
 	/// 更新処理
@@ -49,13 +49,17 @@ public:
 	void Update();
 
 	/// <summary>
-	/// コマンドリストとの紐づけ
+	/// コマンドリスト
 	/// </summary>
 	/// <param name="commandList"></param>
 	/// <param name="rootParamIndexMaterial"></param>
 	/// <param name="rootParamIndexTexture"></param>
-	void Bind(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture);
+	void SetGraphicsCommand(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture) const;
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="filePath"></param>
 	void SetTexture(const std::string& filePath);
 
 private:
@@ -63,7 +67,6 @@ private:
 
 	ComPtr<ID3D12Resource> surfaceBuffer_ = nullptr;
 	SurfaceData* surfaceData_ = nullptr;
-	std::string textureFilePath;
 	const TextureData* textureData_ = nullptr;
 
 	Transform transform_ = {};

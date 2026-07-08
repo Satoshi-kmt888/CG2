@@ -4,6 +4,7 @@
 #include "Logging/D3D12ResourceLeakChecker.h"
 #include "Input/InputManager.h"
 #include "Camera/DebugCamera.h"
+#include "Render/Model.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -27,6 +28,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto debugCamera = std::make_unique<DebugCamera>();
 	Camera const* activeCamera = mainCamera.get();
 	bool enableDebug = false;
+
+	auto sphere = Model::CreateSphere();
+	Transform transform = {};
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -57,7 +61,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓描画処理↓
 		//====================
 
-
+		sphere->Draw(transform, activeCamera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑

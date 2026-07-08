@@ -1,4 +1,4 @@
-#include "DirectionalLight.h"
+#include "Light/DirectionalLight.h"
 
 #include "Graphics/D3D12Utility.h"
 #include "Graphics/DirectXCommon.h"

@@ -3,7 +3,7 @@
 #include "Audio/AudioManager.h"
 #include "Logging/Logger.h"
 #include "Logging/CrashHandler.h"
-#include "Graphics/DirectionalLight.h"
+#include "Light/DirectionalLight.h"
 #include "Graphics/DirectXCommon.h"
 #include "Graphics/GraphicsPipeline.h"
 #include "Input/InputManager.h"

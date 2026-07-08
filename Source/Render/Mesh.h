@@ -45,16 +45,10 @@ public:
 	void AddIndex(uint32_t index);
 
 	/// <summary>
-	/// 頂点データをもとにバッファを生成
+	/// バッファの生成
 	/// </summary>
 	/// <param name="device"></param>
-	void Build(ID3D12Device* device);
-
-	/// <summary>
-	/// コマンドリストに紐づけ
-	/// </summary>
-	/// <param name="commandList"></param>
-	void Bind(ID3D12GraphicsCommandList* commandList) const;
+	void CreateBuffer(ID3D12Device* device);
 
 	/// <summary>
 	/// ドローコールを実行
@@ -65,13 +59,15 @@ public:
 private:
 	//--- メンバ変数 ---
 
-	//頂点バッファ
-	ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+	//頂点
+	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	std::vector<VertexData> vertices_{};
+	UINT vertexCount_ = 0;
 
-	//インデックスバッファ
-	ComPtr<ID3D12Resource> indexResource_ = nullptr;
+	//インデックス
+	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 	std::vector<uint32_t> indices_{};
+	UINT indexCount_ = 0;
 };

@@ -5,11 +5,11 @@
 #include <memory>
 #include <string>
 
-#include "Graphics/Material.h"
 #include "Math/Matrix4x4.h"
-#include "Graphics/Mesh.h"
 #include "Math/TransformationMatrix.h"
 #include "Math/Vector2.h"
+#include "Render/Material.h"
+#include "Render/Mesh.h"
 
 /**
  * \class Sprite

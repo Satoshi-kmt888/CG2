@@ -14,7 +14,7 @@ void Logger::Initialize() {
 	}
 
 	//ログのディレクトリを用意
-	std::filesystem::create_directory("Projects/Logs");
+	std::filesystem::create_directory("Logs");
 
 	//ログファイル名を時刻にする(UTC時刻)
 	auto now = std::chrono::system_clock::now();
@@ -22,7 +22,7 @@ void Logger::Initialize() {
 		std::chrono::current_zone(),
 		std::chrono::floor<std::chrono::seconds>(now)
 	};
-	auto filename = std::format("Projects/Logs/{:%Y%m%d_%H%M%S}.log", local);
+	auto filename = std::format("Logs/{:%Y%m%d_%H%M%S}.log", local);
 	logStream_.open(filename, std::ios::out);
 
 	isInitialize_ = true;
