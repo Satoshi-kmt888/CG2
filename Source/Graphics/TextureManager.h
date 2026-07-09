@@ -1,12 +1,11 @@
 #pragma once
+
 #include <d3d12.h>
 #include <wrl/client.h>
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
 #include <DirectXTex.h>
 
 /**

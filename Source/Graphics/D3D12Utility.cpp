@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstdint>
-
 #include <d3d12.h>
 #include <dxgiformat.h>
 #include <Windows.h>

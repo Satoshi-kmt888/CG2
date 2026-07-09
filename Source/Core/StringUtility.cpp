@@ -1,4 +1,4 @@
-#include "Logging/StringUtility.h"
+#include "Core/StringUtility.h"
 
 #include <windows.h>
 

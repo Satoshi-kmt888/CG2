@@ -1,11 +1,11 @@
-#include "Logging/CrashHandler.h"
+#include "Diagnostics/CrashHandler.h"
 
-#include "Logging/Logger.h"
+#include "Diagnostics/Logger.h"
 
 #include <Windows.h>
+#include <minidumpapiset.h>
 #include <array>
 #include <strsafe.h>
-#include <minidumpapiset.h>
 
 #pragma comment(lib, "DbgHelp.lib")
 

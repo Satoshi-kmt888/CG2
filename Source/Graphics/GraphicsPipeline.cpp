@@ -1,12 +1,11 @@
 #include "GraphicsPipeline.h"
 
-#include "Logging/Logger.h"
-#include "Graphics/DirectXCommon.h"
+#include "Diagnostics/Logger.h"
+#include "Graphics/GraphicsSystem.h"
 #include "Graphics/ShaderCompiler.h"
 
 #include <cassert>
 #include <cstdlib>
-
 #include <d3dcommon.h>
 #include <dxcapi.h>
 #include <dxgiformat.h>
@@ -78,7 +77,7 @@ void GraphicsPipeline::CreateRootSignature() {
 		assert(false);
 	}
 	//バイナリをもとに作成
-	hr = DirectXCommon::GetInstance()->GetDevice()->CreateRootSignature(
+	hr = GraphicsSystem::GetInstance()->GetDevice()->CreateRootSignature(
 		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_)
 	);
 	assert(SUCCEEDED(hr));
@@ -156,7 +155,7 @@ void GraphicsPipeline::CreatePipelineState(ShaderCompiler* shaderCompiler) {
 	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc_;
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	//実際に生成
-	HRESULT hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(
+	HRESULT hr = GraphicsSystem::GetInstance()->GetDevice()->CreateGraphicsPipelineState(
 		&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_)
 	);
 	assert(SUCCEEDED(hr));

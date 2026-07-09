@@ -7,17 +7,11 @@
     <Filter Include="Source\Math">
       <UniqueIdentifier>{92b13b15-d769-4eb7-b006-1d901a1d9c9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Logging">
-      <UniqueIdentifier>{6d113232-ca8e-4382-82ab-b144b243524d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Input">
       <UniqueIdentifier>{5105ae1e-f8f5-40ef-855d-2ca13ca8ae0f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Graphics">
       <UniqueIdentifier>{6439c650-7d9e-47f6-86d3-02da203d86fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\FrameWork">
-      <UniqueIdentifier>{a8dca8af-4ce7-4ece-8f50-16def59810df}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Camera">
       <UniqueIdentifier>{364b625d-3c71-4bf0-9728-b520057b4d5a}</UniqueIdentifier>
@@ -37,6 +31,12 @@
     <Filter Include="Source\Light">
       <UniqueIdentifier>{20909cbb-1262-4a1c-b3ea-8e388afd45f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{a8dca8af-4ce7-4ece-8f50-16def59810df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Diagnstics">
+      <UniqueIdentifier>{f9809d69-b59d-4431-91d1-dc33956dc515}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Audio\AudioManager.cpp">
@@ -48,16 +48,7 @@
     <ClCompile Include="..\Source\Camera\DebugCamera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\FrameWork\WinApp.cpp">
-      <Filter>Source\FrameWork</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\FrameWork\StarEngine.cpp">
-      <Filter>Source\FrameWork</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp">
@@ -99,15 +90,6 @@
     <ClCompile Include="..\externals\imgui\backends\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Logging\CrashHandler.cpp">
-      <Filter>Source\Logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Logging\Logger.cpp">
-      <Filter>Source\Logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Logging\StringUtility.cpp">
-      <Filter>Source\Logging</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Math\Transform.cpp">
       <Filter>Source\Math</Filter>
     </ClCompile>
@@ -126,6 +108,36 @@
     <ClCompile Include="..\Source\Light\DirectionalLight.cpp">
       <Filter>Source\Light</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\CommandContext.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\GraphicsDevice.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\GraphicsSystem.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\SwapChain.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\StarEngine.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\StringUtility.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Core\WinApp.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Diagnostics\CrashHandler.cpp">
+      <Filter>Source\Diagnstics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Diagnostics\Logger.cpp">
+      <Filter>Source\Diagnstics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\AudioManager.h">
@@ -137,16 +149,7 @@
     <ClInclude Include="..\Source\Camera\DebugCamera.h">
       <Filter>Source\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\FrameWork\WinApp.h">
-      <Filter>Source\FrameWork</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\FrameWork\StarEngine.h">
-      <Filter>Source\FrameWork</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\DirectXCommon.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h">
@@ -160,9 +163,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\Input\InputManager.h">
       <Filter>Source\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Logging\D3D12ResourceLeakChecker.h">
-      <Filter>Source\Logging</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Matrix4x4.h">
       <Filter>Source\Math</Filter>
@@ -200,15 +200,6 @@
     <ClInclude Include="..\Source\Math\Vector3.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Logging\CrashHandler.h">
-      <Filter>Source\Logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Logging\Logger.h">
-      <Filter>Source\Logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Logging\StringUtility.h">
-      <Filter>Source\Logging</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Math\Transform.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
@@ -226,6 +217,39 @@
     </ClInclude>
     <ClInclude Include="..\Source\Light\DirectionalLight.h">
       <Filter>Source\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\DirectXCommon.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\CommandContext.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\GraphicsDevice.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\GraphicsSystem.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\SwapChain.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\StarEngine.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\StringUtility.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Core\WinApp.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Diagnostics\CrashHandler.h">
+      <Filter>Source\Diagnstics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Diagnostics\D3D12ResourceLeakChecker.h">
+      <Filter>Source\Diagnstics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Diagnostics\Logger.h">
+      <Filter>Source\Diagnstics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

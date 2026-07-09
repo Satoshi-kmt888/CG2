@@ -1,15 +1,15 @@
 #include "StarEngine.h"
 
 #include "Audio/AudioManager.h"
-#include "Logging/Logger.h"
-#include "Logging/CrashHandler.h"
-#include "Light/DirectionalLight.h"
-#include "Graphics/DirectXCommon.h"
+#include "Core/WinApp.h"
+#include "Diagnostics/CrashHandler.h"
+#include "Diagnostics/Logger.h"
+#include "Graphics/GraphicsSystem.h"
 #include "Graphics/GraphicsPipeline.h"
-#include "Input/InputManager.h"
 #include "Graphics/ShaderCompiler.h"
 #include "Graphics/TextureManager.h"
-#include "FrameWork/WinApp.h"
+#include "Input/InputManager.h"
+#include "Light/DirectionalLight.h"
 
 #ifdef USE_IMGUI
 #include <backends/imgui_impl_dx12.h>
@@ -38,16 +38,17 @@ namespace StarEngine {
 
 	void Initialize() {
 		CrashHandler::Register();
-
-		//ログファイル
 		Logger::Initialize();
 
 		//基盤システムの初期化
-		WinApp::GetInstance()->Initialize();
-		DirectXCommon::GetInstance()->Initialize();
+		auto* winApp = WinApp::GetInstance();
+		winApp->Initialize();
 
-		LONG width = static_cast<LONG>(WinApp::GetInstance()->kClientWidth);
-		LONG height = static_cast<LONG>(WinApp::GetInstance()->kClientHeight);
+		auto* graphicsSystem = GraphicsSystem::GetInstance();
+		graphicsSystem->Initialize(*winApp);
+
+		LONG width = static_cast<LONG>(WinApp::GetInstance()->GetClientWidth());
+		LONG height = static_cast<LONG>(WinApp::GetInstance()->GetClientHeight());
 
 		scissorRect = D3D12_RECT{ 0, 0, width, height };
 		viewport = D3D12_VIEWPORT{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f };
@@ -58,8 +59,8 @@ namespace StarEngine {
 		graphicsPipeline = std::make_unique<GraphicsPipeline>();
 		graphicsPipeline->Initialize(shaderCompiler.get());
 
-		auto device = DirectXCommon::GetInstance()->GetDevice();
-		auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+		auto device = GraphicsSystem::GetInstance()->GetDevice();
+		auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
 
 		//マネージャー(とりあえずテクスチャのみ)
 		TextureManager::GetInstance()->Initialize(device, commandList);
@@ -76,9 +77,9 @@ namespace StarEngine {
 		ImGui::StyleColorsDark();
 		ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHwnd());
 		ImGui_ImplDX12_Init(
-			DirectXCommon::GetInstance()->GetDevice(),
-			DirectXCommon::GetInstance()->GetSwapChainDesc().BufferCount,
-			DirectXCommon::GetInstance()->GetRtvDesc().Format,
+			GraphicsSystem::GetInstance()->GetDevice(),
+			GraphicsSystem::GetInstance()->GetSwapChainDesc().BufferCount,
+			GraphicsSystem::GetInstance()->GetRTVDesc().Format,
 			TextureManager::GetInstance()->GetSrvDescriptorHeap(),
 			TextureManager::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
 			TextureManager::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
@@ -103,7 +104,7 @@ namespace StarEngine {
 		//基盤類を終了させる
 		AudioManager::GetInstance()->Finalize();
 		TextureManager::GetInstance()->Finalize();
-		DirectXCommon::GetInstance()->Finalize();
+		GraphicsSystem::GetInstance()->Finalize();
 		WinApp::GetInstance()->Finalize();
 
 		//ログファイルの終了
@@ -119,15 +120,15 @@ namespace StarEngine {
 #endif
 		InputManager::GetInstance()->Update();
 
-		DirectXCommon::GetInstance()->PreDraw();
+		GraphicsSystem::GetInstance()->PreDraw();
 
 		//SRV用のヒープ
 		ID3D12DescriptorHeap* descriptorHeap[] = { TextureManager::GetInstance()->GetSrvDescriptorHeap() };
-		DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
+		GraphicsSystem::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeap);
 
 		directionalLight->Update();
 
-		auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+		auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
 		commandList->RSSetViewports(1, &viewport);
 		commandList->RSSetScissorRects(1, &scissorRect);
 		//RootSignatureを設定。PSOとは別途設定が必要
@@ -140,11 +141,11 @@ namespace StarEngine {
 #ifdef USE_IMGUI
 		//ImGUiの描画コマンドを確定させる
 		ImGui::Render();
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList());
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), GraphicsSystem::GetInstance()->GetCommandList());
 #endif
 
 		//描画後処理
-		DirectXCommon::GetInstance()->PostDraw();
+		GraphicsSystem::GetInstance()->PostDraw();
 	}
 
 	bool ProcessMessage() {

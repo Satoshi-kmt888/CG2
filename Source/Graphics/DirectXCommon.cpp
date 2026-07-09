@@ -1,9 +1,9 @@
 #include "DirectXCommon.h"
 
+#include "Core/StringUtility.h"
+#include "Core/WinApp.h"
+#include "Diagnostics/Logger.h"
 #include "Graphics/D3D12Utility.h"
-#include "Logging/Logger.h"
-#include "Logging/StringUtility.h"
-#include "FrameWork/WinApp.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -235,8 +235,8 @@ void DirectXCommon::CreateCommand() {
 
 void DirectXCommon::CreateSwapChain() {
 	//スワップチェーンを生成する
-	swapChainDesc_.Width = WinApp::GetInstance()->kClientWidth;   //画面の幅。ウィンドウのクライアント領域と同じものにしておく
-	swapChainDesc_.Height = WinApp::GetInstance()->kClientHeight; //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc_.Width = WinApp::GetInstance()->GetClientWidth();   //画面の幅。ウィンドウのクライアント領域と同じものにしておく
+	swapChainDesc_.Height = WinApp::GetInstance()->GetClientHeight(); //画面の高さ。ウィンドウのクライアント領域と同じものにしておく
 	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;           //色の形式
 	swapChainDesc_.SampleDesc.Count = 1;                          //マルチサンプルしない
 	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
@@ -293,8 +293,8 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	//
 	depthStencilResource_ = D3D12Utility::CreateDepthStencilTextureResource(
 		device_.Get(),
-		WinApp::GetInstance()->kClientWidth,
-		WinApp::GetInstance()->kClientHeight
+		WinApp::GetInstance()->GetClientWidth(),
+		WinApp::GetInstance()->GetClientHeight()
 	);
 
 	//DSVの設定

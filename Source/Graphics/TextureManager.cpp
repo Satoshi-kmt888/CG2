@@ -1,8 +1,8 @@
 #include "TextureManager.h"
 
 #include "Graphics/D3D12Utility.h"
-#include "Logging/Logger.h"
-#include "Logging/StringUtility.h"
+#include "Diagnostics/Logger.h"
+#include "Core/StringUtility.h"
 
 #include <d3dx12.h>
 #include <DirectXTex.h>

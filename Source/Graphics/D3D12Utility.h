@@ -2,9 +2,9 @@
 
 #include <cstdint>
 #include <d3d12.h>
+#include <DirectXTex.h>
 #include <Windows.h>
 #include <wrl/client.h>
-#include <DirectXTex.h>
 
 template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 

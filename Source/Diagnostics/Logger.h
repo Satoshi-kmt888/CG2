@@ -86,6 +86,6 @@ private:
 	static inline bool isInitialize_ = false;
 };
 
-#define LOG_INFO(...) do{Logger::Log(Logger::LogLevel::Info, std::source_location::current(), __VA_ARGS__);} while(0)
-#define LOG_WARNING(...) do{Logger::Log(Logger::LogLevel::Warning, std::source_location::current(), __VA_ARGS__);} while(0)
-#define LOG_ERROR(...) do{Logger::Log(Logger::LogLevel::Error, std::source_location::current(), __VA_ARGS__);} while(0)
+#define LOG_INFO(fmt, ...) do{Logger::Log(Logger::LogLevel::Info, std::source_location::current(), fmt, ##__VA_ARGS__);} while(0)
+#define LOG_WARNING(fmt, ...) do{Logger::Log(Logger::LogLevel::Warning, std::source_location::current(), fmt, ##__VA_ARGS__);} while(0)
+#define LOG_ERROR(fmt, ...) do{Logger::Log(Logger::LogLevel::Error, std::source_location::current(), fmt, ##__VA_ARGS__);} while(0)

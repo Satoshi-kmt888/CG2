@@ -1,6 +1,4 @@
-#include "Logger.h"
-
-#include "Logging/StringUtility.h"
+#include "Diagnostics/Logger.h"
 
 #include <chrono>
 #include <filesystem>

@@ -1,8 +1,8 @@
 #include "Render/Model.h"
 
 #include "Graphics/D3D12Utility.h"
-#include "Graphics/DirectXCommon.h"
-#include "Logging/Logger.h"
+#include "Graphics/GraphicsSystem.h"
+#include "Diagnostics/Logger.h"
 
 #include <numbers>
 
@@ -14,7 +14,7 @@ Model::~Model() {
 }
 
 std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionHorizontal, uint32_t divisionVertical) {
-	ID3D12Device* device = DirectXCommon::GetInstance()->GetDevice();
+	ID3D12Device* device = GraphicsSystem::GetInstance()->GetDevice();
 
 	auto model = std::make_unique<Model>();
 	model->material_ = std::make_unique<Material>();
@@ -83,7 +83,7 @@ std::unique_ptr<Model> Model::CreateFromOBJ(const std::string& filename) {
 }
 
 void Model::Draw(const Transform& transform, const Matrix4x4& viewProjectionMatrix) {
-	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+	auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!transformationBuffer_) {
 		LOG_ERROR("Model::Draw メンバ変数transformationBuffer_がnullptrです。Model::CreateBufferでtransformationBuffer_を作成してください。");

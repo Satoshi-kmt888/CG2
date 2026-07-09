@@ -1,10 +1,10 @@
 #include "Render/Mesh.h"
 
+#include "Diagnostics/Logger.h"
 #include "Graphics/D3D12Utility.h"
-#include "Logging/Logger.h"
 
-#include <dxgiformat.h>
 #include <cstdint>
+#include <dxgiformat.h>
 
 void Mesh::AddVertex(const VertexData& vertex) {
 	vertices_.emplace_back(vertex);

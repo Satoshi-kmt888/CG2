@@ -1,8 +1,9 @@
 #pragma once
+
 constexpr auto DIRECTINPUT_VERSION = 0x0800;
-#include <dinput.h>
 
 #include <array>
+#include <dinput.h>
 
 //入力処理を管理するクラス
 class InputManager {

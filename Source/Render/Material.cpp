@@ -1,8 +1,8 @@
 #include "Render/Material.h"
 
+#include "Diagnostics/Logger.h"
 #include "Graphics/D3D12Utility.h"
 #include "Graphics/TextureManager.h"
-#include "Logging/Logger.h"
 
 void Material::CreateBuffer(ID3D12Device* device) {
 	if (!device) {

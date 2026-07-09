@@ -1,12 +1,8 @@
-#include <Windows.h> //ShaderCompiler.h内のdxcapi.hがWindows.hの内容を必要としているためこの位置
 #include "ShaderCompiler.h"
 
-#include "Logging/Logger.h"
-#include "Logging/StringUtility.h"
+#include "Diagnostics/Logger.h"
 
 #include <cassert>
-#include <format>
-
 #include <dxcapi.h>
 
 #pragma comment(lib, "dxcompiler.lib")
