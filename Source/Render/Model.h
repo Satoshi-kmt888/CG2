@@ -61,6 +61,10 @@ private:
 	/// <param name="device"></param>
 	void CreateBuffer(ID3D12Device* device);
 
+	void LoadOBJ(const std::string& filename);
+
+	void LoadMaterialTemplateFile(const std::string& filename);
+
 	//--- メンバ変数 ---
 
 	//座標変換リソース

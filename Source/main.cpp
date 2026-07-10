@@ -29,7 +29,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Camera const* activeCamera = mainCamera.get();
 	bool enableDebug = false;
 
-	auto sphere = Model::CreateSphere();
+	auto model = Model::CreateFromOBJ("axis.obj");
 	Transform transform = {};
 
 	//ウィンドウの×ボタンが押されるまでループ
@@ -61,7 +61,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓描画処理↓
 		//====================
 
-		sphere->Draw(transform, activeCamera->GetViewProjMatrix());
+		model->Draw(transform, activeCamera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑
