@@ -108,9 +108,6 @@
     <ClCompile Include="..\Source\Light\DirectionalLight.cpp">
       <Filter>Source\Light</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\CommandContext.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
@@ -136,6 +133,9 @@
       <Filter>Source\Diagnstics</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Diagnostics\Logger.cpp">
+      <Filter>Source\Diagnstics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Diagnostics\ImGuiManager.cpp">
       <Filter>Source\Diagnstics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,9 +218,6 @@
     <ClInclude Include="..\Source\Light\DirectionalLight.h">
       <Filter>Source\Light</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Graphics\DirectXCommon.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\CommandContext.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
@@ -249,6 +246,9 @@
       <Filter>Source\Diagnstics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Diagnostics\Logger.h">
+      <Filter>Source\Diagnstics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Diagnostics\ImGuiManager.h">
       <Filter>Source\Diagnstics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -145,10 +145,10 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Core\StringUtility.cpp" />
     <ClCompile Include="..\Source\Core\WinApp.cpp" />
     <ClCompile Include="..\Source\Diagnostics\CrashHandler.cpp" />
+    <ClCompile Include="..\Source\Diagnostics\ImGuiManager.cpp" />
     <ClCompile Include="..\Source\Diagnostics\Logger.cpp" />
     <ClCompile Include="..\Source\Graphics\CommandContext.cpp" />
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp" />
-    <ClCompile Include="..\Source\Graphics\DirectXCommon.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsSystem.cpp" />
@@ -182,10 +182,10 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Core\WinApp.h" />
     <ClInclude Include="..\Source\Diagnostics\CrashHandler.h" />
     <ClInclude Include="..\Source\Diagnostics\D3D12ResourceLeakChecker.h" />
+    <ClInclude Include="..\Source\Diagnostics\ImGuiManager.h" />
     <ClInclude Include="..\Source\Diagnostics\Logger.h" />
     <ClInclude Include="..\Source\Graphics\CommandContext.h" />
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h" />
-    <ClInclude Include="..\Source\Graphics\DirectXCommon.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsDevice.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsSystem.h" />

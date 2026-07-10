@@ -1,7 +1,7 @@
-#include "FrameWork/StarEngine.h"
+#include "Core/StarEngine.h"
 
 #include "Camera/Camera.h"
-#include "Logging/D3D12ResourceLeakChecker.h"
+#include "Diagnostics/D3D12ResourceLeakChecker.h"
 #include "Input/InputManager.h"
 #include "Camera/DebugCamera.h"
 #include "Render/Model.h"

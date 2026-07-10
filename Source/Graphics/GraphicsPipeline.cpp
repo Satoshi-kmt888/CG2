@@ -13,6 +13,11 @@
 
 #pragma comment(lib, "dxcompiler.lib")
 
+GraphicsPipeline::~GraphicsPipeline() {
+	graphicsPipelineState_.Reset();
+	rootSignature_.Reset();
+}
+
 void GraphicsPipeline::Initialize(ShaderCompiler* shaderCompiler) {
 	CreateRootSignature();
 	CreateInputLayout();

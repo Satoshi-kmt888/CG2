@@ -14,6 +14,11 @@ class ShaderCompiler;
  */
 class GraphicsPipeline {
 public:
+	//--- インスタンス管理 ---
+
+	GraphicsPipeline() = default;
+	~GraphicsPipeline();
+
 	//--- 公開関数 ---
 
 	/**

@@ -3,6 +3,7 @@
 #include "Graphics/D3D12Utility.h"
 #include "Diagnostics/Logger.h"
 #include "Core/StringUtility.h"
+#include "GraphicsSystem.h"
 
 #include <d3dx12.h>
 #include <DirectXTex.h>
@@ -29,7 +30,7 @@ void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList*
 	commandList_ = commandList;
 
 	srvDescriptorHeap_ = D3D12Utility::CreateDescriptorHeap(
-		device_.Get(),
+		device_,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		kMaxTextures,
 		true
@@ -46,8 +47,6 @@ void TextureManager::Finalize() {
 	textureDataMap_.clear();
 
 	srvDescriptorHeap_.Reset();
-	commandList_.Reset();
-	device_.Reset();
 }
 
 const TextureData& TextureManager::Load(const std::string& filePath) {
@@ -63,7 +62,7 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 
 	TextureData data;
 	data.metadata = metadata;
-	data.resource = D3D12Utility::CreateTextureResource(device_.Get(), metadata);
+	data.resource = D3D12Utility::CreateTextureResource(device_, metadata);
 
 	intermediateResource_.push_back(UploadTextureData(data.resource.Get(), mipImages));
 
@@ -104,7 +103,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12R
 	//中間リソースを作る
 	std::vector<D3D12_SUBRESOURCE_DATA> subResources;
 	HRESULT hr = DirectX::PrepareUpload(
-		device_.Get(),
+		device_,
 		mipImages.GetImages(),
 		mipImages.GetImageCount(),
 		mipImages.GetMetadata(),
@@ -112,11 +111,11 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12R
 	);
 	assert(SUCCEEDED(hr));
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subResources.size()));
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = D3D12Utility::CreateBufferResource(device_.Get(), intermediateSize);
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = D3D12Utility::CreateBufferResource(device_, intermediateSize);
 
 	//データ転送をコマンドに積む
 	UpdateSubresources(
-		commandList_.Get(),
+		commandList_,
 		texture,
 		intermediateResource.Get(),
 		0,

@@ -10,7 +10,7 @@ CommandContext::~CommandContext() {
 }
 
 bool CommandContext::Initialize(const GraphicsDevice* graphicsDevice) {
-	if (graphicsDevice == nullptr) {
+	if (!graphicsDevice) {
 		LOG_ERROR("GraphicsDevice が nullptr のため、CommandContext を初期化できません。");
 		return false;
 	}
@@ -83,7 +83,7 @@ void CommandContext::WaitForGPU() {
 }
 
 void CommandContext::Finalize() {
-	if (fenceEvent_ != nullptr) {
+	if (fenceEvent_) {
 		CloseHandle(fenceEvent_);
 		fenceEvent_ = nullptr;
 	}
@@ -119,9 +119,6 @@ bool CommandContext::CreateCommand(ID3D12Device* device) {
 		LOG_ERROR("CommandList の生成に失敗しました。");
 		return false;
 	}
-
-	//初期化時は一度 Close 状態にしておき、利用時に Reset() から始まる運用にする
-	commandList_->Close();
 
 	return true;
 }

@@ -41,7 +41,7 @@ bool SwapChain::Initialize(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* comma
 bool SwapChain::Present(uint32_t syncInterval) {
 	HRESULT hr = swapChain_->Present(syncInterval, 0);
 
-	if (hr == DXGI_ERROR_DEVICE_REMOVED || DXGI_ERROR_DEVICE_RESET) {
+	if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
 		LOG_ERROR("Present中にデバイスロストを検知しました。HRESULT: 0x{0:X}", static_cast<uint32_t>(hr));
 		return false;
 	}

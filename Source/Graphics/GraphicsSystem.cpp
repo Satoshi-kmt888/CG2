@@ -29,15 +29,18 @@ bool GraphicsSystem::Initialize(const WinApp& winApp) {
 		return false;
 	}
 
+	auto width = static_cast<LONG>(winApp.GetClientWidth());
+	auto height = static_cast<LONG>(winApp.GetClientHeight());
+
+	scissorRect_ = D3D12_RECT{ 0, 0, width, height };
+	viewport_ = D3D12_VIEWPORT{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f };
+
 	LOG_INFO("GraphicsSystem の初期化が正常に完了しました。");
 
 	return true;
 }
 
 void GraphicsSystem::PreDraw() {
-	//次のフレーム用にコマンドアロケータとリストをクリア
-	command_.Reset();
-
 	ID3D12GraphicsCommandList* commandList = command_.GetCommandList();
 	swapChain_.TransitionToRenderTarget(commandList);
 
@@ -51,11 +54,13 @@ void GraphicsSystem::PreDraw() {
 
 	//描画先のRTVとDSVを設定する
 	commandList->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
+
+	commandList->RSSetViewports(1, &viewport_);
+	commandList->RSSetScissorRects(1, &scissorRect_);
 }
 
 void GraphicsSystem::PostDraw() {
 	ID3D12GraphicsCommandList* commandList = command_.GetCommandList();
-
 	swapChain_.TransitionToPresent(commandList);
 
 	//コマンドリストを確定させ、GPUのキューに実行をリクエスト
@@ -74,6 +79,9 @@ void GraphicsSystem::PostDraw() {
 
 	//GPUが現在のフレームの描画を終えるまでCPUを停止して待機
 	command_.WaitForGPU();
+
+	//次のフレーム用にコマンドアロケータとリストをクリア
+	command_.Reset();
 }
 
 void GraphicsSystem::Finalize() {

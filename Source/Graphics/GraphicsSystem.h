@@ -70,4 +70,7 @@ private:
 	GraphicsDevice device_;  //GPUデバイス管理
 	CommandContext command_; //コマンドキュー・リスト/同期の管理
 	SwapChain swapChain_;    //バックバッファ表示・深度バッファの管理
+
+	D3D12_RECT scissorRect_{};
+	D3D12_VIEWPORT viewport_{};
 };

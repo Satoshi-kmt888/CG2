@@ -10,18 +10,11 @@
 #include "Graphics/TextureManager.h"
 #include "Input/InputManager.h"
 #include "Light/DirectionalLight.h"
-
-#ifdef USE_IMGUI
-#include <backends/imgui_impl_dx12.h>
-#include <backends/imgui_impl_win32.h>
-#include <imgui.h>
-#endif
+#include "Diagnostics/ImGuiManager.h"
 
 #include <memory>
 
 #include <d3d12.h>
-
-#include <Windows.h>
 
 namespace StarEngine {
 	//--- 内部静的変数 ---
@@ -29,12 +22,6 @@ namespace StarEngine {
 	static std::unique_ptr<ShaderCompiler> shaderCompiler = nullptr;
 	static std::unique_ptr<GraphicsPipeline> graphicsPipeline = nullptr;
 	static std::unique_ptr<DirectionalLight> directionalLight = nullptr;
-
-	//シザー矩形の設定
-	static D3D12_RECT scissorRect{};
-
-	//クライアント領域のサイズと一緒にして画面全体に表示
-	static D3D12_VIEWPORT viewport{};
 
 	void Initialize() {
 		CrashHandler::Register();
@@ -46,12 +33,6 @@ namespace StarEngine {
 
 		auto* graphicsSystem = GraphicsSystem::GetInstance();
 		graphicsSystem->Initialize(*winApp);
-
-		LONG width = static_cast<LONG>(WinApp::GetInstance()->GetClientWidth());
-		LONG height = static_cast<LONG>(WinApp::GetInstance()->GetClientHeight());
-
-		scissorRect = D3D12_RECT{ 0, 0, width, height };
-		viewport = D3D12_VIEWPORT{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f };
 
 		//コンパイラとパイプラインの生成・初期化
 		shaderCompiler = std::make_unique<ShaderCompiler>();
@@ -66,42 +47,26 @@ namespace StarEngine {
 		TextureManager::GetInstance()->Initialize(device, commandList);
 		AudioManager::GetInstance()->Initialize();
 		InputManager::GetInstance()->Initialize();
+		ImGuiManager::GetInstance()->Initialize(
+			winApp->GetHwnd(), graphicsSystem->GetDevice(),
+			graphicsSystem->GetSwapChainDesc().BufferCount,
+			graphicsSystem->GetRTVDesc().Format
+		);
 
 		//ライト
 		directionalLight = std::make_unique<DirectionalLight>();
 		directionalLight->Initialize();
-
-#ifdef USE_IMGUI
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
-		ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHwnd());
-		ImGui_ImplDX12_Init(
-			GraphicsSystem::GetInstance()->GetDevice(),
-			GraphicsSystem::GetInstance()->GetSwapChainDesc().BufferCount,
-			GraphicsSystem::GetInstance()->GetRTVDesc().Format,
-			TextureManager::GetInstance()->GetSrvDescriptorHeap(),
-			TextureManager::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-			TextureManager::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
-		);
-		ImGuiIO& io = ImGui::GetIO();
-		io.Fonts->Build();
-#endif
 	}
 
 	void Finalize() {
-#ifdef USE_IMGUI
-		ImGui_ImplDX12_Shutdown();
-		ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext();
-#endif
+		ImGuiManager::GetInstance()->Finalize();
 
 		//static変数を明示的にリセット(寿命の問題があるので必ず!)
-		graphicsPipeline.reset();
 		shaderCompiler.reset();
+		graphicsPipeline.reset();
 		directionalLight.reset();
 
-		//基盤類を終了させる
+		////基盤類を終了させる
 		AudioManager::GetInstance()->Finalize();
 		TextureManager::GetInstance()->Finalize();
 		GraphicsSystem::GetInstance()->Finalize();
@@ -112,15 +77,11 @@ namespace StarEngine {
 	}
 
 	void BeginFrame() {
+		GraphicsSystem::GetInstance()->PreDraw();
 		//IMGUI
-#ifdef USE_IMGUI
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-#endif
+		ImGuiManager::GetInstance()->BeginFrame();
 		InputManager::GetInstance()->Update();
 
-		GraphicsSystem::GetInstance()->PreDraw();
 
 		//SRV用のヒープ
 		ID3D12DescriptorHeap* descriptorHeap[] = { TextureManager::GetInstance()->GetSrvDescriptorHeap() };
@@ -129,8 +90,6 @@ namespace StarEngine {
 		directionalLight->Update();
 
 		auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
-		commandList->RSSetViewports(1, &viewport);
-		commandList->RSSetScissorRects(1, &scissorRect);
 		//RootSignatureを設定。PSOとは別途設定が必要
 		commandList->SetGraphicsRootSignature(graphicsPipeline->GetRootSignature());
 		commandList->SetPipelineState(graphicsPipeline->GetGraphicsPipelineState());
@@ -138,11 +97,8 @@ namespace StarEngine {
 	}
 
 	void EndFrame() {
-#ifdef USE_IMGUI
-		//ImGUiの描画コマンドを確定させる
-		ImGui::Render();
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), GraphicsSystem::GetInstance()->GetCommandList());
-#endif
+		auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
+		ImGuiManager::GetInstance()->EndFrame(commandList);
 
 		//描画後処理
 		GraphicsSystem::GetInstance()->PostDraw();
