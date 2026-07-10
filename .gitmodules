@@ -2,4 +2,3 @@
 	path = Externals/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
-	ignore = dirty
