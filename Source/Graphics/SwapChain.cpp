@@ -1,7 +1,7 @@
 #include "SwapChain.h"
 
 #include "D3D12Utility.h"
-#include "Diagnostics/Logger.h"
+#include "Debugger/Logger.h"
 
 #include <dxgi.h>
 #include <dxgiformat.h>

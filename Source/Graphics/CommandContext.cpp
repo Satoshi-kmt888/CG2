@@ -1,7 +1,7 @@
 #include "CommandContext.h"
 
+#include "Debugger/Logger.h"
 #include "GraphicsDevice.h"
-#include "Diagnostics/Logger.h"
 
 #include <array>
 

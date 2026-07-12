@@ -1,7 +1,7 @@
 #include "GraphicsDevice.h"
 
-#include "Core/StringUtility.h"
-#include "Diagnostics/Logger.h"
+#include "App/StringUtility.h"
+#include "Debugger/Logger.h"
 
 #include <array>
 #include <d3d12sdklayers.h>

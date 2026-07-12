@@ -13,9 +13,6 @@
     <Filter Include="Source\Graphics">
       <UniqueIdentifier>{6439c650-7d9e-47f6-86d3-02da203d86fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Camera">
-      <UniqueIdentifier>{364b625d-3c71-4bf0-9728-b520057b4d5a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Audio">
       <UniqueIdentifier>{93a0d605-e66f-4b11-92c4-8ed34e3f858a}</UniqueIdentifier>
     </Filter>
@@ -25,28 +22,19 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Render">
-      <UniqueIdentifier>{e76c2537-b7d7-42bd-b504-547c986c7cb8}</UniqueIdentifier>
+    <Filter Include="Source\App">
+      <UniqueIdentifier>{8bb982a1-1967-4066-876b-a913e9595787}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Light">
-      <UniqueIdentifier>{20909cbb-1262-4a1c-b3ea-8e388afd45f8}</UniqueIdentifier>
+    <Filter Include="Source\Scene">
+      <UniqueIdentifier>{9104f98b-99f9-490d-8350-ed7c921991d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core">
-      <UniqueIdentifier>{a8dca8af-4ce7-4ece-8f50-16def59810df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Diagnstics">
-      <UniqueIdentifier>{f9809d69-b59d-4431-91d1-dc33956dc515}</UniqueIdentifier>
+    <Filter Include="Source\Debugger">
+      <UniqueIdentifier>{04768ed7-c720-4646-838f-4dcfdc21454f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Audio\AudioManager.cpp">
+    <ClCompile Include="..\Source\Audio\Audio.cpp">
       <Filter>Source\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Camera\Camera.cpp">
-      <Filter>Source\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Camera\DebugCamera.cpp">
-      <Filter>Source\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp">
       <Filter>Source\Graphics</Filter>
@@ -57,10 +45,7 @@
     <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Graphics\TextureManager.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Input\InputManager.cpp">
+    <ClCompile Include="..\Source\Input\Input.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp">
@@ -93,21 +78,6 @@
     <ClCompile Include="..\Source\Math\Transform.cpp">
       <Filter>Source\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Render\Material.cpp">
-      <Filter>Source\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Render\Mesh.cpp">
-      <Filter>Source\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Render\Model.cpp">
-      <Filter>Source\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Render\Sprite.cpp">
-      <Filter>Source\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Light\DirectionalLight.cpp">
-      <Filter>Source\Light</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\CommandContext.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
@@ -120,34 +90,64 @@
     <ClCompile Include="..\Source\Graphics\SwapChain.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Core\StarEngine.cpp">
-      <Filter>Source\Core</Filter>
+    <ClCompile Include="..\Source\App\StarEngine.cpp">
+      <Filter>Source\App</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Core\StringUtility.cpp">
-      <Filter>Source\Core</Filter>
+    <ClCompile Include="..\Source\App\StringUtility.cpp">
+      <Filter>Source\App</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Core\WinApp.cpp">
-      <Filter>Source\Core</Filter>
+    <ClCompile Include="..\Source\App\WinApp.cpp">
+      <Filter>Source\App</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Diagnostics\CrashHandler.cpp">
-      <Filter>Source\Diagnstics</Filter>
+    <ClCompile Include="..\Source\Debugger\CrashHandler.cpp">
+      <Filter>Source\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Diagnostics\Logger.cpp">
-      <Filter>Source\Diagnstics</Filter>
+    <ClCompile Include="..\Source\Debugger\ImGuiManager.cpp">
+      <Filter>Source\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Diagnostics\ImGuiManager.cpp">
-      <Filter>Source\Diagnstics</Filter>
+    <ClCompile Include="..\Source\Debugger\Logger.cpp">
+      <Filter>Source\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\Camera.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\DebugCamera.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\DirectionalLight.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\Material.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\Mesh.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\Model.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\Sprite.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\TextureManager.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\RootSignature.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\BlendState.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\DepthStencilState.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\RasterizerState.cpp">
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\Audio\AudioManager.h">
+    <ClInclude Include="..\Source\Audio\Audio.h">
       <Filter>Source\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Camera\Camera.h">
-      <Filter>Source\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Camera\DebugCamera.h">
-      <Filter>Source\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h">
       <Filter>Source\Graphics</Filter>
@@ -158,10 +158,7 @@
     <ClInclude Include="..\Source\Graphics\ShaderCompiler.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Graphics\TextureManager.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Input\InputManager.h">
+    <ClInclude Include="..\Source\Input\Input.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Matrix4x4.h">
@@ -203,21 +200,6 @@
     <ClInclude Include="..\Source\Math\Transform.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Render\Material.h">
-      <Filter>Source\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Render\Mesh.h">
-      <Filter>Source\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Render\Model.h">
-      <Filter>Source\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Render\Sprite.h">
-      <Filter>Source\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Light\DirectionalLight.h">
-      <Filter>Source\Light</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\CommandContext.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
@@ -230,26 +212,62 @@
     <ClInclude Include="..\Source\Graphics\SwapChain.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Core\StarEngine.h">
-      <Filter>Source\Core</Filter>
+    <ClInclude Include="..\Source\App\StarEngine.h">
+      <Filter>Source\App</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Core\StringUtility.h">
-      <Filter>Source\Core</Filter>
+    <ClInclude Include="..\Source\App\StringUtility.h">
+      <Filter>Source\App</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Core\WinApp.h">
-      <Filter>Source\Core</Filter>
+    <ClInclude Include="..\Source\App\WinApp.h">
+      <Filter>Source\App</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Diagnostics\CrashHandler.h">
-      <Filter>Source\Diagnstics</Filter>
+    <ClInclude Include="..\Source\Debugger\CrashHandler.h">
+      <Filter>Source\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Diagnostics\D3D12ResourceLeakChecker.h">
-      <Filter>Source\Diagnstics</Filter>
+    <ClInclude Include="..\Source\Debugger\D3D12ResourceLeakChecker.h">
+      <Filter>Source\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Diagnostics\Logger.h">
-      <Filter>Source\Diagnstics</Filter>
+    <ClInclude Include="..\Source\Debugger\ImGuiManager.h">
+      <Filter>Source\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Diagnostics\ImGuiManager.h">
-      <Filter>Source\Diagnstics</Filter>
+    <ClInclude Include="..\Source\Debugger\Logger.h">
+      <Filter>Source\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\Camera.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\DebugCamera.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\DirectionalLight.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\Material.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\Mesh.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\Model.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\Sprite.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\TextureManager.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\RootSignature.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\BlendState.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\DepthStencilState.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\RasterizerState.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

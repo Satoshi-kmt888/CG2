@@ -1,7 +1,7 @@
 #include "GraphicsSystem.h"
 
-#include "Core/WinApp.h"
-#include "Diagnostics/Logger.h"
+#include "App/WinApp.h"
+#include "Debugger/Logger.h"
 
 #include <d3d12.h>
 

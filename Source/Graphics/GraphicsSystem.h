@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Graphics/GraphicsDevice.h"
 #include "Graphics/CommandContext.h"
+#include "Graphics/GraphicsDevice.h"
 #include "Graphics/SwapChain.h"
 
 #include <array>

@@ -1,7 +1,5 @@
 #pragma once
 
-struct Vector3;
-
 /// <summary>
 /// 4x4行列
 /// </summary>
@@ -10,7 +8,10 @@ struct Matrix4x4 {
 
 	/*--------基本操作--------*/
 
-	//単位行列
+	/// <summary>
+	/// 単位行列
+	/// </summary>
+	/// <returns></returns>
 	static Matrix4x4 Identity() noexcept {
 		Matrix4x4 result{};
 
@@ -22,7 +23,10 @@ struct Matrix4x4 {
 		return result;
 	}
 
-	//転置行列
+	/// <summary>
+	/// 転置行列
+	/// </summary>
+	/// <returns></returns>
 	Matrix4x4 Transpose() const noexcept {
 		Matrix4x4 result{};
 
@@ -35,7 +39,10 @@ struct Matrix4x4 {
 		return result;
 	}
 
-	//逆行列
+	/// <summary>
+	/// 逆行列
+	/// </summary>
+	/// <returns></returns>
 	Matrix4x4 Inversed() const noexcept;
 
 	/*--------基本演算子--------*/
