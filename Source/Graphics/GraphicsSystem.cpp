@@ -46,6 +46,12 @@ bool GraphicsSystem::Initialize(const WinApp& winApp) {
 
 void GraphicsSystem::PreDraw() {
 	ID3D12GraphicsCommandList* commandList = command_.GetCommandList();
+
+	ID3D12DescriptorHeap* srvDescriptorHeaps[] = {
+		DescriptorManager::GetInstance()->GetHeap(DescriptorType::SRV_CBV_UAV)
+	};
+	commandList->SetDescriptorHeaps(_countof(srvDescriptorHeaps), srvDescriptorHeaps);
+
 	swapChain_.TransitionToRenderTarget(commandList);
 
 	//描画先となるRTVとDSVのハンドルを取得

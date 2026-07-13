@@ -36,7 +36,6 @@ namespace StarEngine {
 		//マネージャー類の終了処理
 		ImGuiManager::GetInstance()->Finalize();
 		TextureManager::GetInstance()->Finalize();
-		DescriptorManager::GetInstance()->Finalize();
 
 		//DirectX12基盤の終了
 		GraphicsSystem::GetInstance()->Finalize();
@@ -49,9 +48,6 @@ namespace StarEngine {
 	void BeginFrame() {
 		GraphicsSystem::GetInstance()->PreDraw();
 		ImGuiManager::GetInstance()->BeginFrame();
-
-		ID3D12DescriptorHeap* srvDescriptorHeaps[] = { DescriptorManager::GetInstance()->GetHeap(DescriptorType::SRV_CBV_UAV) };
-		GraphicsSystem::GetInstance()->GetCommandList()->SetDescriptorHeaps(_countof(srvDescriptorHeaps), srvDescriptorHeaps);
 	}
 
 	void EndFrame() {
