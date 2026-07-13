@@ -47,9 +47,9 @@ const TextureData& TextureManager::Load(const std::string& filePath) {
 	data.metadata = metadata;
 	data.resource = D3D12Utility::CreateTextureResource(device_, metadata);
 
-	UploadTextureData(data.resource.Get(), mipImages);
+	intermediateResource_.push_back(UploadTextureData(data.resource.Get(), mipImages));
 
-	data.descriptorHandle = DescriptorManager::GetInstance()->Allocate();
+	data.descriptorHandle = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
 
 	//SRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};

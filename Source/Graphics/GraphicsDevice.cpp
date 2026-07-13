@@ -4,7 +4,6 @@
 #include "Debugger/Logger.h"
 
 #include <array>
-#include <d3d12sdklayers.h>
 #include <d3dcommon.h>
 #include <dxgi.h>
 #include <Windows.h>

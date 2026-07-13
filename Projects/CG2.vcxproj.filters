@@ -31,18 +31,18 @@
     <Filter Include="Source\Debugger">
       <UniqueIdentifier>{04768ed7-c720-4646-838f-4dcfdc21454f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Pipeline">
+      <UniqueIdentifier>{f834e1f1-d1a5-40ec-9b7e-cd5dc8f96b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Nobody">
+      <UniqueIdentifier>{908940af-5805-4e55-bf01-a0e8c2c395cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Audio\Audio.cpp">
       <Filter>Source\Audio</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Input\Input.cpp">
@@ -129,20 +129,26 @@
     <ClCompile Include="..\Source\Scene\Sprite.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Scene\TextureManager.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\RootSignature.cpp">
-      <Filter>Source\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\BlendState.cpp">
-      <Filter>Source\Graphics</Filter>
+      <Filter>Source\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\DepthStencilState.cpp">
-      <Filter>Source\Graphics</Filter>
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\RootSignature.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\TextureManager.cpp">
+      <Filter>Source\Nobody</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\RasterizerState.cpp">
-      <Filter>Source\Graphics</Filter>
+      <Filter>Source\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\DescriptorManager.cpp">
       <Filter>Source\Graphics</Filter>
@@ -153,12 +159,6 @@
       <Filter>Source\Audio</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\ShaderCompiler.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Input\Input.h">
@@ -257,20 +257,26 @@
     <ClInclude Include="..\Source\Scene\Sprite.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Scene\TextureManager.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\RootSignature.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\BlendState.h">
-      <Filter>Source\Graphics</Filter>
+      <Filter>Source\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\DepthStencilState.h">
-      <Filter>Source\Graphics</Filter>
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\ShaderCompiler.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\RootSignature.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\TextureManager.h">
+      <Filter>Source\Nobody</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\RasterizerState.h">
-      <Filter>Source\Graphics</Filter>
+      <Filter>Source\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\DescriptorManager.h">
       <Filter>Source\Graphics</Filter>

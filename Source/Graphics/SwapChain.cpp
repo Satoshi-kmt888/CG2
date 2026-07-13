@@ -1,12 +1,10 @@
 #include "SwapChain.h"
 
-#include "D3D12Utility.h"
 #include "Debugger/Logger.h"
+#include "Graphics/D3D12Utility.h"
 
 #include <dxgi.h>
 #include <dxgiformat.h>
-
-using namespace D3D12Utility;
 
 SwapChain::~SwapChain() {
 	Finalize();
@@ -38,10 +36,9 @@ bool SwapChain::Initialize(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* comma
 	return true;
 }
 
-bool SwapChain::Present(uint32_t syncInterval) {
-	HRESULT hr = swapChain_->Present(syncInterval, 0);
-
-	if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
+bool SwapChain::Present(uint32_t syncInterval) const {
+	if (HRESULT hr = swapChain_->Present(syncInterval, 0);
+		hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
 		LOG_ERROR("Present中にデバイスロストを検知しました。HRESULT: 0x{0:X}", static_cast<uint32_t>(hr));
 		return false;
 	}
@@ -78,12 +75,17 @@ void SwapChain::TransitionToPresent(ID3D12GraphicsCommandList* commandList) {
 }
 
 void SwapChain::Finalize() {
-	depthStencilResource_.Reset();
+	for (uint32_t i = 0; i < kBufferCount; ++i) {
+		DescriptorManager::GetInstance()->Free(rtvHandles_[i]);
+	}
+
+	//DSVハンドルの返却
+	DescriptorManager::GetInstance()->Free(dsvHandle_);
+
 	for (auto& resource : swapChainResources_) {
 		resource.Reset();
 	}
-	dsvDescriptorHeap_.Reset();
-	rtvDescriptorHeap_.Reset();
+	depthStencilResource_.Reset();
 	swapChain_.Reset();
 }
 
@@ -123,62 +125,43 @@ bool SwapChain::CreateSwapChain(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* 
 }
 
 bool SwapChain::CreateRenderTargetViews(ID3D12Device* device) {
-	//DSVディスクリプターヒープの生成とサイズ取得
-	rtvDescriptorHeap_ = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-	if (!rtvDescriptorHeap_) {
-		LOG_ERROR("RTV用ディスクリプターヒープの生成に失敗しました。");
-		return false;
-	}
-	rtvDescriptorSize_ = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
-	//RTVの設定
-	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	   //出力結果をSRGBに変換して書き込む
-	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; //2dテクスチャとして書き込む
-
-	//ディスクリプタハンドルの割り当て
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	for (uint32_t i = 0; i < kBufferCount; ++i) {
+		//スワップチェーンからリソース（バックバッファ）を取得
 		HRESULT hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&swapChainResources_[i]));
 		if (FAILED(hr)) {
 			LOG_ERROR("スワップチェーンからのバッファ取得に失敗しました。インデックス: [{}]", i);
 			return false;
 		}
 
-		rtvHandles_[i] = rtvHandle;
-		device->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc_, rtvHandle);
+		//統括マネージャからRTV用のハンドルを1つずつ「割り当て」
+		rtvHandles_[i] = DescriptorManager::GetInstance()->Allocate(DescriptorType::RTV);
 
-		rtvHandle.ptr += rtvDescriptorSize_;
+		//もらったハンドルの「cpuHandle」を使ってRTVを生成
+		device->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc_, rtvHandles_[i].cpuHandle);
 	}
 
 	return true;
 }
 
 bool SwapChain::CreateDepthStencilView(ID3D12Device* device, uint32_t width, uint32_t height) {
-	//DSVディスクリプターヒープの生成とサイズ取得
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
-	if (!dsvDescriptorHeap_) {
-		LOG_ERROR("DSV用ディスクリプターヒープの生成に失敗しました。");
-		return false;
-	}
-	dsvDescriptorSize_ = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-	//深度バッファ用テクスチャリソースの生成
-	depthStencilResource_ = CreateDepthStencilTextureResource(device, width, height);
+	depthStencilResource_ = D3D12Utility::CreateDepthStencilTextureResource(device, width, height);
 	if (!depthStencilResource_) {
 		LOG_ERROR("深度ステンシル用テクスチャリソースの生成に失敗しました。");
 		return false;
 	}
 
-	//DSVの設定
-	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //Format。基本的にはResourceに合わせる
-	dsvDesc_.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2dTexture
+	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;         // リソースとフォーマットを合わせる
+	dsvDesc_.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 
-	//DSVHeapの先頭にDSVを作る
-	dsvHandle_ = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	dsvHandle_ = DescriptorManager::GetInstance()->Allocate(DescriptorType::DSV);
+
 	device->CreateDepthStencilView(
 		depthStencilResource_.Get(),
 		&dsvDesc_,
-		dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart()
+		dsvHandle_.cpuHandle
 	);
 
 	return true;

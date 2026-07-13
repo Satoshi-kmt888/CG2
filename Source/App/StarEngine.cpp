@@ -4,9 +4,9 @@
 #include "Debugger/CrashHandler.h"
 #include "Debugger/Logger.h"
 #include "Graphics/GraphicsSystem.h"
-#include "Graphics/DescriptorManager.h"
-#include "Scene/TextureManager.h"
+#include "Graphics/TextureManager.h"
 #include "Debugger/ImGuiManager.h"
+
 
 namespace StarEngine {
 	void Initialize() {
@@ -23,7 +23,6 @@ namespace StarEngine {
 		graphicsSystem->Initialize(*winApp);
 
 		//マネージャーの初期化
-		DescriptorManager::GetInstance()->Initialize(graphicsSystem->GetDevice());
 		TextureManager::GetInstance()->Initialize(graphicsSystem->GetDevice(), graphicsSystem->GetCommandList());
 		ImGuiManager::GetInstance()->Initialize(
 			winApp->GetHwnd(),
@@ -51,7 +50,7 @@ namespace StarEngine {
 		GraphicsSystem::GetInstance()->PreDraw();
 		ImGuiManager::GetInstance()->BeginFrame();
 
-		ID3D12DescriptorHeap* srvDescriptorHeaps[] = { DescriptorManager::GetInstance()->GetHeap() };
+		ID3D12DescriptorHeap* srvDescriptorHeaps[] = { DescriptorManager::GetInstance()->GetHeap(DescriptorType::SRV_CBV_UAV) };
 		GraphicsSystem::GetInstance()->GetCommandList()->SetDescriptorHeaps(_countof(srvDescriptorHeaps), srvDescriptorHeaps);
 	}
 

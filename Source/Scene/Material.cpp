@@ -2,7 +2,7 @@
 
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
-#include "Scene/TextureManager.h"
+#include "Graphics/TextureManager.h"
 
 void Material::CreateBuffer(ID3D12Device* device) {
 	if (!device) {

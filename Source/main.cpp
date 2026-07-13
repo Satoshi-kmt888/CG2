@@ -1,12 +1,10 @@
 #include "App/StarEngine.h"
 
 #include "Debugger/D3D12ResourceLeakChecker.h"
-#include "Scene/TextureManager.h"
+#include "Graphics/TextureManager.h"
 
 #include <sal.h>
 #include <Windows.h>
-
-#include <imgui.h>
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -27,8 +25,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-		ImGui::Begin("Window");
-		ImGui::End();
+		
 
 		//====================
 		// ↑更新処理↑

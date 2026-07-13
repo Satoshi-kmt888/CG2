@@ -157,6 +157,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Graphics\RootSignature.cpp" />
     <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp" />
     <ClCompile Include="..\Source\Graphics\SwapChain.cpp" />
+    <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
     <ClCompile Include="..\Source\Input\Input.cpp" />
     <ClCompile Include="..\Source\main.cpp" />
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp" />
@@ -168,7 +169,6 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Scene\Mesh.cpp" />
     <ClCompile Include="..\Source\Scene\Model.cpp" />
     <ClCompile Include="..\Source\Scene\Sprite.cpp" />
-    <ClCompile Include="..\Source\Scene\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externals\imgui\backends\imgui_impl_dx12.h" />
@@ -199,6 +199,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Graphics\RootSignature.h" />
     <ClInclude Include="..\Source\Graphics\ShaderCompiler.h" />
     <ClInclude Include="..\Source\Graphics\SwapChain.h" />
+    <ClInclude Include="..\Source\Graphics\TextureManager.h" />
     <ClInclude Include="..\Source\Input\Input.h" />
     <ClInclude Include="..\Source\Math\Matrix4x4.h" />
     <ClInclude Include="..\Source\Math\Transform.h" />
@@ -212,7 +213,6 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Scene\Mesh.h" />
     <ClInclude Include="..\Source\Scene\Model.h" />
     <ClInclude Include="..\Source\Scene\Sprite.h" />
-    <ClInclude Include="..\Source\Scene\TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

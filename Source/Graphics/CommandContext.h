@@ -36,13 +36,13 @@ public:
 	/// コマンドアロケータとコマンドリストを次のフレーム用にリセットする
 	/// </summary>
 	/// <returns>リセット成功時にtrue</returns>
-	bool Reset();
+	bool Reset() const;
 
 	/// <summary>
 	/// コマンドリストの記録を確定させ、コマンドキューに実行をリクエストする
 	/// </summary>
 	/// <returns>実行リクエスト成功時にtrue</returns>
-	bool Execute();
+	bool Execute() const;
 
 	/// <summary>
 	/// GPUが現在のフェンス位置に到達するまでCPUをブロックして待機する

@@ -19,8 +19,8 @@ void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, 
 	ImGui_ImplWin32_Init(hwnd);
 
 	auto descriptorManager = DescriptorManager::GetInstance();
-	ID3D12DescriptorHeap* descriptorHeap = descriptorManager->GetHeap();
-	descriptorHandle_ = descriptorManager->Allocate();
+	ID3D12DescriptorHeap* descriptorHeap = descriptorManager->GetHeap(DescriptorType::SRV_CBV_UAV);
+	descriptorHandle_ = descriptorManager->Allocate(DescriptorType::SRV_CBV_UAV);
 	ImGui_ImplDX12_Init(
 		device, bufferCount, rtvFormat, descriptorHeap,
 		descriptorHandle_.cpuHandle,
