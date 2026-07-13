@@ -119,31 +119,8 @@ void WinApp::Finalize() {
 }
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	auto* pThis = std::bit_cast<WinApp*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
-	case WM_CREATE:
-	{
-		auto const* createStruct = std::bit_cast<LPCREATESTRUCT>(lparam);
-		pThis = static_cast<WinApp*>(createStruct->lpCreateParams);
-		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
-
-		//ウィンドウがOSによって生成されたタイミングのログ
-		LOG_INFO("WM_CREATE: ウィンドウハンドルのフックに成功しました。");
-	}
-	return 0;
-
-	case WM_SIZE:
-		if (wparam != SIZE_MINIMIZED && pThis) {
-			pThis->clientWidth_ = LOWORD(lparam);
-			pThis->clientHeight_ = HIWORD(lparam);
-
-			//リサイズに新しい解像度をログに出す
-			LOG_INFO("ウィンドウサイズが変更されました。新解像度: {}x{}", pThis->clientWidth_, pThis->clientHeight_);
-		}
-		return 0;
-
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
