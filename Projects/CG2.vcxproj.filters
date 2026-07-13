@@ -144,6 +144,9 @@
     <ClCompile Include="..\Source\Graphics\RasterizerState.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Graphics\DescriptorManager.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\Audio.h">
@@ -267,6 +270,9 @@
       <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\RasterizerState.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\DescriptorManager.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

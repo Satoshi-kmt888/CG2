@@ -15,7 +15,7 @@ public:
 	static inline constexpr uint32_t kDefaultClientHeight = 720;
 
 	//ウィンドウクラス名
-	static inline const wchar_t* kWindowClassName = L"EngineProduction_DirectX12";
+	static inline const wchar_t* kWindowClassName = L"CG2";
 
 	//--- インスタンス管理 ---
 

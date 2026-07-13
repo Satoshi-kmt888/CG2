@@ -1,7 +1,5 @@
 #include "ImGuiManager.h"
 
-#include "Scene/TextureManager.h"
-
 #ifdef USE_IMGUI
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
@@ -20,11 +18,13 @@ void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, 
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(hwnd);
 
-	auto srvDescriptorHeap = TextureManager::GetInstance()->GetSrvDescriptorHeap();
+	auto descriptorManager = DescriptorManager::GetInstance();
+	ID3D12DescriptorHeap* descriptorHeap = descriptorManager->GetHeap();
+	descriptorHandle_ = descriptorManager->Allocate();
 	ImGui_ImplDX12_Init(
-		device, bufferCount, rtvFormat, srvDescriptorHeap,
-		srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
+		device, bufferCount, rtvFormat, descriptorHeap,
+		descriptorHandle_.cpuHandle,
+		descriptorHandle_.gpuHandle
 	);
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->Build();
@@ -52,5 +52,7 @@ void ImGuiManager::Finalize() {
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	DescriptorManager::GetInstance()->Free(descriptorHandle_);
 #endif
 }

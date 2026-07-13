@@ -149,6 +149,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Graphics\CommandContext.cpp" />
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp" />
     <ClCompile Include="..\Source\Graphics\DepthStencilState.cpp" />
+    <ClCompile Include="..\Source\Graphics\DescriptorManager.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsDevice.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsSystem.cpp" />
@@ -190,6 +191,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Graphics\CommandContext.h" />
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h" />
     <ClInclude Include="..\Source\Graphics\DepthStencilState.h" />
+    <ClInclude Include="..\Source\Graphics\DescriptorManager.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsDevice.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsSystem.h" />

@@ -4,6 +4,9 @@
 #include "Debugger/CrashHandler.h"
 #include "Debugger/Logger.h"
 #include "Graphics/GraphicsSystem.h"
+#include "Graphics/DescriptorManager.h"
+#include "Scene/TextureManager.h"
+#include "Debugger/ImGuiManager.h"
 
 namespace StarEngine {
 	void Initialize() {
@@ -18,9 +21,24 @@ namespace StarEngine {
 		//DirectX12基盤の初期化
 		auto* graphicsSystem = GraphicsSystem::GetInstance();
 		graphicsSystem->Initialize(*winApp);
+
+		//マネージャーの初期化
+		DescriptorManager::GetInstance()->Initialize(graphicsSystem->GetDevice());
+		TextureManager::GetInstance()->Initialize(graphicsSystem->GetDevice(), graphicsSystem->GetCommandList());
+		ImGuiManager::GetInstance()->Initialize(
+			winApp->GetHwnd(),
+			graphicsSystem->GetDevice(),
+			graphicsSystem->GetSwapChainDesc().BufferCount,
+			graphicsSystem->GetRTVDesc().Format
+		);
 	}
 
 	void Finalize() {
+		//マネージャー類の終了処理
+		ImGuiManager::GetInstance()->Finalize();
+		TextureManager::GetInstance()->Finalize();
+		DescriptorManager::GetInstance()->Finalize();
+
 		//DirectX12基盤の終了
 		GraphicsSystem::GetInstance()->Finalize();
 		//WinAppの終了
@@ -31,9 +49,14 @@ namespace StarEngine {
 
 	void BeginFrame() {
 		GraphicsSystem::GetInstance()->PreDraw();
+		ImGuiManager::GetInstance()->BeginFrame();
+
+		ID3D12DescriptorHeap* srvDescriptorHeaps[] = { DescriptorManager::GetInstance()->GetHeap() };
+		GraphicsSystem::GetInstance()->GetCommandList()->SetDescriptorHeaps(_countof(srvDescriptorHeaps), srvDescriptorHeaps);
 	}
 
 	void EndFrame() {
+		ImGuiManager::GetInstance()->EndFrame(GraphicsSystem::GetInstance()->GetCommandList());
 		GraphicsSystem::GetInstance()->PostDraw();
 	}
 

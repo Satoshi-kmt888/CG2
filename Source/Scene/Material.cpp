@@ -55,7 +55,8 @@ void Material::SetGraphicsCommand(ID3D12GraphicsCommandList* commandList, UINT r
 	commandList->SetGraphicsRootConstantBufferView(rootParamIndexMaterial, surfaceBuffer_->GetGPUVirtualAddress());
 
 	if (textureData_) {
-		commandList->SetGraphicsRootDescriptorTable(rootParamIndexTexture, textureData_->gpuHandle);
+		commandList->SetGraphicsRootDescriptorTable(rootParamIndexTexture,
+			textureData_->descriptorHandle.gpuHandle);
 	}
 }
 

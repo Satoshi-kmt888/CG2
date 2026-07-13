@@ -3,7 +3,11 @@
 #include "App/StringUtility.h"
 #include "Debugger/Logger.h"
 
-#include <bit>
+#include <imgui.h>
+
+#ifdef _DEBUG
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 
 WinApp* WinApp::GetInstance() {
 	static WinApp instance;
@@ -77,10 +81,8 @@ bool WinApp::Initialize() {
 	UpdateWindow(hWnd_);
 	SetFocus(hWnd_);
 
-	//初期化成功ログ
 	LOG_INFO("WinApp の初期化が正常に完了しました。クライアント解像度: {}x{}", clientWidth_, clientHeight_);
 
-	//正常終了
 	return true;
 }
 
@@ -119,6 +121,12 @@ void WinApp::Finalize() {
 }
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+#ifdef _DEBUG
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+		return true;
+	}
+#endif
+
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
 	case WM_DESTROY:

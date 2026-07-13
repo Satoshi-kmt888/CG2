@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Graphics/DescriptorManager.h"
+
 #include <d3d12.h>
 #include <Windows.h>
+#include <dxgiformat.h>
 
 /// <summary>
 /// ImGuiの 初期化 / フレーム管理 / 描画 / 破棄 を行うシングルトンクラス
@@ -24,7 +27,7 @@ public:
 	//--- 公開関数 ---
 
 	/// <summary>
-	/// 
+	/// 初期化
 	/// </summary>
 	/// <param name="hwnd"></param>
 	/// <param name="device"></param>
@@ -33,18 +36,18 @@ public:
 	void Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, DXGI_FORMAT rtvFormat);
 
 	/// <summary>
-	/// 
+	/// フレーム開始処理
 	/// </summary>
 	void BeginFrame();
 
 	/// <summary>
-	/// 
+	/// フレーム終了処理
 	/// </summary>
 	/// <param name="commandList"></param>
 	void EndFrame(ID3D12GraphicsCommandList* commandList);
 
 	/// <summary>
-	/// 
+	/// 終了処理
 	/// </summary>
 	void Finalize();
 
@@ -53,5 +56,9 @@ private:
 
 	ImGuiManager() = default;
 	~ImGuiManager() = default;
+
+	//--- 内部変数 ---
+
+	DescriptorHandle descriptorHandle_{};
 };
 
