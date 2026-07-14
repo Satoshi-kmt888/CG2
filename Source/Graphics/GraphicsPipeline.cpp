@@ -43,11 +43,11 @@ GraphicsPipeline& GraphicsPipeline::SetVertexShader(IDxcBlob* vsBlob) {
 
 GraphicsPipeline& GraphicsPipeline::SetPixelShader(IDxcBlob* psBlob) {
 	if (!psBlob) {
-		LOG_ERROR("引数 vsBlob がnullptrです。");
+		LOG_ERROR("引数 psBlob がnullptrです。");
 		return *this;
 	}
 
-	vsBlob_ = psBlob;
+	psBlob_ = psBlob;
 	desc_.PS = { psBlob_->GetBufferPointer(), psBlob_->GetBufferSize() };
 	return *this;
 }

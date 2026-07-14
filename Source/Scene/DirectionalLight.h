@@ -6,41 +6,37 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 
-/**
- * \class DirectionalLight
- * \brief 平行光源を管理するクラス
- */
+/// <summary>
+/// 平行光源を管理するクラス
+/// </summary>
 class DirectionalLight {
 public:
 	//--- 内部データ構造体 ---
 
-	/**
-	* \struct DirectionalLightData
-	* \brief GPU側の定数バッファへ転送するためのライトデータ構造体
-	*/
+	/// <summary>
+	/// GPU側の定数バッファへ転送するためのライトデータ
+	/// </summary>
 	struct ConstantBufferData {
 		Vector4 color;     //<! ライトの色
 		Vector3 direction; //<! ライトの向き
 		float intensity;   //<! 輝度
 	};
 
-	//--- コンストラクタ・デストラクタ ---
+	//--- インスタンス管理 ---
 
 	DirectionalLight() = default;
 	~DirectionalLight();
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief ライトの初期化
-	 * \details 定数バッファの生成とMap、初期値の設定
-	 */
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
-	/**
-	 * \brief データ更新
-	 * \details CPU側の設定値をGPU側の定数バッファへ書き込む
-	 */
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
 
 	//--- ゲッター ---
@@ -48,16 +44,6 @@ public:
 	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const {
 		return constantBufferResource_->GetGPUVirtualAddress();
 	}
-
-	const Vector3& GetDirection() const { return direction_; }
-	const Vector4& GetColor() const { return color_; }
-	const float& GetIntensity() const { return intensity_; }
-
-	//--- セッター ---
-
-	void SetDirection(const Vector3& direction) { direction_ = direction; }
-	void SetColor(const Vector4& color) { color_ = color; }
-	void SetIntensity(const float intensity) { intensity_ = intensity; }
 
 private:
 	//--- メンバ変数 ---

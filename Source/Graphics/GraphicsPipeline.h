@@ -8,6 +8,7 @@
 #include <dxcapi.h>
 #include <wrl/client.h>
 #include <vector>
+#include <deque>
 #include <string>
 
 template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -109,7 +110,7 @@ private:
 	//頂点レイアウトデータ
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_;
 
-	std::vector<std::string> semanticNames_;
+	std::deque<std::string> semanticNames_;
 
 	//シェーダーBlob
 	ComPtr<IDxcBlob> vsBlob_ = nullptr;

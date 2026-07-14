@@ -21,7 +21,7 @@ void ShaderCompiler::Initialize() {
 }
 
 ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& filePath, const wchar_t* profile) {
-	LOG_ERROR("シェーダーコンパイルを開始します。 : {}", StringUtility::ConvertString(filePath.c_str()));
+	LOG_INFO("シェーダーコンパイルを開始します。 : {}", StringUtility::ConvertString(filePath.c_str()));
 
 	//--- HLSLを読み込む ---
 
@@ -74,7 +74,7 @@ ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& filePath, const wch
 	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
 	assert(SUCCEEDED(hr));
 
-	LOG_ERROR("シェーダーのコンパイルに成功しました。 : {}", StringUtility::ConvertString(filePath.c_str()));
+	LOG_INFO("シェーダーのコンパイルに成功しました。 : {}", StringUtility::ConvertString(filePath.c_str()));
 
 	return shaderBlob;
 }

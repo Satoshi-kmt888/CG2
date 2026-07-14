@@ -1,6 +1,7 @@
 #include "App/StarEngine.h"
 
 #include "App/WinApp.h"
+#include "Input/Input.h"
 #include "Debugger/CrashHandler.h"
 #include "Debugger/Logger.h"
 #include "Graphics/GraphicsSystem.h"
@@ -21,6 +22,9 @@ namespace StarEngine {
 		//DirectX12基盤の初期化
 		auto* graphicsSystem = GraphicsSystem::GetInstance();
 		graphicsSystem->Initialize(*winApp);
+
+		//
+		Input::GetInstance()->Initialize();
 
 		//マネージャーの初期化
 		TextureManager::GetInstance()->Initialize(graphicsSystem->GetDevice(), graphicsSystem->GetCommandList());
@@ -46,6 +50,8 @@ namespace StarEngine {
 	}
 
 	void BeginFrame() {
+		Input::GetInstance()->Update();
+
 		GraphicsSystem::GetInstance()->PreDraw();
 		ImGuiManager::GetInstance()->BeginFrame();
 	}
