@@ -21,7 +21,7 @@ void Input::Initialize() {
 	assert(SUCCEEDED(hr));
 
 	//キーボードデバイスの生成
-	hr = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, NULL);
+	hr = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, nullptr);
 	assert(SUCCEEDED(hr));
 
 	//入力データ形式のセット
@@ -34,16 +34,33 @@ void Input::Initialize() {
 		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
 	);
 	assert(SUCCEEDED(hr));
+
+	//マウスデバイスの生成
+	hr = directInput_->CreateDevice(GUID_SysMouse, &mouse_, nullptr);
+	assert(SUCCEEDED(hr));
+
+	//入力データ形式のセット
+	hr = mouse_->SetDataFormat(&c_dfDIMouse2);
+	assert(SUCCEEDED(hr));
+
+	//排他制御レベルのセット
+	hr = mouse_->SetCooperativeLevel(
+		WinApp::GetInstance()->GetHwnd(),
+		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE
+	);
+	assert(SUCCEEDED(hr));
 }
 
 void Input::Update() {
+	//キーボードの更新
 	preKey_ = key_;
-
-	//キーボード情報の取得開始
 	keyboard_->Acquire();
-
-	//全キーの入力状態を取得
 	keyboard_->GetDeviceState(static_cast<DWORD>(key_.size()), key_.data());
+
+	//マウスの更新
+	preMouseState_ = mouseState_;
+	mouse_->Acquire();
+	mouse_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouseState_);
 }
 
 bool Input::PushKey(uint8_t key) {
@@ -60,4 +77,31 @@ bool Input::TriggerKey(uint8_t key) {
 
 bool Input::ReleaseKey(uint8_t key) {
 	return ((key_[key] & 0x80) == 0) && ((preKey_[key] & 0x80) != 0);
+}
+
+bool Input::PushMouse(int button) {
+	if (button < 0 || button >= 8) return false;
+	return (mouseState_.rgbButtons[button] & 0x80) != 0;
+}
+
+bool Input::TriggerMouse(int button) {
+	if (button < 0 || button >= 8) return false;
+	return ((mouseState_.rgbButtons[button] & 0x80) != 0) && ((preMouseState_.rgbButtons[button] & 0x80) == 0);
+}
+
+bool Input::ReleaseMouse(int button) {
+	if (button < 0 || button >= 8) return false;
+	return ((mouseState_.rgbButtons[button] & 0x80) == 0) && ((preMouseState_.rgbButtons[button] & 0x80) != 0);
+}
+
+long Input::GetMouseMoveX() const {
+	return mouseState_.lX;
+}
+
+long Input::GetMouseMoveY() const {
+	return mouseState_.lY;
+}
+
+long Input::GetMouseWheel() const {
+	return mouseState_.lZ;
 }

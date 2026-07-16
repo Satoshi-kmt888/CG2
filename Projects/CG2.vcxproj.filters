@@ -90,12 +90,6 @@
     <ClCompile Include="..\Source\Graphics\SwapChain.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\App\StarEngine.cpp">
-      <Filter>Source\App</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\App\StringUtility.cpp">
-      <Filter>Source\App</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\App\WinApp.cpp">
       <Filter>Source\App</Filter>
     </ClCompile>
@@ -152,6 +146,12 @@
     </ClCompile>
     <ClCompile Include="..\Source\Graphics\DescriptorManager.cpp">
       <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\App\StringUtility.cpp">
+      <Filter>Source\Nobody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\App\StarEngine.cpp">
+      <Filter>Source\Nobody</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,12 +215,6 @@
     <ClInclude Include="..\Source\Graphics\SwapChain.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\App\StarEngine.h">
-      <Filter>Source\App</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\App\StringUtility.h">
-      <Filter>Source\App</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\App\WinApp.h">
       <Filter>Source\App</Filter>
     </ClInclude>
@@ -280,6 +274,12 @@
     </ClInclude>
     <ClInclude Include="..\Source\Graphics\DescriptorManager.h">
       <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\App\StringUtility.h">
+      <Filter>Source\Nobody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\App\StarEngine.h">
+      <Filter>Source\Nobody</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

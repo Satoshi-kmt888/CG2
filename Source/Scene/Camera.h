@@ -5,19 +5,17 @@
 
 #include <numbers>
 
-/**
- * \enum ProjectionType
- * \brief 投影法式
- */
+/// <summary>
+/// 投影法式
+/// </summary>
 enum class ProjectionType {
 	Perspective,
 	Orthographic
 };
 
-/**
- * \class Camera
- * \brief 描画に必要な行列を管理するクラス
- */
+/// <summary>
+/// 描画に必要な行列を管理するクラス
+/// </summary>
 class Camera {
 public:
 	//--- コンストラクタ・デストラクタ ---
@@ -27,10 +25,16 @@ public:
 
 	//--- 公開関数 ---
 
-	/** \brief 初期化処理 */
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="width"></param>
+	/// <param name="height"></param>
 	void Initialize(float width, float height);
 
-	/** \brief 更新処理 */
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
 
 	//--- ゲッター ---
@@ -67,13 +71,21 @@ public:
 private:
 	//--- 内部関数 ---
 
-	/** \brief 行列の更新 */
+	/// <summary>
+	/// 行列更新
+	/// </summary>
 	void UpdateMatrix();
 
-	//透視投影行列
+	/// <summary>
+	/// 透視投影行列を計算
+	/// </summary>
+	/// <returns></returns>
 	Matrix4x4 MakePerspectiveMatrix() const noexcept;
 
-	//正射影行列
+	/// <summary>
+	/// 静者行列を計算
+	/// </summary>
+	/// <returns></returns>
 	Matrix4x4 MakeOrthographicMatrix() const noexcept;
 
 	//--- 内部変数 ---

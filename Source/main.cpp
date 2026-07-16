@@ -59,7 +59,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		pipeline->SetRootSignature(rootSignature.get())
 			.SetVertexShader(vsBlob.Get())
 			.SetPixelShader(psBlob.Get())
-			// 頂点レイアウトは元コードの仕様に合わせて追加してください
 			.AddInputLayout("POSITION", DXGI_FORMAT_R32G32B32A32_FLOAT, 0)
 			.AddInputLayout("TEXCOORD", DXGI_FORMAT_R32G32_FLOAT, 0)
 			.AddInputLayout("NORMAL", DXGI_FORMAT_R32G32B32_FLOAT, 0)

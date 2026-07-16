@@ -8,13 +8,16 @@
 /// /// </summary>
 class DebugCamera {
 public:
-	//--- コンストラクタ・デストラクタ ---
+	//--- インスタンス管理 ---
 
 	DebugCamera();
 	~DebugCamera() = default;
 
 	//--- 公開関数 ---
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
 	void Update();
 
 	//--- ゲッター ---
@@ -28,12 +31,12 @@ private:
 
 	void Move();
 
-	//--- メンバ変数 ---
+	//--- 内部変数 ---
 
 	Camera camera_;
 
 	float zoomSpeed_ = 0.01f;
-	float rotateSensitivity_ = 0.005f;
+	float rotateSensitivity_ = 0.002f;
 	float yaw_;
 	float pitch_;
 	Vector3 forward_ = { 0.0f, 0.0f, 0.0f };

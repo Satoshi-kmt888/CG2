@@ -76,9 +76,6 @@ void Camera::UpdateMatrix() {
 		//透視投影行列を計算
 		projectionMatrix_ = MakePerspectiveMatrix();
 	} else {
-		float halfWidth = width_ * 0.5f;
-		float halfHeight = height_ * 0.5f;
-
 		//正射影行列を計算
 		projectionMatrix_ = MakeOrthographicMatrix();
 	}
