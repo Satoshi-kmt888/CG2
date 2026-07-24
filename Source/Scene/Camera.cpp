@@ -109,8 +109,8 @@ Matrix4x4 Camera::MakeOrthographicMatrix() const noexcept {
 
 	float left = 0.0f;
 	float right = width_;
-	float top = height_;
-	float bottom = 0.0f;
+	float top = 0.0f;
+	float bottom = height_;
 
 	float inverseWidth = 1.0f / (right - left);
 	float inverseHeight = 1.0f / (top - bottom);

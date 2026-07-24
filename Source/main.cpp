@@ -11,6 +11,7 @@
 #include "Scene/Camera.h"
 #include "Scene/DebugCamera.h"
 #include "Scene/DirectionalLight.h"
+#include "Scene/Sprite.h"
 
 #include <sal.h>
 #include <Windows.h>
@@ -70,13 +71,28 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			return false;
 		}
 
+		//デバッグカメラ
 		auto debugCamera = std::make_unique<DebugCamera>();
 
+		//2Dカメラ
+		auto camera2D = std::make_unique<Camera>(1280.0f, 720.0f);
+		camera2D->SetProjectionType(ProjectionType::Orthographic);
+
+		//平行光源
 		auto light = std::make_unique<DirectionalLight>();
 		light->Initialize();
 
-		auto model = Model::CreateSphere();
-		Transform transform{};
+		//球モデル
+		auto modelSphere = Model::CreateSphere();
+		Transform transformSphere{};
+
+		//スプライト
+		auto sprite = Sprite::Create();
+		Transform transformSprite{
+			{512.0f, 512.0f, 1.0f},
+			{0.0f, 0.0f, 0.0f,},
+			{0.0f, 0.0f, 0.0f}
+		};
 
 		//ウィンドウの×ボタンが押されるまでループ
 		while (StarEngine::ProcessMessage()) {
@@ -88,10 +104,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			//====================
 
 #ifdef _DEBUG
-			ImGui::Text("camera = %f", debugCamera->GetCamera().GetTranslation().x);
+			ImGui::DragFloat3("sprite.rotation", &transformSprite.rotation.x, 0.01f);
+			ImGui::DragFloat3("sprite.translation", &transformSprite.translation.x, 1.0f);
 #endif
 
 			debugCamera->Update();
+			camera2D->Update();
 			light->Update();
 
 			//====================
@@ -108,7 +126,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			commandList->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			model->Draw(transform, debugCamera->GetCamera().GetViewProjMatrix());
+			//modelSphere->Draw(transformSphere, debugCamera->GetCamera().GetViewProjMatrix());
+
+			sprite->Draw(transformSprite, camera2D->GetViewProjMatrix());
 
 			//====================
 			// ↑描画処理↑

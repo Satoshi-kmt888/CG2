@@ -62,6 +62,8 @@ public:
 	/// <param name="filePath"></param>
 	void SetTexture(const std::string& filePath);
 
+	void SetEnableLighting(uint32_t enableLighting) { surfaceData_->enableLighting = enableLighting; }
+
 private:
 	//--- 内部変数 ---
 
