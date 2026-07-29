@@ -7,12 +7,31 @@
 #include "Scene/Sprite.h"
 
 #include <memory>
+#include <vector>
 
 /// <summary>
 /// モデル描画するシーン
 /// </summary>
 class GameScene {
 public:
+	//--- インナークラス ---
+
+	//モデルの種類
+	enum class ObjectType {
+		kSprite,
+		kPlane,
+		kSphere
+	};
+
+	struct GameObject {
+		uint32_t id = 0;
+		std::string name;
+		ObjectType type;
+		std::unique_ptr<Sprite> sprite;
+		std::unique_ptr<Model> model;
+		Transform transform{};
+	};
+
 	//--- インスタンス管理 ---
 
 	GameScene() = default;
@@ -40,15 +59,7 @@ private:
 	//ライト
 	DirectionalLight directionalLight_;
 
-	//スプライト
-	std::unique_ptr<Sprite> sprite_;
-	Transform transformSprite_{};
-
-	//平面モデル
-	std::unique_ptr<Model> plane_;
-	Transform transformPlane_{};
-
-	//球モデル
-	std::unique_ptr<Model> sphere_;
-	Transform transformSphere_{};
+	std::vector<GameObject> objects_;
+	uint32_t nextObjectID_ = 1;
+	int selectedObjectTypeIndex_ = 0;
 };
