@@ -53,7 +53,7 @@ std::unique_ptr<Sprite> Sprite::Create() {
 	//マテリアルにテクスチャをセットしてバッファを作る
 	sprite->material_->SetTexture("Resources/uvChecker.png");
 	sprite->material_->CreateBuffer(device);
-	sprite->material_->SetEnableLighting(0); //ライティングはオフ
+	sprite->material_->SetLightType(0); //ライティングはオフ
 
 	//スプライト本体を作る
 	sprite->CreateBuffer(device);

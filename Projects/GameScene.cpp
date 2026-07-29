@@ -55,7 +55,7 @@ void GameScene::ControlImGui() {
 	// モデルの生成ボタン
 	//==================================================
 
-	const char* objectTypeNames[] = { "Sprite", "Plane", "Sphere" };
+	const char* objectTypeNames[] = { "Sprite", "Plane", "Sphere", "UtahTeapot", "StanfordBunny" };
 
 	ImGui::Combo("Model", &selectedObjectTypeIndex_, objectTypeNames, IM_ARRAYSIZE(objectTypeNames));
 
@@ -86,6 +86,16 @@ void GameScene::ControlImGui() {
 		case ObjectType::kSphere:
 			//球モデルを生成
 			newObject.model = Model::CreateSphere();
+			break;
+
+		case ObjectType::kUtahTeapot:
+			//ティーポットモデルを生成
+			newObject.model = Model::CreateFromOBJ("teapot.obj");
+			break;
+
+		case ObjectType::kStanfordBunny:
+			//うさぎモデルを生成
+			newObject.model = Model::CreateFromOBJ("bunny.obj");
 			break;
 		}
 
@@ -138,7 +148,10 @@ void GameScene::ControlImGui() {
 				obj.model->SetColor(color);
 
 				//ライティング方式
-
+				auto lightType = static_cast<int>(obj.model->GetLightType());
+				const char* lightTypeNames[] = { "None", "Lambert", "HalfLambert" };
+				ImGui::Combo("Light", &lightType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
+				obj.model->SetLightType(lightType);
 			}
 		}
 

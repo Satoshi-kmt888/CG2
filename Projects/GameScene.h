@@ -20,7 +20,9 @@ public:
 	enum class ObjectType {
 		kSprite,
 		kPlane,
-		kSphere
+		kSphere,
+		kUtahTeapot,
+		kStanfordBunny
 	};
 
 	struct GameObject {

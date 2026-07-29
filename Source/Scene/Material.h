@@ -25,7 +25,7 @@ public:
 	//GPUへ送るための表面データ
 	struct SurfaceData {
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; //RGBAの色データ
-		int32_t enableLighting = 1; //ライティング有効フラグ
+		int32_t lightType = 0; //ライティング有効フラグ
 		std::array<float, 3> padding;       //パディング
 		Matrix4x4 uvTransform = Matrix4x4::Identity();  //uv座標変換データ
 	};
@@ -65,12 +65,13 @@ public:
 	//--- ゲッター ---
 
 	const Vector4& GetColor() const { return surfaceData_->color; }
+	int32_t GetLightType() const { return surfaceData_->lightType; }
 	const Transform& GetTransform() const { return transform_; }
 
 	//--- セッター ----
 
 	void SetColor(const Vector4& color) { surfaceData_->color = color; }
-	void SetEnableLighting(uint32_t enableLighting) { surfaceData_->enableLighting = enableLighting; }
+	void SetLightType(int32_t lightType) { surfaceData_->lightType = lightType; }
 	void SetTransform(const Transform& transform) { transform_ = transform; }
 
 private:
