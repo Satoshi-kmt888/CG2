@@ -169,6 +169,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Scene\Mesh.cpp" />
     <ClCompile Include="..\Source\Scene\Model.cpp" />
     <ClCompile Include="..\Source\Scene\Sprite.cpp" />
+    <ClCompile Include="GameScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externals\imgui\backends\imgui_impl_dx12.h" />
@@ -213,6 +214,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Scene\Mesh.h" />
     <ClInclude Include="..\Source\Scene\Model.h" />
     <ClInclude Include="..\Source\Scene\Sprite.h" />
+    <ClInclude Include="GameScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

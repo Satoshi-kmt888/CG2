@@ -1,8 +1,8 @@
 #include "Scene/Sprite.h"
 
-#include "Graphics/GraphicsSystem.h"
-#include "Graphics/D3D12Utility.h"
 #include "Debugger/Logger.h"
+#include "Graphics/D3D12Utility.h"
+#include "Graphics/GraphicsSystem.h"
 
 Sprite::~Sprite() {
 	if (transformationBuffer_ && transformationData_) {
@@ -72,7 +72,7 @@ void Sprite::Draw(Transform& transform, const Matrix4x4& viewProjectionMatrix) {
 	//ワールド変換データを更新
 	transform.scale.z = 1.0f;
 	transform.rotation = { 0.0f, 0.0f, transform.rotation.z }; //Rollだけにする
-	transform.translation.z = 1.0f;
+	transform.translation.z = 0.0f;
 	transformationData_->world = Transform::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
 	transformationData_->wvp = transformationData_->world * viewProjectionMatrix;
 	commandList->SetGraphicsRootConstantBufferView(1, transformationBuffer_->GetGPUVirtualAddress());

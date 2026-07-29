@@ -153,6 +153,7 @@
     <ClCompile Include="..\Source\App\StarEngine.cpp">
       <Filter>Source\Nobody</Filter>
     </ClCompile>
+    <ClCompile Include="GameScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\Audio.h">
@@ -281,6 +282,7 @@
     <ClInclude Include="..\Source\App\StarEngine.h">
       <Filter>Source\Nobody</Filter>
     </ClInclude>
+    <ClInclude Include="GameScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shader\Object3d.hlsli">
