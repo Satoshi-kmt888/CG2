@@ -119,7 +119,26 @@ void GameScene::ControlImGui() {
 
 			//マテリアル編集
 			if (ImGui::CollapsingHeader("Material")) {
-				ImGui::Text("b");
+				//UVトランスフォーム編集
+				Transform uvTransform{};
+				if (obj.model) {
+					uvTransform = obj.model->GetUVTransform();
+				} else if (obj.sprite) {
+					//uvTransform = obj.sprite->GetUVTransform();
+				}
+
+				ImGui::DragFloat2("UVTranslation", &uvTransform.translation.x, 0.01f);
+				ImGui::DragFloat("UVRotation", &uvTransform.rotation.z, 0.01f);
+				ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f);
+				obj.model->SetUVTransform(uvTransform);
+
+				//カラー
+				Vector4 color = obj.model->GetColor();
+				ImGui::ColorEdit4("Color", &color.x);
+				obj.model->SetColor(color);
+
+				//ライティング方式
+
 			}
 		}
 
@@ -137,7 +156,20 @@ void GameScene::ControlImGui() {
 	//==================================================
 
 	if (ImGui::CollapsingHeader("Light")) {
-		ImGui::Text("light");
+		//ライトカラー
+		Vector4 color = directionalLight_.GetColor();
+		ImGui::ColorEdit4("LightColor", &color.x);
+		directionalLight_.SetColor(color);
+
+		//ライトの向き
+		Vector3 direction = directionalLight_.GetDirection();
+		ImGui::SliderFloat3("LightDirection", &direction.x, -1.0f, 1.0f);
+		directionalLight_.SetDirection(direction);
+
+		//輝度
+		float intensity = directionalLight_.GetIntensity();
+		ImGui::DragFloat("intensity", &intensity, 0.01f, 0.0f, 10.0f);
+		directionalLight_.SetIntensity(intensity);
 	}
 
 	ImGui::End();

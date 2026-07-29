@@ -62,7 +62,16 @@ public:
 	/// <param name="filePath"></param>
 	void SetTexture(const std::string& filePath);
 
+	//--- ゲッター ---
+
+	const Vector4& GetColor() const { return surfaceData_->color; }
+	const Transform& GetTransform() const { return transform_; }
+
+	//--- セッター ----
+
+	void SetColor(const Vector4& color) { surfaceData_->color = color; }
 	void SetEnableLighting(uint32_t enableLighting) { surfaceData_->enableLighting = enableLighting; }
+	void SetTransform(const Transform& transform) { transform_ = transform; }
 
 private:
 	//--- 内部変数 ---

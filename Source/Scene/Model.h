@@ -52,6 +52,16 @@ public:
 	/// <param name="viewProjectionMatrix"></param>
 	void Draw(const Transform& transform, const Matrix4x4& viewProjectionMatrix);
 
+	//--- ゲッター ---
+
+	const Vector4& GetColor() const { return material_->GetColor(); }
+	const Transform& GetUVTransform() const { return material_->GetTransform(); }
+
+	//--- セッター ---
+
+	void SetColor(const Vector4& color) { material_->SetColor(color); }
+	void SetUVTransform(const Transform& transform) { material_->SetTransform(transform); }
+
 private:
 	//--- 内部関数 ---
 

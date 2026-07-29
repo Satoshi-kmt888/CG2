@@ -39,11 +39,21 @@ public:
 	/// </summary>
 	void Update();
 
-	//--- ゲッター ---
-
 	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const {
 		return constantBufferResource_->GetGPUVirtualAddress();
 	}
+
+	//--- ゲッター ---
+
+	const Vector3& GetDirection() const { return direction_; }
+	const Vector4& GetColor() const { return color_; }
+	float GetIntensity() const { return intensity_; }
+
+	//--- セッター ---
+
+	void SetDirection(const Vector3& direction) { direction_ = direction; }
+	void SetColor(const Vector4& color) { color_ = color; }
+	void SetIntensity(const float intensity) { intensity_ = intensity; }
 
 private:
 	//--- メンバ変数 ---
