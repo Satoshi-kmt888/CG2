@@ -2,6 +2,7 @@
 
 #include "Graphics/GraphicsSystem.h"
 #include "Audio/Audio.h"
+#include "Input/Input.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
@@ -22,6 +23,12 @@ void GameScene::Initialize() {
 	//3Dカメラ
 	camera3D_.Initialize(1280.0f, 720.0f);
 
+	//デバッグカメラ
+	debugCamera_.GetCamera().Initialize(1280.0f, 720.0f);
+
+	//現在有効なカメラ
+	activeCamera_ = camera3D_;
+
 	//--- ライトの初期化 ---
 
 	//平行ライト
@@ -34,12 +41,29 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-	camera2D_.Update();
-	camera3D_.Update();
-
-	directionalLight_.Update();
+	//--- imgui操作 ---
 
 	ControlImGui();
+
+	//--- カメラの更新と切り替え ---
+
+	camera2D_.Update();
+
+	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
+		isValidDebugCamera_ = !isValidDebugCamera_;
+	}
+
+	if (isValidDebugCamera_) {
+		activeCamera_ = debugCamera_.GetCamera();
+		debugCamera_.Update();
+	} else {
+		activeCamera_ = camera3D_;
+		camera3D_.Update();
+	}
+
+	//--- ライトの更新 ---
+
+	directionalLight_.Update();
 }
 
 void GameScene::Draw() {
@@ -51,7 +75,7 @@ void GameScene::Draw() {
 
 	for (auto& obj : objects_) {
 		if (obj.model) {
-			obj.model->Draw(obj.transform, camera3D_.GetViewProjMatrix());
+			obj.model->Draw(obj.transform, activeCamera_.GetViewProjMatrix());
 		} else if (obj.sprite) {
 			obj.sprite->Draw(obj.transform, camera2D_.GetViewProjMatrix());
 		}

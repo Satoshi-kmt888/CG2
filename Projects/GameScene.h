@@ -6,6 +6,7 @@
 #include "Scene/Model.h"
 #include "Scene/Sprite.h"
 #include "Audio/Audio.h"
+#include "Scene/DebugCamera.h"
 
 #include <memory>
 #include <vector>
@@ -28,8 +29,7 @@ public:
 
 	struct GameObject {
 		uint32_t id = 0;
-		std::string name;
-		ObjectType type;
+		ObjectType type = ObjectType::kSprite;
 		std::unique_ptr<Sprite> sprite;
 		std::unique_ptr<Model> model;
 		Transform transform{};
@@ -91,6 +91,13 @@ private:
 	//カメラ
 	Camera camera2D_{ 1280.0f, 720.0f };
 	Camera camera3D_{ 1280.0f, 720.0f };
+
+	//デバッグカメラ
+	DebugCamera debugCamera_;
+
+	//現在有効なカメラ
+	Camera activeCamera_{ 1280.0f, 720.0f };
+	bool isValidDebugCamera_ = false;
 
 	//ライト
 	DirectionalLight directionalLight_;
