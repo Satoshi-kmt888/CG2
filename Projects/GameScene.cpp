@@ -167,7 +167,7 @@ void GameScene::ImGuiObjectEdit() {
 
 void GameScene::ImGuiMaterialEdit(GameObject& obj) {
 	//マテリアル編集
-	if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_Framed)) {
+	if (!ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_Framed)) {
 		return;
 	}
 
@@ -205,6 +205,8 @@ void GameScene::ImGuiMaterialEdit(GameObject& obj) {
 		ImGui::Combo("Light", &lightType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
 		obj.model->SetLightType(lightType);
 	}
+
+	ImGui::TreePop();
 }
 
 void GameScene::ImGuiLightEdit() {
