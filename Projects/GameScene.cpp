@@ -1,10 +1,16 @@
 #include "GameScene.h"
 
 #include "Graphics/GraphicsSystem.h"
+#include "Audio/Audio.h"
 
 #ifdef _DEBUG
 #include <imgui.h>
 #endif
+
+GameScene::~GameScene() {
+	//サウンドデータを解放
+	Audio::GetInstance()->SoundUnload(&soundFanfare_);
+}
 
 void GameScene::Initialize() {
 	//--- カメラの初期化 ---
@@ -20,6 +26,11 @@ void GameScene::Initialize() {
 
 	//平行ライト
 	directionalLight_.Initialize();
+
+	//--- 音声ファイルの読み込み ---
+
+	//ファンファーレ
+	soundFanfare_ = Audio::GetInstance()->SoundLoadWave("Resources/fanfare.wav");
 }
 
 void GameScene::Update() {
@@ -51,10 +62,26 @@ void GameScene::ControlImGui() {
 #ifdef _DEBUG
 	ImGui::Begin("Settings");
 
-	//==================================================
-	// モデルの生成ボタン
-	//==================================================
+	//オブジェクトの生成
+	ImGuiCreateObject();
 
+	//オブジェクトの編集
+	ImGuiObjectEdit();
+
+	//ライティング編集
+	ImGuiLightEdit();
+
+	//音声ファイルを再生
+	if (ImGui::Button("Start Sound")) {
+		//ファンファーレを流す
+		Audio::GetInstance()->SoundPlayWave(soundFanfare_);
+	}
+
+	ImGui::End();
+#endif
+}
+
+void GameScene::ImGuiCreateObject() {
 	const char* objectTypeNames[] = { "Sprite", "Plane", "Sphere", "UtahTeapot", "StanfordBunny" };
 
 	ImGui::Combo("Model", &selectedObjectTypeIndex_, objectTypeNames, IM_ARRAYSIZE(objectTypeNames));
@@ -101,13 +128,9 @@ void GameScene::ControlImGui() {
 
 		objects_.push_back(std::move(newObject));
 	}
+}
 
-	ImGui::Spacing();
-
-	//==================================================
-	// 各オブジェクトの共通編集リスト
-	//==================================================
-
+void GameScene::ImGuiObjectEdit() {
 	//削除予約インデックス
 	int deleteIndex = -1;
 
@@ -117,42 +140,21 @@ void GameScene::ControlImGui() {
 		ImGui::PushID(obj.id);
 
 		if (ImGui::CollapsingHeader("Object", ImGuiTreeNodeFlags_DefaultOpen)) {
+			float speed = 0.01f;
+			if (obj.sprite) {
+				speed = 0.1f;
+			}
 			//トランスフォーム編集
-			ImGui::DragFloat3("Translation", &obj.transform.translation.x, 0.01f);
-			ImGui::DragFloat3("Rotation", &obj.transform.rotation.x, 0.01f);
-			ImGui::DragFloat3("Scale", &obj.transform.scale.x, 0.01f);
+			ImGui::DragFloat3("Translation", &obj.transform.translation.x, speed);
+			ImGui::DragFloat3("Rotation", &obj.transform.rotation.x, speed);
+			ImGui::DragFloat3("Scale", &obj.transform.scale.x, speed);
 
 			//削除
 			if (ImGui::Button("Delete")) {
 				deleteIndex = i;
 			}
 
-			//マテリアル編集
-			if (ImGui::CollapsingHeader("Material")) {
-				//UVトランスフォーム編集
-				Transform uvTransform{};
-				if (obj.model) {
-					uvTransform = obj.model->GetUVTransform();
-				} else if (obj.sprite) {
-					//uvTransform = obj.sprite->GetUVTransform();
-				}
-
-				ImGui::DragFloat2("UVTranslation", &uvTransform.translation.x, 0.01f);
-				ImGui::DragFloat("UVRotation", &uvTransform.rotation.z, 0.01f);
-				ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f);
-				obj.model->SetUVTransform(uvTransform);
-
-				//カラー
-				Vector4 color = obj.model->GetColor();
-				ImGui::ColorEdit4("Color", &color.x);
-				obj.model->SetColor(color);
-
-				//ライティング方式
-				auto lightType = static_cast<int>(obj.model->GetLightType());
-				const char* lightTypeNames[] = { "None", "Lambert", "HalfLambert" };
-				ImGui::Combo("Light", &lightType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
-				obj.model->SetLightType(lightType);
-			}
+			ImGuiMaterialEdit(obj);
 		}
 
 		ImGui::PopID();
@@ -161,17 +163,55 @@ void GameScene::ControlImGui() {
 	if (deleteIndex != -1) {
 		objects_.erase(objects_.begin() + deleteIndex);
 	}
+}
 
-	ImGui::Spacing();
+void GameScene::ImGuiMaterialEdit(GameObject& obj) {
+	//マテリアル編集
+	if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_Framed)) {
+		return;
+	}
 
-	//==================================================
-	// ライティング編集
-	//==================================================
+	//UVトランスフォームとカラー(モデルとスプライトで異なるため)
+	Transform uvTransform{};
+	Vector4 color{};
+	if (obj.model) {
+		uvTransform = obj.model->GetUVTransform();
+		color = obj.model->GetColor();
+	} else if (obj.sprite) {
+		uvTransform = obj.sprite->GetUVTransform();
+		color = obj.sprite->GetColor();
+	}
 
+	//UVトランスフォーム
+	ImGui::DragFloat2("UVTranslation", &uvTransform.translation.x, 0.01f);
+	ImGui::DragFloat("UVRotation", &uvTransform.rotation.z, 0.01f);
+	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f);
+
+	//カラー
+	ImGui::ColorEdit4("Color", &color.x);
+
+	if (obj.model) {
+		obj.model->SetUVTransform(uvTransform);
+		obj.model->SetColor(color);
+	} else if (obj.sprite) {
+		obj.sprite->SetUVTransform(uvTransform);
+		obj.sprite->SetColor(color);
+	}
+
+	//ライティング方式
+	if (obj.model) {
+		auto lightType = static_cast<int>(obj.model->GetLightType());
+		const char* lightTypeNames[] = { "None", "Lambert", "HalfLambert" };
+		ImGui::Combo("Light", &lightType, lightTypeNames, IM_ARRAYSIZE(lightTypeNames));
+		obj.model->SetLightType(lightType);
+	}
+}
+
+void GameScene::ImGuiLightEdit() {
 	if (ImGui::CollapsingHeader("Light")) {
 		//ライトカラー
 		Vector4 color = directionalLight_.GetColor();
-		ImGui::ColorEdit4("LightColor", &color.x);
+		ImGui::ColorEdit3("LightColor", &color.x);
 		directionalLight_.SetColor(color);
 
 		//ライトの向き
@@ -184,7 +224,4 @@ void GameScene::ControlImGui() {
 		ImGui::DragFloat("intensity", &intensity, 0.01f, 0.0f, 10.0f);
 		directionalLight_.SetIntensity(intensity);
 	}
-
-	ImGui::End();
-#endif
 }

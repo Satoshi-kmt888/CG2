@@ -45,7 +45,7 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionHorizontal, uint32_t
 		//緯度の方向に分割
 		float lat = -std::numbers::pi_v<float> / 2.0f + kLatEvery * static_cast<float>(latIndex);
 		for (uint32_t lonIndex = 0; lonIndex <= divisionHorizontal; ++lonIndex) {
-			//軽度の方向に分割
+			//経度の方向に分割
 			float lon = static_cast<float>(lonIndex) * kLonEvery;
 
 			Mesh::VertexData vertex{};

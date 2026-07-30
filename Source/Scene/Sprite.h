@@ -46,6 +46,18 @@ public:
 	/// <returns></returns>
 	static std::unique_ptr<Sprite> Create();
 
+	//--- ゲッター ---
+
+	const Vector4& GetColor() const { return material_->GetColor(); }
+	uint32_t GetLightType() const { return material_->GetLightType(); }
+	const Transform& GetUVTransform() const { return material_->GetTransform(); }
+
+	//--- セッター ---
+
+	void SetColor(const Vector4& color) { material_->SetColor(color); }
+	void SetLightType(uint32_t lightType) { material_->SetLightType(lightType); }
+	void SetUVTransform(const Transform& transform) { material_->SetTransform(transform); }
+
 private:
 	//--- 内部関数 ---
 
