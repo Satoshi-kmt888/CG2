@@ -1,7 +1,7 @@
 #include "CommandContext.h"
 
+#include "Debugger/Logger.h"
 #include "GraphicsDevice.h"
-#include "Diagnostics/Logger.h"
 
 #include <array>
 
@@ -32,7 +32,7 @@ bool CommandContext::Initialize(const GraphicsDevice* graphicsDevice) {
 	return true;
 }
 
-bool CommandContext::Reset() {
+bool CommandContext::Reset() const {
 	//アロケータのリセット
 	if (FAILED(commandAllocator_->Reset())) {
 		LOG_ERROR("CommandAllocator のリセットに失敗しました。");
@@ -48,7 +48,7 @@ bool CommandContext::Reset() {
 	return true;
 }
 
-bool CommandContext::Execute() {
+bool CommandContext::Execute() const {
 	if (FAILED(commandList_->Close())) {
 		LOG_ERROR("CommandList を Close することに失敗しました(不正なコマンドが記録されている可能性があります)。");
 		return false;

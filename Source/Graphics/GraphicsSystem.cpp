@@ -1,7 +1,8 @@
 #include "GraphicsSystem.h"
 
-#include "Core/WinApp.h"
-#include "Diagnostics/Logger.h"
+#include "App/WinApp.h"
+#include "Debugger/Logger.h"
+#include "DescriptorManager.h"
 
 #include <d3d12.h>
 
@@ -21,6 +22,9 @@ bool GraphicsSystem::Initialize(const WinApp& winApp) {
 		Finalize();
 		return false;
 	}
+
+	//スワップチェーンより前に初期化
+	DescriptorManager::GetInstance()->Initialize(device_.GetDevice());
 
 	if (!swapChain_.Initialize(device_.GetDxgiFactory(), command_.GetCommandQueue(),
 		device_.GetDevice(), winApp.GetHwnd(), winApp.GetClientWidth(), winApp.GetClientHeight())) {
@@ -42,6 +46,12 @@ bool GraphicsSystem::Initialize(const WinApp& winApp) {
 
 void GraphicsSystem::PreDraw() {
 	ID3D12GraphicsCommandList* commandList = command_.GetCommandList();
+
+	ID3D12DescriptorHeap* srvDescriptorHeaps[] = {
+		DescriptorManager::GetInstance()->GetHeap(DescriptorType::SRV_CBV_UAV)
+	};
+	commandList->SetDescriptorHeaps(_countof(srvDescriptorHeaps), srvDescriptorHeaps);
+
 	swapChain_.TransitionToRenderTarget(commandList);
 
 	//描画先となるRTVとDSVのハンドルを取得
@@ -73,7 +83,7 @@ void GraphicsSystem::PostDraw() {
 
 	//画面をフリップ(表示を切り替え)
 	if (!swapChain_.Present()) {
-		LOG_ERROR("画面のフリップ（Present）に失敗しました。デバイスロストの可能性があります。");
+		LOG_ERROR("画面のフリップ(Present)に失敗しました。デバイスロストの可能性があります。");
 		return;
 	}
 
@@ -88,6 +98,8 @@ void GraphicsSystem::Finalize() {
 	swapChain_.Finalize();
 	command_.Finalize();
 	device_.Finalize();
+
+	DescriptorManager::GetInstance()->Finalize();
 
 	LOG_INFO("GraphicsSystem の解放処理が完了しました。");
 }

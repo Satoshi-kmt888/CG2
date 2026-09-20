@@ -5,12 +5,11 @@
 #include <wrl/client.h>
 #include <string>
 
-/**
- * \class ShaderCompiler
- * \brief HLSLシェーダーのコンパイルを管理するクラス
- * \details DXC(DirectX Shader Compiler)を使用して、HLSLファイルをコンパイル済みバイナリに変換
- * * 内部でデバッグ情報の埋め込みや最適化の無効化などの設定を行う
- */
+template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+/// <summary>
+/// HLSLシェーダーのコンパイルを管理するクラス
+/// </summary>
 class ShaderCompiler {
 public:
 	//--- コンストラクタ・デストラクタ ---
@@ -20,24 +19,31 @@ public:
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief HLSLファイルを読み込み、コンパイルしてバイナリを取得する
-	 * \param[in] filePath コンパイル対象のシェーダーファイルパス
-	 * \param profile シェーダープロファイル
-	 * \return コンパイル済みバイナリ。エラー時はアサートで停止。
-	 */
-	Microsoft::WRL::ComPtr<IDxcBlob> Compile(
-		const std::wstring& filePath,
-		const wchar_t* profile
-	);
-
-	/** \brief 初期化処理 */
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
-private:
-	//--- メンバ変数 ---
+	/// <summary>
+	/// HLSLファイルを読み込み、コンパイルしてバイナリを取得する
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <param name="profile"></param>
+	/// <returns></returns>
+	ComPtr<IDxcBlob> Compile(const std::wstring& filePath, const wchar_t* profile);
 
-	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_ = nullptr;                //!< DXCユーティリティ
-	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;         //!< DXCコンパイラ
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_ = nullptr; //!< インクルードハンドラ
+private:
+	//--- 内部関数 ---
+
+	/// <summary>
+	/// コンパイルエラーを解析し、詳細なログを出力
+	/// </summary>
+	/// <param name="shdaerResult"></param>
+	void OutputCompileErrors(IDxcResult* shaderResult);
+
+	//--- 内部変数 ---
+
+	ComPtr<IDxcUtils> dxcUtils_ = nullptr;                //!< DXCユーティリティ
+	ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;         //!< DXCコンパイラ
+	ComPtr<IDxcIncludeHandler> includeHandler_ = nullptr; //!< インクルードハンドラ
 };

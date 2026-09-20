@@ -1,72 +1,118 @@
 #pragma once
 
+#include "BlendState.h"
+#include "DepthStencilState.h"
+#include "RasterizerState.h"
+
 #include <d3d12.h>
+#include <dxcapi.h>
 #include <wrl/client.h>
+#include <vector>
+#include <deque>
+#include <string>
 
-class ShaderCompiler;
+template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-/**
- * \class GraphicsPipeline
- * \brief パイプラインステートとルートシグネチャを管理するクラス
- * * 役割:
- * - シェーダーを統合し、GPUの描画設定(PSO)を作成・保持する
- * - GPUへのデータの渡し口(RootSignature)を管理する
- */
+class RootSignature;
+
 class GraphicsPipeline {
 public:
 	//--- インスタンス管理 ---
 
-	GraphicsPipeline() = default;
-	~GraphicsPipeline();
+	GraphicsPipeline();
+	~GraphicsPipeline() = default;
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief 初期化処理
-	 * \param[in] shaderCompiler コンパイル済みのシェーダーにアクセスするためのポインタ
-	 */
-	void Initialize(ShaderCompiler* shaderCompiler);
+	/// <summary>
+	/// パイプラインに紐づけるルートシグネチャを設定
+	/// </summary>
+	/// <param name="rootSignature"></param>
+	GraphicsPipeline& SetRootSignature(const RootSignature* rootSignature);
+
+	/// <summary>
+	/// 頂点シェーダーを設定
+	/// </summary>
+	/// <param name="vsBlob"></param>
+	GraphicsPipeline& SetVertexShader(IDxcBlob* vsBlob);
+
+	/// <summary>
+	/// ピクセルシェーダーを設定
+	/// </summary>
+	/// <param name="vsBlob"></param>
+	GraphicsPipeline& SetPixelShader(IDxcBlob* psBlob);
+
+	/// <summary>
+	/// 頂点入力レイアウトを1要素ずつ動的に追加
+	/// </summary>
+	/// <param name="semanticName">セマンティック名（"POSITION", "TEXCOORD" など）</param>
+	/// <param name="format">データの型（DXGI_FORMAT_R32G32B32_FLOAT など）</param>
+	/// <param name="semanticIndex">同じセマンティック名がある場合のインデックス（デフォルトは0）</param>
+	GraphicsPipeline& AddInputLayout(const std::string& semanticName, DXGI_FORMAT format, UINT semanticIndex = 0);
+
+	/// <summary>
+	/// ブレンドステートプリセットを設定
+	/// </summary>
+	/// <param name="blendState"></param>
+	GraphicsPipeline& SetBlendState(const BlendState& blendState);
+
+	/// <summary>
+	/// ラスタライザステートプリセットを設定
+	/// </summary>
+	/// <param name="rasterizerState"></param>
+	GraphicsPipeline& SetRasterizerState(const RasterizerState& rasterizerState);
+
+	/// <summary>
+	/// デプスステンシルステートプリセットを設定
+	/// </summary>
+	/// <param name="depthStencilState"></param>
+	GraphicsPipeline& SetDepthStencilState(const DepthStencilState& depthStencilState);
+
+	/// <summary>
+	/// RTVのフォーマット設定
+	/// </summary>
+	/// <param name="rtvFormat"></param>
+	GraphicsPipeline& SetRenderTargetFormat(DXGI_FORMAT rtvFormat);
+
+	/// <summary>
+	/// DSVのフォーマット設定
+	/// </summary>
+	/// <param name="dsvFormat"></param>
+	GraphicsPipeline& SetDepthStencilFormat(DXGI_FORMAT dsvFormat);
+
+	/// <summary>
+	/// 生成したパラメータをもとにPSOを構成
+	/// </summary>
+	/// <param name="device"></param>
+	/// <returns></returns>
+	[[nodiscard]] bool Build(ID3D12Device* device);
 
 	//--- ゲッター ---
 
-	ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
-	ID3D12PipelineState* GetGraphicsPipelineState() const { return graphicsPipelineState_.Get(); }
+	ID3D12PipelineState* Get() const { return pipelineState_.Get(); }
 
 private:
 	//--- 内部関数 ---
 
-	/** \brief ルートシグネチャの作成*/
-	void CreateRootSignature();
+	/// <summary>
+	/// パイプラインの生成に使用した一時配列と一時バイナリデータをクリア
+	/// </summary>
+	void Clear();
 
-	/** \brief インプットレイアウトの設定 */
-	void CreateInputLayout();
+	//--- 内部変数 ---
 
-	/** \brief ブレンドステートの設定 */
-	void CreateBlendState();
+	//生成されるPSOオブジェクト
+	ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
 
-	/** \brief ラスタライザステートの設定 */
-	void CreateRasterizerState();
+	//パイプライン構築用
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc_{};
 
-	/** \brief 深度ステンシルステートの設定 */
-	void CreateDepthStencilState();
+	//頂点レイアウトデータ
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_;
 
-	/**
-	 * \brief パイプラインステートオブジェクト(PSO)の生成
-	 * \details 各ステートとコンパイル済みシェーダを統合し、最終的な描画ルールを構築する
-	 * \param[in] shaderCompiler シェーダのコンパイルに使用するコンパイラ
-	 */
-	void CreatePipelineState(ShaderCompiler* shaderCompiler);
+	std::deque<std::string> semanticNames_;
 
-	//--- メンバ変数 ---
-
-	//パイプラインオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
-
-	//設定データ
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[3]{}; //!< インプットレイアウトの要素実体
-	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_{}; //!< インプットレイアウトの設定
-	D3D12_BLEND_DESC blendDesc_{}; //!< ブレンドステートの設定
-	D3D12_RASTERIZER_DESC rasterizerDesc_{}; //!< ラスタライザステートの設定
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{}; //!< 深度ステンシルステートの設定
+	//シェーダーBlob
+	ComPtr<IDxcBlob> vsBlob_ = nullptr;
+	ComPtr<IDxcBlob> psBlob_ = nullptr;
 };

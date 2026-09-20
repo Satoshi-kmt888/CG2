@@ -175,10 +175,9 @@ Matrix4x4 Matrix4x4::Inversed() const noexcept {
 		m[0][1] * m[1][0] * m[2][2] -
 		m[0][0] * m[1][2] * m[2][1];
 
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 4; ++column) {
-			//invDetを乗算
-			result.m[row][column] *= invDet;
+	for (auto& row : result.m) {
+		for (auto& element : row) {
+			element *= invDet;
 		}
 	}
 

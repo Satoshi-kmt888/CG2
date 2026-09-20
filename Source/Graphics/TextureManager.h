@@ -1,40 +1,35 @@
 #pragma once
 
+#include "Graphics/DescriptorManager.h"
+
 #include <d3d12.h>
-#include <wrl/client.h>
-#include <cstdint>
+#include <DirectXTex.h>
 #include <string>
 #include <unordered_map>
-#include <vector>
-#include <DirectXTex.h>
+#include <wrl/client.h>
 
-/**
- * \struct TextureData
- * \brief テクスチャ1枚当たりの管理データ構造体
- */
+template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+/// <summary>
+/// テクスチャ1枚当たりの管理データ構造体
+/// </summary>
 struct TextureData {
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle{};
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle{};
+	ComPtr<ID3D12Resource> resource = nullptr;
+	DescriptorHandle descriptorHandle{};
 	DirectX::TexMetadata metadata{};
 };
 
-/**
- * \class TextureManager
- * \brief テクスチャの読み込み・管理を行うシングルトンクラス
- */
+/// <summary>
+/// テクスチャの読み込み・管理を行うシングルトンクラス
+/// </summary>
 class TextureManager {
 public:
-	//--- 公開定数 ---
-
-	static const uint32_t kMaxTextures = 128; //<! 最大テクスチャ数
-
 	//--- インスタンス管理 ---
 
-	/**
-	 * \brief シングルトンインスタンスの取得
-	 * \return TextureManagerのインスタンスポインタ
-	 */
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns></returns>
 	static TextureManager* GetInstance();
 
 	//コピーガード
@@ -43,63 +38,54 @@ public:
 
 	//--- 公開関数 ---
 
-	/**
-	 * \brief テクスチャを読み込む
-	 * \details 既に読み込み済みのパスが渡された場合、キャッシュからデータを返す
-	 * \param[in] filePath 画像ファイルのパス
-	 * \return 読み込んだテクスチャの管理データ
-	 */
-	const TextureData& Load(const std::string& filePath);
-
-	/**
-	 * \brief 初期化処理
-	 * \param[in] device 使用するDirectX12デバイス
-	 * \param[in] commandList 転送コマンドの記録に使用するコマンドリスト
-	 */
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="commandList"></param>
 	void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
-	/** \brief 終了処理 */
+	/// <summary>
+	/// テクスチャを読み込む
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
+	const TextureData& Load(const std::string& filePath);
+
+	/// <summary>
+	/// 終了
+	/// </summary>
 	void Finalize();
 
-	//--- ゲッター ---
-
-	ID3D12DescriptorHeap* GetSrvDescriptorHeap() const { return srvDescriptorHeap_.Get(); }
-
 private:
-	//--- コンストラクタ・デストラクタ ---
+	//--- インスタンス管理 ---
 
 	TextureManager() = default;
 	~TextureManager() = default;
 
 	//--- 内部関数 ---
 
-	/**
-	 * \brief ディスク上の画像ファイルをメモリに読み込む
-	 * \param[in] filePath 画像ファイルのパス
-	 * \return 読み込まれた画像イメージ
-	 */
+	/// <summary>
+	/// ディスク上の画像ファイルをメモリに読み込む
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
 	DirectX::ScratchImage ReadFile(const std::string& filePath);
 
-	/**
-	 * \brief 画像データをGPU(VRAM)へ転送する
-	 * \param[in] texture 転送先のリソース
-	 * \param[in] mipImages 転送元の画像イメージ
-	 * \return アップロードに使用した中間リソース
-	 */
-	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+	/// <summary>
+	/// 画像データをGPU(VRAM)へ転送する
+	/// </summary>
+	/// <param name="texture"></param>
+	/// <param name="mipImages"></param>
+	/// <returns></returns>
+	ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
-	//--- メンバ変数 ---
+	//--- 内部変数 ---
 
-	//DirectXCommonから参照するオブジェクト
 	ID3D12Device* device_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
 
-	//リソース管理
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
-	uint32_t srvDescriptorSize_ = 0; //<! ディスクリプタ1つ分のサイズ
-	uint32_t srvDescriptorIndex_ = 0; //<! 現在使用中のディスクリプタ
-
 	//管理用コンテナ
-	std::unordered_map<std::string, TextureData> textureDataMap_; //<! ファイルパスをキーにしたテクスチャデータ
-	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResource_; //<! 転送完了まで保持が必要な中間リソース
+	std::unordered_map<std::string, TextureData> textureDataMap_;
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResource_;
 };

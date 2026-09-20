@@ -1,11 +1,8 @@
 #include "Graphics/D3D12Utility.h"
 
 #include <cassert>
-#include <cstdint>
-#include <d3d12.h>
 #include <dxgiformat.h>
 #include <Windows.h>
-#include <wrl/client.h>
 
 namespace D3D12Utility {
 	ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
@@ -28,11 +25,13 @@ namespace D3D12Utility {
 
 		//実際にリソースを作る
 		ComPtr<ID3D12Resource> resource = nullptr;
-		HRESULT hr = device->CreateCommittedResource(
+		if (HRESULT hr = device->CreateCommittedResource(
 			&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&resource)
-		);
-		assert(SUCCEEDED(hr));
+		); FAILED(hr)) {
+			assert(SUCCEEDED(hr));
+			return nullptr;
+		}
 
 		return resource;
 	}
@@ -53,32 +52,24 @@ namespace D3D12Utility {
 		heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; //細かい設定を行う
 
 		//Resourceの生成
-		Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-		HRESULT hr = device->CreateCommittedResource(
+		ComPtr<ID3D12Resource> resource = nullptr;
+
+		if (HRESULT hr = device->CreateCommittedResource(
 			&heapProperties, //Heapの設定
 			D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定
 			&resourceDesc, //Resourceの設定
 			D3D12_RESOURCE_STATE_COPY_DEST, //初回のResourceState
 			nullptr,
 			IID_PPV_ARGS(&resource)
-		);
+		); FAILED(hr)) {
+			assert(SUCCEEDED(hr));
+			return nullptr;
+		}
 
 		return resource;
 	}
 
-	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap = nullptr;
-		D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
-		descriptorHeapDesc.Type = heapType;
-		descriptorHeapDesc.NumDescriptors = numDescriptors;
-		descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
-		assert(SUCCEEDED(hr));
-
-		return descriptorHeap;
-	}
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
+	ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
 		//生成するResourceの設定
 		D3D12_RESOURCE_DESC resourceDesc{};
 		resourceDesc.Width = width; //Textureの幅
@@ -100,31 +91,19 @@ namespace D3D12Utility {
 		depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //フォーマット。Resourceと合わせる
 
 		//Resourceの生成
-		Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-		HRESULT hr = device->CreateCommittedResource(
+		ComPtr<ID3D12Resource> resource = nullptr;
+		if (HRESULT hr = device->CreateCommittedResource(
 			&heapProperties, //Heapの設定
 			D3D12_HEAP_FLAG_NONE, //Heapの特殊な設定。特になし。
 			&resourceDesc, //Resourceの設定
 			D3D12_RESOURCE_STATE_DEPTH_WRITE, //深度値を書き込む状態にしておく
 			&depthClearValue, //Clear最適値
 			IID_PPV_ARGS(&resource)
-		);
-		assert(SUCCEEDED(hr));
+		); FAILED(hr)) {
+			assert(SUCCEEDED(hr));
+			return nullptr;
+		}
 
 		return resource;
 	}
-
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-		handleCPU.ptr += (static_cast<size_t>(descriptorSize) * index);
-
-		return handleCPU;
-	}
-
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-		handleGPU.ptr += (static_cast<size_t>(descriptorSize) * index);
-
-		return handleGPU;
-	}
-}//namespace D3D12Utility
+} //namespace D3D12Utility

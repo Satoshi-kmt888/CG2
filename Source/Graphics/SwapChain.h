@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Graphics/DescriptorManager.h"
+
 #include <array>
 #include <cstdint>
 #include <d3d12.h>
@@ -48,7 +50,7 @@ public:
 	/// </summary>
 	/// <param name="syncInterval">垂直同期のインターバル</param>
 	/// <returns>デバイスロストが起きていなければtrue</returns>
-	bool Present(uint32_t syncInterval = 1);
+	bool Present(uint32_t syncInterval = 1) const;
 
 	/// <summary>
 	/// 現在のバックバッファの状態を「表示用」から「レンダーターゲット用」に遷移させる
@@ -74,9 +76,9 @@ public:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRtvHandle() const {
 		UINT index = swapChain_->GetCurrentBackBufferIndex();
-		return rtvHandles_[index];
+		return rtvHandles_[index].cpuHandle;
 	}
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return dsvHandle_; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return dsvHandle_.cpuHandle; }
 
 private:
 	//--- 内部関数 ---
@@ -117,16 +119,12 @@ private:
 	std::array<ComPtr<ID3D12Resource>, kBufferCount> swapChainResources_;
 
 	//RTV(Render Target View)関連
-	ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, kBufferCount> rtvHandles_{};
-	uint32_t rtvDescriptorSize_ = 0;
+	std::array<DescriptorHandle, kBufferCount> rtvHandles_{};
 
 	//DSV(Depth Stencil View)関連
-	ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc_{};
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
-	uint32_t dsvDescriptorSize_ = 0;
+	DescriptorHandle dsvHandle_{};
 	ComPtr<ID3D12Resource> depthStencilResource_;
 };
 
