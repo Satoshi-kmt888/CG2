@@ -5,7 +5,6 @@
 #include "Graphics/GraphicsSystem.h"
 #include "Graphics/RootSignature.h"
 #include "Graphics/ShaderCompiler.h"
-#include "Projects/GameScene.h"
 
 #include <memory>
 #include <Windows.h>
@@ -63,10 +62,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		return false;
 	}
 
-	//ゲームシーン
-	auto gameScene = std::make_unique<GameScene>();
-	gameScene->Initialize();
-
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
 		//フレーム開始処理
@@ -76,7 +71,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-		gameScene->Update();
+
 
 		//====================
 		// ↑更新処理↑
@@ -90,8 +85,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->SetGraphicsRootSignature(rootSignature->Get());
 		commandList->SetPipelineState(pipeline->Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		gameScene->Draw();
 
 		//====================
 		// ↑描画処理↑
