@@ -5,7 +5,13 @@
 #include "Graphics/GraphicsSystem.h"
 #include "Graphics/RootSignature.h"
 #include "Graphics/ShaderCompiler.h"
+#include "Math/Transform.h"
+#include "Math/Vector4.h"
+#include "Scene/Camera.h"
+#include "Scene/DirectionalLight.h"
+#include "Scene/Model.h"
 
+#include <imgui.h>
 #include <memory>
 #include <Windows.h>
 
@@ -54,13 +60,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		.AddInputLayout("POSITION", DXGI_FORMAT_R32G32B32A32_FLOAT, 0)
 		.AddInputLayout("TEXCOORD", DXGI_FORMAT_R32G32_FLOAT, 0)
 		.AddInputLayout("NORMAL", DXGI_FORMAT_R32G32B32_FLOAT, 0)
-		.SetBlendState(BlendStates::None())
+		.SetBlendState(BlendStates::Alpha())
 		.SetRasterizerState(RasterizerStates::BackCull())
 		.SetDepthStencilState(DepthStencilStates::Default());
 
 	if (!pipeline->Build(GraphicsSystem::GetInstance()->GetDevice())) {
 		return false;
 	}
+
+	//カメラ
+	auto camera = std::make_unique<Camera>(1280.0f, 720.0f);
+
+	//ライト
+	auto light = std::make_unique<DirectionalLight>();
+	light->Initialize();
+	Vector4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	//モデル
+	auto plane = Model::CreateFromOBJ("plane.obj");
+	plane->SetLightType(2);
+	Transform transformPlane{};
+	Vector4 planeColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -71,7 +91,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
+		//カメラを更新
+		camera->Update();
+		//ライトを更新
+		light->Update();
 
+		ImGui::Begin("Settings");
+
+		//平面モデルのカラー
+		ImGui::ColorEdit4("plane color", &planeColor.x);
+		plane->SetColor(planeColor);
+
+		//ライト
+		ImGui::ColorEdit4("light color", &lightColor.x);
+		light->SetColor(lightColor);
+
+		ImGui::End();
 
 		//====================
 		// ↑更新処理↑
@@ -85,6 +120,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->SetGraphicsRootSignature(rootSignature->Get());
 		commandList->SetPipelineState(pipeline->Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		commandList->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
+
+		//平面モデルを描画
+		plane->Draw(transformPlane, camera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑

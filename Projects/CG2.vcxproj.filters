@@ -37,6 +37,15 @@
     <Filter Include="Source\Nobody">
       <UniqueIdentifier>{908940af-5805-4e55-bf01-a0e8c2c395cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Instrument">
+      <UniqueIdentifier>{51b5fec6-fe63-4a82-a7f4-20ddd2551413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Instrument\Camera">
+      <UniqueIdentifier>{799ce9cc-62f6-4f28-8cb0-4e62876a7a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Instrument\Light">
+      <UniqueIdentifier>{4ae75538-c326-4ae4-aaa2-cf6f9f8dbe2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Audio\Audio.cpp">
@@ -102,15 +111,6 @@
     <ClCompile Include="..\Source\Debugger\Logger.cpp">
       <Filter>Source\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Scene\Camera.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\DebugCamera.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\DirectionalLight.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Scene\Material.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
@@ -152,6 +152,15 @@
     </ClCompile>
     <ClCompile Include="..\Source\App\StarEngine.cpp">
       <Filter>Source\Nobody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\Camera.cpp">
+      <Filter>Source\Instrument\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\DebugCamera.cpp">
+      <Filter>Source\Instrument\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Scene\DirectionalLight.cpp">
+      <Filter>Source\Instrument\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,15 +239,6 @@
     <ClInclude Include="..\Source\Debugger\Logger.h">
       <Filter>Source\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Scene\Camera.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\DebugCamera.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\DirectionalLight.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Scene\Material.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
@@ -280,6 +280,15 @@
     </ClInclude>
     <ClInclude Include="..\Source\App\StarEngine.h">
       <Filter>Source\Nobody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\Camera.h">
+      <Filter>Source\Instrument\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\DebugCamera.h">
+      <Filter>Source\Instrument\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Scene\DirectionalLight.h">
+      <Filter>Source\Instrument\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
