@@ -96,6 +96,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ライトを更新
 		light->Update();
 
+#ifdef USE_IMGUI
 		ImGui::Begin("Settings");
 
 		//平面モデルのカラー
@@ -107,6 +108,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		light->SetColor(lightColor);
 
 		ImGui::End();
+#endif
 
 		//====================
 		// ↑更新処理↑
