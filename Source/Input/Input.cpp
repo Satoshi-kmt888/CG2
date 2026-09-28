@@ -1,6 +1,6 @@
 #include "Input/Input.h"
 
-#include "App/WinApp.h"
+#include "Debugger/Logger.h"
 
 #include <cassert>
 
@@ -12,43 +12,64 @@ Input* Input::GetInstance() {
 	return &instance;
 }
 
-void Input::Initialize() {
+bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	HRESULT hr = DirectInput8Create(
-		WinApp::GetInstance()->GetHInstance(),
-		DIRECTINPUT_VERSION, IID_IDirectInput8,
+		hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
 		(void**)&directInput_, nullptr
 	);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("DirectInputの生成に失敗しました。");
+		return false;
+	}
 
 	//キーボードデバイスの生成
 	hr = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, nullptr);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("キーボードデバイスの生成に失敗しました。");
+		return false;
+	}
 
 	//入力データ形式のセット
 	hr = keyboard_->SetDataFormat(&c_dfDIKeyboard); //標準形式
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("キーボードの入力データ形式をセットできませんでした。");
+		return false;
+	}
 
 	//排他制御レベルのセット
 	hr = keyboard_->SetCooperativeLevel(
-		WinApp::GetInstance()->GetHwnd(),
-		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
+		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
 	);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("キーボードの排他制御レベルをセットできませんでした。");
+		return false;
+	}
 
 	//マウスデバイスの生成
 	hr = directInput_->CreateDevice(GUID_SysMouse, &mouse_, nullptr);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("マウスデバイスの生成に失敗しました。");
+		return false;
+	}
 
 	//入力データ形式のセット
 	hr = mouse_->SetDataFormat(&c_dfDIMouse2);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("マウスの入力データ形式をセットできませんでした。");
+		return false;
+	}
 
 	//排他制御レベルのセット
 	hr = mouse_->SetCooperativeLevel(
-		WinApp::GetInstance()->GetHwnd(),
-		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE
+		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE
 	);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		LOG_ERROR("キーボードの排他制御レベルをセットできませんでした。");
+		return false;
+	}
+
+	LOG_INFO("入力機器の初期化に成功しました。");
+	return true;
 }
 
 void Input::Update() {

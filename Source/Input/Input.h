@@ -22,9 +22,11 @@ public:
 	//---公開関数 ---
 
 	/// <summary>
-	/// 初期化
+	/// 入力機器の初期化
 	/// </summary>
-	void Initialize();
+	/// <param name="hInstance">インスタンスハンドル</param>
+	/// <param name="hwnd">ウィンドウハンドル</param>
+	bool Initialize(HINSTANCE hInstance, HWND hwnd);
 
 	/// <summary>
 	/// 更新処理
