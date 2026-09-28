@@ -56,10 +56,6 @@ private:
 
 	IDirectInput8* directInput_ = nullptr;
 
-	IDirectInputDevice8* keyboard_ = nullptr;
-	std::array<BYTE, 256> key_{};
-	std::array<BYTE, 256> preKey_{};
-
 	IDirectInputDevice8* mouse_ = nullptr;
 	DIMOUSESTATE2 mouseState_{};
 	DIMOUSESTATE2 preMouseState_{};

@@ -22,29 +22,6 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 		return false;
 	}
 
-	//キーボードデバイスの生成
-	hr = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, nullptr);
-	if (FAILED(hr)) {
-		LOG_ERROR("キーボードデバイスの生成に失敗しました。");
-		return false;
-	}
-
-	//入力データ形式のセット
-	hr = keyboard_->SetDataFormat(&c_dfDIKeyboard); //標準形式
-	if (FAILED(hr)) {
-		LOG_ERROR("キーボードの入力データ形式をセットできませんでした。");
-		return false;
-	}
-
-	//排他制御レベルのセット
-	hr = keyboard_->SetCooperativeLevel(
-		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
-	);
-	if (FAILED(hr)) {
-		LOG_ERROR("キーボードの排他制御レベルをセットできませんでした。");
-		return false;
-	}
-
 	//マウスデバイスの生成
 	hr = directInput_->CreateDevice(GUID_SysMouse, &mouse_, nullptr);
 	if (FAILED(hr)) {
@@ -74,10 +51,6 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 
 void Input::Update() {
 	//キーボードの更新
-	preKey_ = key_;
-	keyboard_->Acquire();
-	keyboard_->GetDeviceState(static_cast<DWORD>(key_.size()), key_.data());
-
 	//マウスの更新
 	preMouseState_ = mouseState_;
 	mouse_->Acquire();
