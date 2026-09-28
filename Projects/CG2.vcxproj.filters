@@ -290,6 +290,9 @@
     <ClInclude Include="..\Source\Scene\DirectionalLight.h">
       <Filter>Source\Instrument\Light</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Input\DigitalState.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shader\Object3d.hlsli">

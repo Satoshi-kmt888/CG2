@@ -259,6 +259,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Graphics\ShaderCompiler.h" />
     <ClInclude Include="..\Source\Graphics\SwapChain.h" />
     <ClInclude Include="..\Source\Graphics\TextureManager.h" />
+    <ClInclude Include="..\Source\Input\DigitalState.h" />
     <ClInclude Include="..\Source\Input\Input.h" />
     <ClInclude Include="..\Source\Math\Matrix4x4.h" />
     <ClInclude Include="..\Source\Math\Transform.h" />
