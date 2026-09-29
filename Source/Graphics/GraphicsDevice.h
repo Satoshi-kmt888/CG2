@@ -4,23 +4,23 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
-template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 /// <summary>
 /// GPUデバイス管理クラス
 /// </summary>
 class GraphicsDevice {
 public:
-	//--- インスタンス管理 ---
+	//==================================================
+	// public methods
+	//==================================================
 
 	GraphicsDevice() = default;
 	~GraphicsDevice();
 
-	//コピーガード
+	//コピー・ムーブ禁止
 	GraphicsDevice(const GraphicsDevice&) = delete;
 	GraphicsDevice& operator=(const GraphicsDevice&) = delete;
-
-	//--- 公開関数 ---
+	GraphicsDevice(const GraphicsDevice&&) = delete;
+	GraphicsDevice& operator=(const GraphicsDevice&&) = delete;
 
 	/// <summary>
 	/// DXGIFactory/Adapter/Deviceの初期化およびデバッグ設定
@@ -33,18 +33,20 @@ public:
 	/// </summary>
 	void Finalize();
 
-	//--- ゲッター ---
-
-	IDXGIFactory7* GetDxgiFactory() const { return dxgiFactory_.Get(); }
-	ID3D12Device* GetDevice() const { return device_.Get(); }
+	IDXGIFactory7* GetDxgiFactory() const { return m_dxgiFactory.Get(); }
+	ID3D12Device* GetDevice() const { return m_device.Get(); }
 
 private:
-	//--- 内部関数 ---
+	//==================================================
+	// private methods
+	//==================================================
 
+#ifdef _DEBUG
 	/// <summary>
 	/// デバッグレイヤーの有効化
 	/// </summary>
 	void EnableDebugLayer() const;
+#endif
 
 	/// <summary>
 	/// DXGIファクトリの生成
@@ -64,14 +66,22 @@ private:
 	/// <returns>生成成功時にtrue</returns>
 	bool CreateDevice();
 
+#ifdef _DEBUG
 	/// <summary>
 	/// デバッグ時のエラー・警告検知フィルター(InfoQueue)の設定
 	/// </summary>
 	void ConfigureInfoQueue() const;
+#endif
 
-	//--- 内部変数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
-	ComPtr<IDXGIFactory7> dxgiFactory_;
-	ComPtr<IDXGIAdapter4> useAdapter_;
-	ComPtr<ID3D12Device> device_;
+	template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+	bool m_initialized = false;
+
+	ComPtr<IDXGIFactory7> m_dxgiFactory;
+	ComPtr<IDXGIAdapter4> m_adapter;
+	ComPtr<ID3D12Device> m_device;
 };

@@ -13,7 +13,9 @@ class WinApp;
 /// </summary>
 class GraphicsSystem {
 public:
-	//--- インスタンス管理 ---
+	//==================================================
+	// public methods
+	//==================================================
 
 	/// <summary>
 	/// インスタンスの取得
@@ -21,18 +23,18 @@ public:
 	/// <returns></returns>
 	static GraphicsSystem* GetInstance();
 
-	//コピーガード
+	//コピームーブ禁止
 	GraphicsSystem(const GraphicsSystem&) = delete;
 	GraphicsSystem& operator=(const GraphicsSystem&) = delete;
-
-	//--- 公開関数 ---
+	GraphicsSystem(const GraphicsSystem&&) = delete;
+	GraphicsSystem& operator=(const GraphicsSystem&&) = delete;
 
 	/// <summary>
 	/// グラフィックスシステムを構成するすべてのコンポーネントを初期化する
 	/// </summary>
 	/// <param name="winApp">接続先のウィンドウアプリケーションの参照</param>
 	/// <returns>初期化成功時にtrue</returns>
-	bool Initialize(const WinApp& winApp);
+	bool Initialize(HWND hwnd, uint32_t width, uint32_t height);
 
 	/// <summary>
 	/// 描画コマンドの記録を開始し、レンダーターゲットをクリアする
@@ -49,28 +51,30 @@ public:
 	/// </summary>
 	void Finalize();
 
-	//--- ゲッター ---
-
-	ID3D12Device* GetDevice() const { return device_.GetDevice(); }
-	ID3D12GraphicsCommandList* GetCommandList() { return command_.GetCommandList(); }
-	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChain_.GetSwapChainDesc(); }
-	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return swapChain_.GetRTVDesc(); }
+	ID3D12Device* GetDevice() const { return m_device.GetDevice(); }
+	ID3D12GraphicsCommandList* GetCommandList() { return m_command.GetCommandList(); }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return m_swapChain.GetSwapChainDesc(); }
+	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return m_swapChain.GetRTVDesc(); }
 
 private:
-	//--- インスタンス管理 ---
+	//==================================================
+	// private methods
+	//==================================================
 
 	GraphicsSystem() = default;
 	~GraphicsSystem() = default;
 
-	//--- 内部変数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
 	//画面のクリアカラー
 	static constexpr std::array<float, 4> kClearColor = { 0.392f, 0.584f, 0.929f, 1.0f };
 
-	GraphicsDevice device_;  //GPUデバイス管理
-	CommandContext command_; //コマンドキュー・リスト/同期の管理
-	SwapChain swapChain_;    //バックバッファ表示・深度バッファの管理
+	GraphicsDevice m_device;  //GPUデバイス管理
+	CommandContext m_command; //コマンドキュー・リスト/同期の管理
+	SwapChain m_swapChain;    //バックバッファ表示・深度バッファの管理
 
-	D3D12_RECT scissorRect_{};
-	D3D12_VIEWPORT viewport_{};
+	D3D12_RECT m_scissorRect{};
+	D3D12_VIEWPORT m_viewport{};
 };

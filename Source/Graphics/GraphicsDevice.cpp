@@ -16,8 +16,9 @@ GraphicsDevice::~GraphicsDevice() {
 }
 
 bool GraphicsDevice::Initialize() {
-	//デバッグレイヤーの設定
+#ifdef _DEBUG
 	EnableDebugLayer();
+#endif
 
 	//各初期化を段階的に実行
 	if (!CreateDxgiFactory()) {
@@ -33,22 +34,25 @@ bool GraphicsDevice::Initialize() {
 		return false;
 	}
 
-	//デバッグ用のInfoQueueの設定
+#ifdef _DEBUG
 	ConfigureInfoQueue();
+#endif
 
+	m_initialized = true;
 	LOG_INFO("GraphicsDevice の初期化が正常に終了しました。");
-
 	return true;
 }
 
 void GraphicsDevice::Finalize() {
-	device_.Reset();
-	useAdapter_.Reset();
-	dxgiFactory_.Reset();
+	m_device.Reset();
+	m_adapter.Reset();
+	m_dxgiFactory.Reset();
+
+	m_initialized = false;
 }
 
-void GraphicsDevice::EnableDebugLayer() const {
 #ifdef _DEBUG
+void GraphicsDevice::EnableDebugLayer() const {
 	ComPtr<ID3D12Debug1> debugController = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
 		debugController->EnableDebugLayer();
@@ -56,11 +60,11 @@ void GraphicsDevice::EnableDebugLayer() const {
 
 		LOG_INFO("D3D12 デバッグレイヤーおよび GPU-Based Validation を有効化しました。");
 	}
-#endif
 }
+#endif
 
 bool GraphicsDevice::CreateDxgiFactory() {
-	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
+	HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(&m_dxgiFactory));
 	if (FAILED(hr)) {
 		LOG_ERROR("DXGIFactory の生成に失敗しました。");
 		return false;
@@ -73,11 +77,11 @@ bool GraphicsDevice::CreateDxgiFactory() {
 
 bool GraphicsDevice::SelectAdapter() {
 	//パフォーマンスの高い順にアダプターをチェックする
-	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference
-	(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter_)) != DXGI_ERROR_NOT_FOUND; ++i) {
+	for (UINT i = 0; m_dxgiFactory->EnumAdapterByGpuPreference
+	(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&m_adapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
 		//アダプターの情報を取得する
 		DXGI_ADAPTER_DESC3 adapterDesc{};
-		if (FAILED(useAdapter_->GetDesc3(&adapterDesc))) {
+		if (FAILED(m_adapter->GetDesc3(&adapterDesc))) {
 			continue;
 		}
 
@@ -89,7 +93,7 @@ bool GraphicsDevice::SelectAdapter() {
 			return true;
 		}
 		//ソフトウェアアダプタの場合は見なかったことにする
-		useAdapter_ = nullptr;
+		m_adapter = nullptr;
 	}
 
 	LOG_ERROR("高パフォーマンスなハードウェアアダプターが見つかりませんでした。");
@@ -116,7 +120,7 @@ bool GraphicsDevice::CreateDevice() {
 	//高い順に生成できるか試していく
 	for (const auto& info : featureLevels) {
 		//採用したアダプターでデバイスを生成
-		HRESULT hr = D3D12CreateDevice(useAdapter_.Get(), info.level, IID_PPV_ARGS(&device_));
+		HRESULT hr = D3D12CreateDevice(m_adapter.Get(), info.level, IID_PPV_ARGS(&m_device));
 		if (SUCCEEDED(hr)) {
 			LOG_INFO("D3D12Device を生成しました。機能レベル (Feature Level): {}", info.name);
 			return true;
@@ -128,10 +132,10 @@ bool GraphicsDevice::CreateDevice() {
 	return false;
 }
 
-void GraphicsDevice::ConfigureInfoQueue() const {
 #ifdef _DEBUG
+void GraphicsDevice::ConfigureInfoQueue() const {
 	ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
-	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+	if (SUCCEEDED(m_device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		//重大なエラー / 通常のエラー / 警告 時に止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
@@ -155,5 +159,5 @@ void GraphicsDevice::ConfigureInfoQueue() const {
 		infoQueue->PushStorageFilter(&filter);
 		LOG_INFO("D3D12 InfoQueue デバッグフィルターを設定しました。");
 	}
-#endif
 }
+#endif

@@ -1,6 +1,5 @@
 #include "GraphicsSystem.h"
 
-#include "App/WinApp.h"
 #include "Debugger/Logger.h"
 #include "DescriptorManager.h"
 
@@ -11,52 +10,48 @@ GraphicsSystem* GraphicsSystem::GetInstance() {
 	return &instance;
 }
 
-bool GraphicsSystem::Initialize(const WinApp& winApp) {
-	if (!device_.Initialize()) {
+bool GraphicsSystem::Initialize(HWND hwnd, uint32_t width, uint32_t height) {
+	if (!m_device.Initialize()) {
 		LOG_ERROR("GraphicsDevice の初期化に失敗しました。");
 		return false;
 	}
 
-	if (!command_.Initialize(&device_)) {
+	if (!m_command.Initialize(m_device.GetDevice())) {
 		LOG_ERROR("CommandContext の初期化に失敗しました。");
 		Finalize();
 		return false;
 	}
 
 	//スワップチェーンより前に初期化
-	DescriptorManager::GetInstance()->Initialize(device_.GetDevice());
+	DescriptorManager::GetInstance()->Initialize(m_device.GetDevice());
 
-	if (!swapChain_.Initialize(device_.GetDxgiFactory(), command_.GetCommandQueue(),
-		device_.GetDevice(), winApp.GetHwnd(), winApp.GetClientWidth(), winApp.GetClientHeight())) {
+	if (!m_swapChain.Initialize(m_device.GetDxgiFactory(), m_command.GetCommandQueue(),
+		m_device.GetDevice(), hwnd, width, height)) {
 		LOG_ERROR("SwapChain の初期化に失敗しました。");
 		Finalize();
 		return false;
 	}
 
-	auto width = static_cast<LONG>(winApp.GetClientWidth());
-	auto height = static_cast<LONG>(winApp.GetClientHeight());
-
-	scissorRect_ = D3D12_RECT{ 0, 0, width, height };
-	viewport_ = D3D12_VIEWPORT{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f };
+	m_scissorRect = D3D12_RECT{ 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
+	m_viewport = D3D12_VIEWPORT{ 0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 1.0f };
 
 	LOG_INFO("GraphicsSystem の初期化が正常に完了しました。");
-
 	return true;
 }
 
 void GraphicsSystem::PreDraw() {
-	ID3D12GraphicsCommandList* commandList = command_.GetCommandList();
+	ID3D12GraphicsCommandList* commandList = m_command.GetCommandList();
 
 	ID3D12DescriptorHeap* srvDescriptorHeaps[] = {
 		DescriptorManager::GetInstance()->GetHeap(DescriptorType::SRV_CBV_UAV)
 	};
 	commandList->SetDescriptorHeaps(_countof(srvDescriptorHeaps), srvDescriptorHeaps);
 
-	swapChain_.TransitionToRenderTarget(commandList);
+	m_swapChain.TransitionToRenderTarget(commandList);
 
 	//描画先となるRTVとDSVのハンドルを取得
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = swapChain_.GetCurrentRtvHandle();
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = swapChain_.GetDsvHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentRtvHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = m_swapChain.GetDsvHandle();
 
 	//レンダーターゲット(色)と深度バッファ(奥行き)をクリア
 	commandList->ClearRenderTargetView(rtvHandle, kClearColor.data(), 0, nullptr);
@@ -65,16 +60,16 @@ void GraphicsSystem::PreDraw() {
 	//描画先のRTVとDSVを設定する
 	commandList->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
 
-	commandList->RSSetViewports(1, &viewport_);
-	commandList->RSSetScissorRects(1, &scissorRect_);
+	commandList->RSSetViewports(1, &m_viewport);
+	commandList->RSSetScissorRects(1, &m_scissorRect);
 }
 
 void GraphicsSystem::PostDraw() {
-	ID3D12GraphicsCommandList* commandList = command_.GetCommandList();
-	swapChain_.TransitionToPresent(commandList);
+	ID3D12GraphicsCommandList* commandList = m_command.GetCommandList();
+	m_swapChain.TransitionToPresent(commandList);
 
 	//コマンドリストを確定させ、GPUのキューに実行をリクエスト
-	if (!command_.Execute()) {
+	if (!m_command.Execute()) {
 		LOG_ERROR("描画コマンドの実行要求に失敗しました。");
 		//致命的なエラーが発生しているので終了処理を行い安全に閉じる
 		Finalize();
@@ -82,22 +77,22 @@ void GraphicsSystem::PostDraw() {
 	}
 
 	//画面をフリップ(表示を切り替え)
-	if (!swapChain_.Present()) {
+	if (!m_swapChain.Present()) {
 		LOG_ERROR("画面のフリップ(Present)に失敗しました。デバイスロストの可能性があります。");
 		return;
 	}
 
 	//GPUが現在のフレームの描画を終えるまでCPUを停止して待機
-	command_.WaitForGPU();
+	m_command.WaitForGPU();
 
 	//次のフレーム用にコマンドアロケータとリストをクリア
-	command_.Reset();
+	m_command.Reset();
 }
 
 void GraphicsSystem::Finalize() {
-	swapChain_.Finalize();
-	command_.Finalize();
-	device_.Finalize();
+	m_swapChain.Finalize();
+	m_command.Finalize();
+	m_device.Finalize();
 
 	DescriptorManager::GetInstance()->Finalize();
 

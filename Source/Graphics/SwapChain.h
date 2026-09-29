@@ -21,16 +21,18 @@ public:
 	//バッファ枚数
 	static constexpr uint32_t kBufferCount = 2;
 
-	//--- インスタンス管理 ---
+	//==================================================
+	// public methods
+	//==================================================
 
-	SwapChain() = default;
+	SwapChain();
 	~SwapChain();
 
 	//コピーガード
 	SwapChain(const SwapChain&) = delete;
 	SwapChain& operator=(const SwapChain&) = delete;
-
-	//---公開関数 ---
+	SwapChain(const SwapChain&&) = delete;
+	SwapChain& operator=(const SwapChain&&) = delete;
 
 	/// <summary>
 	/// スワップチェーンおよび描画先レンダーターゲットの初期化
@@ -69,19 +71,19 @@ public:
 	/// </summary>
 	void Finalize();
 
-	//--- ゲッター ---
-
-	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
-	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return rtvDesc_; }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return m_swapChainDesc; }
+	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return m_rtvDesc; }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRtvHandle() const {
-		UINT index = swapChain_->GetCurrentBackBufferIndex();
-		return rtvHandles_[index].cpuHandle;
+		UINT index = m_swapChain->GetCurrentBackBufferIndex();
+		return m_rtvHandles[index].cpuHandle;
 	}
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return dsvHandle_.cpuHandle; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return m_dsvHandle.cpuHandle; }
 
 private:
-	//--- 内部関数 ---
+	//==================================================
+	// private methods
+	//==================================================
 
 	/// <summary>
 	/// スワップチェーン本体を生成する内部関数
@@ -111,20 +113,22 @@ private:
 	/// <returns>生成成功時にtrue</returns>
 	bool CreateDepthStencilView(ID3D12Device* device, uint32_t width, uint32_t height);
 
-	//--- 内部変数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
 	//表示関連
-	ComPtr<IDXGISwapChain4> swapChain_;
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
-	std::array<ComPtr<ID3D12Resource>, kBufferCount> swapChainResources_;
+	ComPtr<IDXGISwapChain4> m_swapChain;
+	DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc{};
+	std::array<ComPtr<ID3D12Resource>, kBufferCount> m_swapChainResources;
 
 	//RTV(Render Target View)関連
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-	std::array<DescriptorHandle, kBufferCount> rtvHandles_{};
+	D3D12_RENDER_TARGET_VIEW_DESC m_rtvDesc{};
+	std::array<DescriptorHandle, kBufferCount> m_rtvHandles{};
 
 	//DSV(Depth Stencil View)関連
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc_{};
-	DescriptorHandle dsvHandle_{};
-	ComPtr<ID3D12Resource> depthStencilResource_;
+	D3D12_DEPTH_STENCIL_VIEW_DESC m_dsvDesc{};
+	DescriptorHandle m_dsvHandle{};
+	ComPtr<ID3D12Resource> m_depthStencilResource;
 };
 

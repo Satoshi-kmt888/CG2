@@ -1,23 +1,27 @@
 #include "CommandContext.h"
 
 #include "Debugger/Logger.h"
-#include "GraphicsDevice.h"
 
 #include <array>
+
+CommandContext::CommandContext() = default;
 
 CommandContext::~CommandContext() {
 	Finalize();
 }
 
-bool CommandContext::Initialize(const GraphicsDevice* graphicsDevice) {
-	if (!graphicsDevice) {
-		LOG_ERROR("GraphicsDevice が nullptr のため、CommandContext を初期化できません。");
+bool CommandContext::Initialize(ID3D12Device* device) {
+	if (m_initialized) {
+		LOG_INFO("既に初期化済みです。");
 		return false;
 	}
 
-	ID3D12Device* device = graphicsDevice->GetDevice();
+	if (!device) {
+		LOG_ERROR("引数がnullptrのため、CommandContextを初期化できません。");
+		return false;
+	}
 
-	if (!CreateCommand(device)) {
+	if (!CreateCommandObjects(device)) {
 		Finalize();
 		return false;
 	}
@@ -27,21 +31,25 @@ bool CommandContext::Initialize(const GraphicsDevice* graphicsDevice) {
 		return false;
 	}
 
-	LOG_INFO("CommandContext の初期化が正常に完了しました。");
-
+	m_initialized = true;
+	LOG_INFO("CommandContextの初期化が正常に完了しました。");
 	return true;
 }
 
 bool CommandContext::Reset() const {
-	//アロケータのリセット
-	if (FAILED(commandAllocator_->Reset())) {
-		LOG_ERROR("CommandAllocator のリセットに失敗しました。");
+	if (!m_initialized) {
+		LOG_ERROR("初期化が完了していません。初期化関数を実行してください。");
+		return false;
+	}
+
+	if (FAILED(m_commandAllocator->Reset())) {
+		LOG_ERROR("CommandAllocatorのリセットに失敗しました。");
 		return false;
 	}
 
 	//コマンドリストのリセット
-	if (FAILED(commandList_->Reset(commandAllocator_.Get(), nullptr))) {
-		LOG_ERROR("CommandList のリセットに失敗しました。");
+	if (FAILED(m_commandList->Reset(m_commandAllocator.Get(), nullptr))) {
+		LOG_ERROR("CommandListのリセットに失敗しました。");
 		return false;
 	}
 
@@ -49,53 +57,67 @@ bool CommandContext::Reset() const {
 }
 
 bool CommandContext::Execute() const {
-	if (FAILED(commandList_->Close())) {
-		LOG_ERROR("CommandList を Close することに失敗しました(不正なコマンドが記録されている可能性があります)。");
+	if (!m_initialized) {
+		LOG_ERROR("初期化が完了していません。初期化関数を実行してください。");
 		return false;
 	}
 
-	//キューヘ実行を要求
-	std::array<ID3D12CommandList*, 1> commandLists = { commandList_.Get() };
-	commandQueue_->ExecuteCommandLists(static_cast<UINT>(commandLists.size()), commandLists.data());
+	if (FAILED(m_commandList->Close())) {
+		LOG_ERROR("CommandListをCloseすることに失敗しました(不正なコマンドが記録されている可能性があります)。");
+		return false;
+	}
+
+	//キューへ実行を要求
+	std::array<ID3D12CommandList*, 1> commandLists = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(static_cast<UINT>(commandLists.size()), commandLists.data());
 
 	return true;
 }
 
-void CommandContext::WaitForGPU() {
-	//Fenceの値を更新
-	fenceValue_++;
+bool CommandContext::WaitForGPU() {
+	//次のフェンス値が有効かチェックしてからフェンス値を進めるようにする
+	const uint64_t nextValue = m_fenceValue + 1;
 	//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
-	if (FAILED(commandQueue_->Signal(fence_.Get(), fenceValue_))) {
+	if (FAILED(m_commandQueue->Signal(m_fence.Get(), nextValue))) {
 		LOG_ERROR("CommandQueue への Signal 発行に失敗しました。");
-		return;
+		return false;
 	}
+	m_fenceValue = nextValue;
 
 	//Fenceの値が指定したSignal値にたどり着いているかを確認する
-	if (fence_->GetCompletedValue() < fenceValue_) {
+	if (m_fence->GetCompletedValue() < m_fenceValue) {
 		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-		if (SUCCEEDED(fence_->SetEventOnCompletion(fenceValue_, fenceEvent_))) {
+		if (SUCCEEDED(m_fence->SetEventOnCompletion(m_fenceValue, m_fenceEvent))) {
 			//イベントを待つ
-			WaitForSingleObject(fenceEvent_, INFINITE);
+			WaitForSingleObject(m_fenceEvent, INFINITE);
 		} else {
 			LOG_ERROR("SetEventOnCompletion の設定に失敗しました。");
+			return false;
 		}
 	}
+
+	return true;
 }
 
 void CommandContext::Finalize() {
-	if (fenceEvent_) {
-		CloseHandle(fenceEvent_);
-		fenceEvent_ = nullptr;
+	if (m_commandQueue && m_fence && m_fenceEvent) {
+		WaitForGPU();
 	}
 
-	fence_.Reset();
-	commandList_.Reset();
-	commandAllocator_.Reset();
-	commandQueue_.Reset();
+	if (m_fenceEvent) {
+		CloseHandle(m_fenceEvent);
+		m_fenceEvent = nullptr;
+	}
+
+	m_fence.Reset();
+	m_commandList.Reset();
+	m_commandAllocator.Reset();
+	m_commandQueue.Reset();
+
+	m_initialized = false;
 }
 
-bool CommandContext::CreateCommand(ID3D12Device* device) {
-	//コマンドキューを生成する
+bool CommandContext::CreateCommandObjects(ID3D12Device* device) {
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
 	commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;          //登録可能なコマンドリストのタイプ
 	commandQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; //コマンドキューの優先度
@@ -103,19 +125,19 @@ bool CommandContext::CreateCommand(ID3D12Device* device) {
 	commandQueueDesc.NodeMask = 0;                                   //GPUが一つであれば0
 
 	//コマンドキュー
-	if (FAILED(device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue_)))) {
+	if (FAILED(device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&m_commandQueue)))) {
 		LOG_ERROR("CommandQueue の生成に失敗しました。");
 		return false;
 	}
 
 	//コマンドアロケータ
-	if (FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_)))) {
+	if (FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)))) {
 		LOG_ERROR("CommandAllocator の生成に失敗しました。");
 		return false;
 	}
 
 	//コマンドリスト
-	if (FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&commandList_)))) {
+	if (FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList)))) {
 		LOG_ERROR("CommandList の生成に失敗しました。");
 		return false;
 	}
@@ -124,14 +146,14 @@ bool CommandContext::CreateCommand(ID3D12Device* device) {
 }
 
 bool CommandContext::CreateFence(ID3D12Device* device) {
-	if (FAILED(device->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)))) {
+	if (FAILED(device->CreateFence(m_fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)))) {
 		LOG_ERROR("Fence の生成に失敗しました。");
 		return false;
 	}
 
 	//FenceのSignalを待つためのイベントを作成する
-	fenceEvent_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	if (fenceEvent_ == nullptr) {
+	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	if (m_fenceEvent == nullptr) {
 		LOG_ERROR("Fence 用のWin32イベント作成に失敗しました。");
 		return false;
 	}

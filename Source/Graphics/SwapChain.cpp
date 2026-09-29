@@ -6,6 +6,8 @@
 #include <dxgi.h>
 #include <dxgiformat.h>
 
+SwapChain::SwapChain() = default;
+
 SwapChain::~SwapChain() {
 	Finalize();
 }
@@ -37,7 +39,7 @@ bool SwapChain::Initialize(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* comma
 }
 
 bool SwapChain::Present(uint32_t syncInterval) const {
-	if (HRESULT hr = swapChain_->Present(syncInterval, 0);
+	if (HRESULT hr = m_swapChain->Present(syncInterval, 0);
 		hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
 		LOG_ERROR("Present中にデバイスロストを検知しました。HRESULT: 0x{0:X}", static_cast<uint32_t>(hr));
 		return false;
@@ -47,12 +49,12 @@ bool SwapChain::Present(uint32_t syncInterval) const {
 }
 
 void SwapChain::TransitionToRenderTarget(ID3D12GraphicsCommandList* commandList) {
-	UINT index = swapChain_->GetCurrentBackBufferIndex();
+	UINT index = m_swapChain->GetCurrentBackBufferIndex();
 
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = swapChainResources_[index].Get();
+	barrier.Transition.pResource = m_swapChainResources[index].Get();
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;       // 表示状態から
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET; // 描画可能状態へ
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -61,12 +63,12 @@ void SwapChain::TransitionToRenderTarget(ID3D12GraphicsCommandList* commandList)
 }
 
 void SwapChain::TransitionToPresent(ID3D12GraphicsCommandList* commandList) {
-	UINT index = swapChain_->GetCurrentBackBufferIndex();
+	UINT index = m_swapChain->GetCurrentBackBufferIndex();
 
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = swapChainResources_[index].Get();
+	barrier.Transition.pResource = m_swapChainResources[index].Get();
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET; // 描画可能状態から
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;       // 表示状態へ
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -76,36 +78,36 @@ void SwapChain::TransitionToPresent(ID3D12GraphicsCommandList* commandList) {
 
 void SwapChain::Finalize() {
 	for (uint32_t i = 0; i < kBufferCount; ++i) {
-		DescriptorManager::GetInstance()->Free(rtvHandles_[i]);
+		DescriptorManager::GetInstance()->Free(m_rtvHandles[i]);
 	}
 
 	//DSVハンドルの返却
-	DescriptorManager::GetInstance()->Free(dsvHandle_);
+	DescriptorManager::GetInstance()->Free(m_dsvHandle);
 
-	for (auto& resource : swapChainResources_) {
+	for (auto& resource : m_swapChainResources) {
 		resource.Reset();
 	}
-	depthStencilResource_.Reset();
-	swapChain_.Reset();
+	m_depthStencilResource.Reset();
+	m_swapChain.Reset();
 }
 
 bool SwapChain::CreateSwapChain(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* commandQueue,
 	HWND hwnd, uint32_t width, uint32_t height) {
 	//スワップチェーンを生成する
-	swapChainDesc_.Width = width;                                 //画面の幅
-	swapChainDesc_.Height = height;                               //画面の高さ
-	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;           //色の形式
-	swapChainDesc_.SampleDesc.Count = 1;                          //マルチサンプルしない
-	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
-	swapChainDesc_.BufferCount = kBufferCount;                    //バッファ枚数
-	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;    //モニタにうつしたら中身を破棄
+	m_swapChainDesc.Width = width;                                 //画面の幅
+	m_swapChainDesc.Height = height;                               //画面の高さ
+	m_swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;           //色の形式
+	m_swapChainDesc.SampleDesc.Count = 1;                          //マルチサンプルしない
+	m_swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //描画のターゲットとして利用する
+	m_swapChainDesc.BufferCount = kBufferCount;                    //バッファ枚数
+	m_swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;    //モニタにうつしたら中身を破棄
 	ComPtr<IDXGISwapChain1> swapChain1;
 
 	//コマンドキュー、ウィンドウハンドル、設定を渡して生成する
 	HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(
 		commandQueue,
 		hwnd,
-		&swapChainDesc_,
+		&m_swapChainDesc,
 		nullptr,
 		nullptr,
 		&swapChain1
@@ -115,7 +117,7 @@ bool SwapChain::CreateSwapChain(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* 
 		return false;
 	}
 
-	hr = swapChain1.As(&swapChain_);
+	hr = swapChain1.As(&m_swapChain);
 	if (FAILED(hr)) {
 		LOG_ERROR("IDXGISwapChain4への型キャストに失敗しました。");
 		return false;
@@ -125,43 +127,43 @@ bool SwapChain::CreateSwapChain(IDXGIFactory7* dxgiFactory, ID3D12CommandQueue* 
 }
 
 bool SwapChain::CreateRenderTargetViews(ID3D12Device* device) {
-	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	m_rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	m_rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
 	for (uint32_t i = 0; i < kBufferCount; ++i) {
 		//スワップチェーンからリソース（バックバッファ）を取得
-		HRESULT hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&swapChainResources_[i]));
+		HRESULT hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainResources[i]));
 		if (FAILED(hr)) {
 			LOG_ERROR("スワップチェーンからのバッファ取得に失敗しました。インデックス: [{}]", i);
 			return false;
 		}
 
 		//統括マネージャからRTV用のハンドルを1つずつ「割り当て」
-		rtvHandles_[i] = DescriptorManager::GetInstance()->Allocate(DescriptorType::RTV);
+		m_rtvHandles[i] = DescriptorManager::GetInstance()->Allocate(DescriptorType::RTV);
 
 		//もらったハンドルの「cpuHandle」を使ってRTVを生成
-		device->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc_, rtvHandles_[i].cpuHandle);
+		device->CreateRenderTargetView(m_swapChainResources[i].Get(), &m_rtvDesc, m_rtvHandles[i].cpuHandle);
 	}
 
 	return true;
 }
 
 bool SwapChain::CreateDepthStencilView(ID3D12Device* device, uint32_t width, uint32_t height) {
-	depthStencilResource_ = D3D12Utility::CreateDepthStencilTextureResource(device, width, height);
-	if (!depthStencilResource_) {
+	m_depthStencilResource = D3D12Utility::CreateDepthStencilTextureResource(device, width, height);
+	if (!m_depthStencilResource) {
 		LOG_ERROR("深度ステンシル用テクスチャリソースの生成に失敗しました。");
 		return false;
 	}
 
-	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;         // リソースとフォーマットを合わせる
-	dsvDesc_.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	m_dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;         // リソースとフォーマットを合わせる
+	m_dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 
-	dsvHandle_ = DescriptorManager::GetInstance()->Allocate(DescriptorType::DSV);
+	m_dsvHandle = DescriptorManager::GetInstance()->Allocate(DescriptorType::DSV);
 
 	device->CreateDepthStencilView(
-		depthStencilResource_.Get(),
-		&dsvDesc_,
-		dsvHandle_.cpuHandle
+		m_depthStencilResource.Get(),
+		&m_dsvDesc,
+		m_dsvHandle.cpuHandle
 	);
 
 	return true;

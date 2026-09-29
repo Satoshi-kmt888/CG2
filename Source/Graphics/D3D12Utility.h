@@ -5,9 +5,9 @@
 #include <DirectXTex.h>
 #include <wrl/client.h>
 
+namespace D3D12Utility {
 template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-namespace D3D12Utility {
 	/// <summary>
 	/// 定数バッファや頂点バッファなどの汎用バッファリソースを生成
 	/// </summary>

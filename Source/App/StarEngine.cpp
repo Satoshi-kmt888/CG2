@@ -21,7 +21,7 @@ namespace StarEngine {
 
 		//DirectX12基盤の初期化
 		auto* graphicsSystem = GraphicsSystem::GetInstance();
-		graphicsSystem->Initialize(*winApp);
+		graphicsSystem->Initialize(winApp->GetHwnd(), winApp->GetClientWidth(), winApp->GetClientHeight());
 
 		//入力処理の初期化
 		Input::GetInstance()->Initialize(winApp->GetHInstance(), winApp->GetHwnd());

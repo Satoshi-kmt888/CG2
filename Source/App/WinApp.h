@@ -1,15 +1,13 @@
 #pragma once
 
-#include <Windows.h>
 #include <cstdint>
+#include <Windows.h>
 
 /// <summary>
 /// ウィンドウの生成 / メッセージ処理 / 破棄を行うクラス
 /// </summary>
 class WinApp {
 public:
-	//--- 公開定数 ---
-
 	//デフォルトクライアント領域
 	static inline constexpr uint32_t kDefaultClientWidth = 1280;
 	static inline constexpr uint32_t kDefaultClientHeight = 720;
@@ -17,15 +15,17 @@ public:
 	//ウィンドウクラス名
 	static inline const wchar_t* kWindowClassName = L"CG2";
 
-	//--- インスタンス管理 ---
+	//==================================================
+	// public methods
+	//==================================================
 
 	static WinApp* GetInstance();
 
-	//コピーガード
+	//コピームーブ禁止
 	WinApp(const WinApp&) = delete;
 	WinApp& operator=(const WinApp&) = delete;
-
-	//--- 公開関数 ---
+	WinApp(const WinApp&&) = delete;
+	WinApp& operator=(const WinApp&&) = delete;
 
 	/// <summary>
 	/// ウィンドウクラス登録とウィンドウ生成
@@ -44,21 +44,23 @@ public:
 	/// </summary>
 	void Finalize();
 
-	//--- ゲッター ---
+	HINSTANCE GetHInstance() const { return m_hInstance; }
+	HWND GetHwnd() const { return m_hWnd; }
 
-	HINSTANCE GetHInstance() const { return hInstance_; }
-	HWND GetHwnd() const { return hWnd_; }
-
-	const uint32_t& GetClientWidth() const { return clientWidth_; }
-	const uint32_t& GetClientHeight() const { return clientHeight_; }
+	const uint32_t& GetClientWidth() const { return m_clientWidth; }
+	const uint32_t& GetClientHeight() const { return m_clientHeight; }
 
 private:
-	//--- インスタンス管理 ---
+	//==================================================
+	// private methods
+	//==================================================
 
 	WinApp() = default;
 	~WinApp() = default;
 
-	//--- 内部関数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
 	/// <summary>
 	/// Windowsからのイベント・メッセージを処理するコールバック関数
@@ -73,10 +75,10 @@ private:
 	//--- 内部変数 ---
 
 	//ウィンドウズ関連
-	HINSTANCE hInstance_ = nullptr; //インスタンスハンドル
-	HWND hWnd_ = nullptr; //ウィンドウハンドル
+	HINSTANCE m_hInstance = nullptr; //インスタンスハンドル
+	HWND m_hWnd = nullptr; //ウィンドウハンドル
 
 	//クライアント領域のサイズ
-	uint32_t clientWidth_ = kDefaultClientWidth;
-	uint32_t clientHeight_ = kDefaultClientHeight;
+	uint32_t m_clientWidth = kDefaultClientWidth;
+	uint32_t m_clientHeight = kDefaultClientHeight;
 };

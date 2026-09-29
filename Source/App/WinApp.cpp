@@ -43,19 +43,19 @@ bool WinApp::Initialize() {
 	}
 
 	//インスタンスハンドルの設定
-	hInstance_ = hInstance;
+	m_hInstance = hInstance;
 
 	//ウィンドウサイズを設定
 	RECT rect = {};
-	rect.right = static_cast<LONG>(clientWidth_);
-	rect.bottom = static_cast<LONG>(clientHeight_);
+	rect.right = static_cast<LONG>(m_clientWidth);
+	rect.bottom = static_cast<LONG>(m_clientHeight);
 
 	//ウィンドウサイズを調整
 	auto style = WS_OVERLAPPEDWINDOW;
 	AdjustWindowRect(&rect, style, FALSE);
 
 	//ウィンドウを生成
-	hWnd_ = CreateWindowEx(
+	m_hWnd = CreateWindowEx(
 	0,                                  //拡張するウィンドウのウィンドウスタイル
 	kWindowClassName,                   //ウィンドウクラス名
 	kWindowClassName,                   //タイトルバーに表示する文字列
@@ -66,22 +66,22 @@ bool WinApp::Initialize() {
 	rect.bottom - rect.top,             //ウィンドウの高さ
 	nullptr,                            //親/オーナーウィンドウハンドルの指定
 	nullptr,                            //メニュー/子ウィンドウIDの指定
-	hInstance_,                         //インスタンスハンドル
+	m_hInstance,                         //インスタンスハンドル
 	this                                //オプション
 	);
 
-	if (!hWnd_) {
+	if (!m_hWnd) {
 		//ウィンドウ生成の失敗ログ
 		LOG_ERROR("ウィンドウの生成に失敗しました。");
 		return false;
 	}
 
 	//ウィンドウを表示
-	ShowWindow(hWnd_, SW_SHOWNORMAL);
-	UpdateWindow(hWnd_);
-	SetFocus(hWnd_);
+	ShowWindow(m_hWnd, SW_SHOWNORMAL);
+	UpdateWindow(m_hWnd);
+	SetFocus(m_hWnd);
 
-	LOG_INFO("WinApp の初期化が正常に完了しました。クライアント解像度: {}x{}", clientWidth_, clientHeight_);
+	LOG_INFO("WinApp の初期化が正常に完了しました。クライアント解像度: {}x{}", m_clientWidth, m_clientHeight);
 
 	return true;
 }
@@ -106,15 +106,15 @@ bool WinApp::ProcessMessage() const {
 }
 
 void WinApp::Finalize() {
-	if (hWnd_) {
-		DestroyWindow(hWnd_);
-		hWnd_ = nullptr;
+	if (m_hWnd) {
+		DestroyWindow(m_hWnd);
+		m_hWnd = nullptr;
 	}
 
-	if (hInstance_) {
+	if (m_hInstance) {
 		//ウィンドウの登録解除
-		UnregisterClass(kWindowClassName, hInstance_);
-		hInstance_ = nullptr;
+		UnregisterClass(kWindowClassName, m_hInstance);
+		m_hInstance = nullptr;
 	}
 
 	LOG_INFO("WinApp の解放処理が完了しました。");
