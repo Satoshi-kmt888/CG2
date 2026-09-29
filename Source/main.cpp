@@ -77,10 +77,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Vector4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//モデル
-	auto plane = Model::CreateFromOBJ("plane.obj");
+	auto plane = Model::CreateFromOBJ("fence.obj");
 	plane->SetLightType(2);
-	Transform transformPlane{};
-	Vector4 planeColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Transform transform{};
+	Vector4 modelColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -100,12 +100,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Begin("Settings");
 
 		//平面モデルのカラー
-		ImGui::ColorEdit4("plane color", &planeColor.x);
-		plane->SetColor(planeColor);
+		ImGui::ColorEdit4("plane color", &modelColor.x);
+		plane->SetColor(modelColor);
 
 		//ライト
 		ImGui::ColorEdit4("light color", &lightColor.x);
 		light->SetColor(lightColor);
+
+		ImGui::Separator();
+
+		//フェンスモデルのSRT
+		ImGui::DragFloat3("model.translation", &transform.translation.x, 0.01f);
+		ImGui::DragFloat3("model.rotation", &transform.rotation.x, 0.01f);
+		ImGui::DragFloat3("model.scale", &transform.scale.x, 0.01f);
 
 		ImGui::End();
 #endif
@@ -125,7 +132,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 
 		//平面モデルを描画
-		plane->Draw(transformPlane, camera->GetViewProjMatrix());
+		plane->Draw(transform, camera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑
