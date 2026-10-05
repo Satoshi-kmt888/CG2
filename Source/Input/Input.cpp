@@ -2,8 +2,6 @@
 
 #include "Debugger/Logger.h"
 
-#include <cassert>
-
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
@@ -19,6 +17,10 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	);
 	if (FAILED(hr)) {
 		LOG_ERROR("DirectInputの生成に失敗しました。");
+		return false;
+	}
+
+	if (!m_keyboard.Initialize(directInput_.Get(), hwnd)) {
 		return false;
 	}
 
@@ -50,27 +52,12 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 }
 
 void Input::Update() {
-	//キーボードの更新
+	m_keyboard.Update();
+
 	//マウスの更新
 	preMouseState_ = mouseState_;
 	mouse_->Acquire();
 	mouse_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouseState_);
-}
-
-bool Input::PushKey(uint8_t key) {
-	return (key_[key] & 0x80) != 0;
-}
-
-bool Input::UpKey(uint8_t key) {
-	return (key_[key] & 0x80) == 0;
-}
-
-bool Input::TriggerKey(uint8_t key) {
-	return ((key_[key] & 0x80) != 0) && ((preKey_[key] & 0x80) == 0);
-}
-
-bool Input::ReleaseKey(uint8_t key) {
-	return ((key_[key] & 0x80) == 0) && ((preKey_[key] & 0x80) != 0);
 }
 
 bool Input::PushMouse(int button) {

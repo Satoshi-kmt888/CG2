@@ -1,6 +1,8 @@
-#include "Keyboard.h"
+#include "Input/Keyboard.h"
 
 #include "Debugger/Logger.h"
+
+#include <array>
 
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -11,22 +13,17 @@ bool Keyboard::Initialize(IDirectInput8* directInput, HWND hwnd) {
 		return false;
 	}
 
-	//デバイスの生成
 	if (FAILED(directInput->CreateDevice(GUID_SysKeyboard, &m_device, nullptr))) {
 		LOG_ERROR("キーボードデバイスの生成に失敗しました。");
 		return false;
 	}
 
-	//入力データ形式のセット
 	if (FAILED(m_device->SetDataFormat(&c_dfDIKeyboard))) {
 		LOG_ERROR("キーボードの入力データ形式をセットできませんでした。");
 		return false;
 	}
 
-	//排他制御レベルのセット
-	if (FAILED(m_device->SetCooperativeLevel(
-		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
-	))) {
+	if (FAILED(m_device->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY))) {
 		LOG_ERROR("キーボードの排他制御レベルをセットできませんでした。");
 		return false;
 	}
@@ -40,11 +37,14 @@ void Keyboard::Update() {
 		return;
 	}
 
-	uint8_t raw[kKeyCount]{};
-	HRESULT hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw);
+	std::array<uint8_t, kKeyCount> raw{};
+	HRESULT hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw.data());
+
+	if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED && SUCCEEDED(m_device->Acquire())) {
+		hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw.data());
+	}
 
 	if (FAILED(hr)) {
-		m_device->Acquire();
 		m_keys.Reset();
 		return;
 	}
