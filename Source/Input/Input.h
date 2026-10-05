@@ -3,6 +3,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 
 #include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 
 #include <dinput.h>
 #include <wrl/client.h>
@@ -32,13 +33,13 @@ public:
 	bool TriggerKey(uint8_t key) const { return m_keyboard.Trigger(key); }
 	bool ReleaseKey(uint8_t key) const { return m_keyboard.Release(key); }
 
-	bool PushMouse(int button);
-	bool TriggerMouse(int button);
-	bool ReleaseMouse(int button);
+	bool PushMouse(uint8_t button) const { return m_mouse.Push(button); }
+	bool TriggerMouse(uint8_t button)const { return m_mouse.Trigger(button); }
+	bool ReleaseMouse(uint8_t button)const { return m_mouse.Release(button); }
 
-	long GetMouseMoveX() const;
-	long GetMouseMoveY() const;
-	long GetMouseWheel() const;
+	long GetMouseMoveX() const { return m_mouse.GetMoveX(); }
+	long GetMouseMoveY() const { return m_mouse.GetMoveY(); }
+	long GetMouseWheel() const { return m_mouse.GetWheel(); }
 
 private:
 	//==================================================
@@ -55,8 +56,5 @@ private:
 	Microsoft::WRL::ComPtr<IDirectInput8> directInput_ = nullptr;
 
 	Keyboard m_keyboard;
-
-	IDirectInputDevice8* mouse_ = nullptr;
-	DIMOUSESTATE2 mouseState_{};
-	DIMOUSESTATE2 preMouseState_{};
+	Mouse m_mouse;
 };

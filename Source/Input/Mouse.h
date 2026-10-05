@@ -6,9 +6,9 @@
 #include <wrl/client.h>
 
 /// <summary>
-/// キーボード
+/// マウス
 /// </summary>
-class Keyboard {
+class Mouse {
 public:
 	//==================================================
 	// public methods
@@ -18,17 +18,23 @@ public:
 
 	void Update();
 
-	bool Push(uint8_t key) const { return m_keys.Push(key); }
-	bool Trigger(uint8_t key)const { return m_keys.Trigger(key); }
-	bool Release(uint8_t key) const { return m_keys.Release(key); }
+	bool Push(uint8_t button) const { return m_buttons.Push(button); }
+	bool Trigger(uint8_t button)const { return m_buttons.Trigger(button); }
+	bool Release(uint8_t button) const { return m_buttons.Release(button); }
+
+	long GetMoveX() const { return m_state.lX; }
+	long GetMoveY() const { return m_state.lY; }
+	long GetWheel() const { return m_state.lZ; }
 
 private:
 	//==================================================
 	// private variables
 	//==================================================
 
-	static constexpr size_t kKeyCount = 256;
+	static constexpr size_t kButtonCount = 8;
 
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> m_device;
-	DigitalState<kKeyCount> m_keys;
+	DigitalState<kButtonCount> m_buttons;
+	DIMOUSESTATE2 m_state{};
 };
+

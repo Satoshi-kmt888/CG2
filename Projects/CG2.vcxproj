@@ -216,6 +216,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
     <ClCompile Include="..\Source\Input\Input.cpp" />
     <ClCompile Include="..\Source\Input\Keyboard.cpp" />
+    <ClCompile Include="..\Source\Input\Mouse.cpp" />
     <ClCompile Include="..\Source\main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">MaxSpeed</Optimization>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</WholeProgramOptimization>
@@ -263,6 +264,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Input\DigitalState.h" />
     <ClInclude Include="..\Source\Input\Input.h" />
     <ClInclude Include="..\Source\Input\Keyboard.h" />
+    <ClInclude Include="..\Source\Input\Mouse.h" />
     <ClInclude Include="..\Source\Math\Matrix4x4.h" />
     <ClInclude Include="..\Source\Math\Transform.h" />
     <ClInclude Include="..\Source\Math\Vector2.h" />
