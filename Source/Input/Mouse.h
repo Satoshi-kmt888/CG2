@@ -1,9 +1,25 @@
 #pragma once
 
+#define DIRECTINPUT_VERSION 0x0800
+
 #include "Input/DigitalState.h"
 
+#include <cstdint>
 #include <dinput.h>
+#include <Windows.h>
 #include <wrl/client.h>
+
+/// <summary>
+/// マウスボタンの種類。
+/// 値はDIMOUSESTATE2::rgbButtonsの添字と対応しているので、順序を変えないこと
+/// </summary>
+enum class MouseButton : uint8_t {
+	Left,
+	Right,
+	Middle,
+	X1,
+	X2,
+};
 
 /// <summary>
 /// マウス
@@ -14,13 +30,13 @@ public:
 	// public methods
 	//==================================================
 
-	bool Initialize(IDirectInput8* directInput, HWND hwnd);
+	[[nodiscard]] bool Initialize(IDirectInput8* directInput, HWND hwnd);
 
 	void Update();
 
-	bool Push(uint8_t button) const { return m_buttons.Push(button); }
-	bool Trigger(uint8_t button)const { return m_buttons.Trigger(button); }
-	bool Release(uint8_t button) const { return m_buttons.Release(button); }
+	bool Push(MouseButton button) const { return m_buttons.Push(static_cast<size_t>(button)); }
+	bool Trigger(MouseButton button)const { return m_buttons.Trigger(static_cast<size_t>(button)); }
+	bool Release(MouseButton button) const { return m_buttons.Release(static_cast<size_t>(button)); }
 
 	long GetMoveX() const { return m_state.lX; }
 	long GetMoveY() const { return m_state.lY; }

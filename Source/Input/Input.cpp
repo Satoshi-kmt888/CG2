@@ -13,18 +13,18 @@ Input* Input::GetInstance() {
 bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	HRESULT hr = DirectInput8Create(
 		hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
-		(void**)&directInput_, nullptr
+		(void**)&m_directInput, nullptr
 	);
 	if (FAILED(hr)) {
 		LOG_ERROR("DirectInputの生成に失敗しました。");
 		return false;
 	}
 
-	if (!m_keyboard.Initialize(directInput_.Get(), hwnd)) {
+	if (!m_keyboard.Initialize(m_directInput.Get(), hwnd)) {
 		return false;
 	}
 
-	if (!m_mouse.Initialize(directInput_.Get(), hwnd)) {
+	if (!m_mouse.Initialize(m_directInput.Get(), hwnd)) {
 		return false;
 	}
 
@@ -39,4 +39,5 @@ void Input::Update() {
 }
 
 void Input::Finalize() {
+	m_gamepad.SetVibration(0.0f, 0.0f);
 }

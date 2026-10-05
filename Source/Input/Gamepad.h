@@ -2,11 +2,12 @@
 
 #include "Input/DigitalState.h"
 
-#include <cstddef>
 #include <cstdint>
-#include <Windows.h>
-#include <XInput.h>
 
+/// <summary>
+/// ゲームパッドのボタンの種類。
+/// 10, 11はXInput側が欠番なので、A以降の値を連番にしないこと
+/// </summary>
 enum class GamepadButton : uint8_t {
 	DPadUp = 0,
 	DPadDown = 1,
@@ -24,6 +25,10 @@ enum class GamepadButton : uint8_t {
 	Y = 15,
 };
 
+/// <summary>
+/// スティックの傾き。デッドゾーン処理済みで、長さは 0.0〜1.0。
+/// y は上方向がプラス(画面座標の向きとは逆)
+/// </summary>
 struct GamepadStick {
 	float x = 0.0f;
 	float y = 0.0f;

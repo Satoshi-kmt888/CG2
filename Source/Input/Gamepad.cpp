@@ -3,16 +3,30 @@
 #include <algorithm>
 #include <bitset>
 #include <cmath>
+#include <Windows.h>
+#include <Xinput.h>
 
 #pragma comment (lib, "xinput.lib")
 
-static_assert((1 << static_cast<int>(GamepadButton::DPadUp)) == XINPUT_GAMEPAD_DPAD_UP);
-static_assert((1 << static_cast<int>(GamepadButton::Start)) == XINPUT_GAMEPAD_START);
-static_assert((1 << static_cast<int>(GamepadButton::LeftShoulder)) == XINPUT_GAMEPAD_LEFT_SHOULDER);
-static_assert((1 << static_cast<int>(GamepadButton::A)) == XINPUT_GAMEPAD_A);
-static_assert((1 << static_cast<int>(GamepadButton::Y)) == XINPUT_GAMEPAD_Y);
-
 namespace {
+	constexpr int Bit(GamepadButton button) { return 1 << static_cast<int>(button); }
+
+	// enumの値がXInputの定義とずれていないことをコンパイル時に確認する
+	static_assert(Bit(GamepadButton::DPadUp) == XINPUT_GAMEPAD_DPAD_UP);
+	static_assert(Bit(GamepadButton::DPadDown) == XINPUT_GAMEPAD_DPAD_DOWN);
+	static_assert(Bit(GamepadButton::DPadLeft) == XINPUT_GAMEPAD_DPAD_LEFT);
+	static_assert(Bit(GamepadButton::DPadRight) == XINPUT_GAMEPAD_DPAD_RIGHT);
+	static_assert(Bit(GamepadButton::Start) == XINPUT_GAMEPAD_START);
+	static_assert(Bit(GamepadButton::Back) == XINPUT_GAMEPAD_BACK);
+	static_assert(Bit(GamepadButton::LeftThumb) == XINPUT_GAMEPAD_LEFT_THUMB);
+	static_assert(Bit(GamepadButton::RightThumb) == XINPUT_GAMEPAD_RIGHT_THUMB);
+	static_assert(Bit(GamepadButton::LeftShoulder) == XINPUT_GAMEPAD_LEFT_SHOULDER);
+	static_assert(Bit(GamepadButton::RightShoulder) == XINPUT_GAMEPAD_RIGHT_SHOULDER);
+	static_assert(Bit(GamepadButton::A) == XINPUT_GAMEPAD_A);
+	static_assert(Bit(GamepadButton::B) == XINPUT_GAMEPAD_B);
+	static_assert(Bit(GamepadButton::X) == XINPUT_GAMEPAD_X);
+	static_assert(Bit(GamepadButton::Y) == XINPUT_GAMEPAD_Y);
+
 	constexpr float kStickMax = 32767.0f;
 
 	GamepadStick ApplyStickDeadzone(SHORT rawX, SHORT rawY, SHORT deadzone) {

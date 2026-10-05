@@ -20,11 +20,16 @@ bool Keyboard::Initialize(IDirectInput8* directInput, HWND hwnd) {
 
 	if (FAILED(m_device->SetDataFormat(&c_dfDIKeyboard))) {
 		LOG_ERROR("キーボードの入力データ形式をセットできませんでした。");
+		m_device.Reset();
 		return false;
 	}
 
+	//FOREGROUND: ウィンドウが非アクティブの間は入力を受け取らない
+	//NONEXCLUSIVE: 他のアプリのキー入力を妨げない
+	//NOWINKEY: ゲーム中に Windows キーでスタートメニューが開くのを防ぐ
 	if (FAILED(m_device->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY))) {
 		LOG_ERROR("キーボードの排他制御レベルをセットできませんでした。");
+		m_device.Reset();
 		return false;
 	}
 
@@ -40,8 +45,10 @@ void Keyboard::Update() {
 	std::array<uint8_t, kKeyCount> raw{};
 	HRESULT hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw.data());
 
-	if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED && SUCCEEDED(m_device->Acquire())) {
-		hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw.data());
+	if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED) {
+		if (SUCCEEDED(m_device->Acquire())) {
+			hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw.data());
+		}
 	}
 
 	if (FAILED(hr)) {

@@ -1,8 +1,12 @@
 #pragma once
 
+#define DIRECTINPUT_VERSION 0x0800
+
 #include "Input/DigitalState.h"
 
+#include <cstdint>
 #include <dinput.h>
+#include <Windows.h>
 #include <wrl/client.h>
 
 /// <summary>
@@ -14,7 +18,7 @@ public:
 	// public methods
 	//==================================================
 
-	bool Initialize(IDirectInput8* directInput, HWND hwnd);
+	[[nodiscard]] bool Initialize(IDirectInput8* directInput, HWND hwnd);
 
 	void Update();
 
