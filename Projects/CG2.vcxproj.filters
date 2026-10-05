@@ -162,6 +162,9 @@
     <ClCompile Include="..\Source\Scene\DirectionalLight.cpp">
       <Filter>Source\Instrument\Light</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Input\Keyboard.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\Audio.h">
@@ -291,6 +294,9 @@
       <Filter>Source\Instrument\Light</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Input\DigitalState.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Input\Keyboard.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
   </ItemGroup>

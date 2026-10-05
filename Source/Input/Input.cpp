@@ -2,8 +2,6 @@
 
 #include "Debugger/Logger.h"
 
-#include <cassert>
-
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
@@ -22,26 +20,7 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 		return false;
 	}
 
-	//キーボードデバイスの生成
-	hr = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, nullptr);
-	if (FAILED(hr)) {
-		LOG_ERROR("キーボードデバイスの生成に失敗しました。");
-		return false;
-	}
-
-	//入力データ形式のセット
-	hr = keyboard_->SetDataFormat(&c_dfDIKeyboard); //標準形式
-	if (FAILED(hr)) {
-		LOG_ERROR("キーボードの入力データ形式をセットできませんでした。");
-		return false;
-	}
-
-	//排他制御レベルのセット
-	hr = keyboard_->SetCooperativeLevel(
-		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
-	);
-	if (FAILED(hr)) {
-		LOG_ERROR("キーボードの排他制御レベルをセットできませんでした。");
+	if (!m_keyboard.Initialize(directInput_.Get(), hwnd)) {
 		return false;
 	}
 
@@ -73,31 +52,12 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 }
 
 void Input::Update() {
-	//キーボードの更新
-	preKey_ = key_;
-	keyboard_->Acquire();
-	keyboard_->GetDeviceState(static_cast<DWORD>(key_.size()), key_.data());
+	m_keyboard.Update();
 
 	//マウスの更新
 	preMouseState_ = mouseState_;
 	mouse_->Acquire();
 	mouse_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouseState_);
-}
-
-bool Input::PushKey(uint8_t key) {
-	return (key_[key] & 0x80) != 0;
-}
-
-bool Input::UpKey(uint8_t key) {
-	return (key_[key] & 0x80) == 0;
-}
-
-bool Input::TriggerKey(uint8_t key) {
-	return ((key_[key] & 0x80) != 0) && ((preKey_[key] & 0x80) == 0);
-}
-
-bool Input::ReleaseKey(uint8_t key) {
-	return ((key_[key] & 0x80) == 0) && ((preKey_[key] & 0x80) != 0);
 }
 
 bool Input::PushMouse(int button) {

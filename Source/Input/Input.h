@@ -2,41 +2,35 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 
-#include <array>
+#include "Input/Keyboard.h"
+
 #include <dinput.h>
+#include <wrl/client.h>
 
 /// <summary>
 /// 入力処理を管理するクラス
 /// </summary>
 class Input {
 public:
-	//--- インスタンス管理 ---
+	//==================================================
+	// public methods
+	//==================================================
 
-	//インスタンスの取得
 	static Input* GetInstance();
 
-	//コピーガード
+	//コピー・ムーブ禁止
 	Input(const Input&) = delete;
 	Input& operator=(const Input&) = delete;
+	Input(const Input&&) = delete;
+	Input& operator=(const Input&&) = delete;
 
-	//---公開関数 ---
-
-	/// <summary>
-	/// 入力機器の初期化
-	/// </summary>
-	/// <param name="hInstance">インスタンスハンドル</param>
-	/// <param name="hwnd">ウィンドウハンドル</param>
 	bool Initialize(HINSTANCE hInstance, HWND hwnd);
 
-	/// <summary>
-	/// 更新処理
-	/// </summary>
 	void Update();
 
-	bool PushKey(uint8_t key); //押してるとき
-	bool UpKey(uint8_t key); //離してるとき
-	bool TriggerKey(uint8_t key); //押した瞬間
-	bool ReleaseKey(uint8_t key); //離した瞬間
+	bool PushKey(uint8_t key) const { return m_keyboard.Push(key); }
+	bool TriggerKey(uint8_t key) const { return m_keyboard.Trigger(key); }
+	bool ReleaseKey(uint8_t key) const { return m_keyboard.Release(key); }
 
 	bool PushMouse(int button);
 	bool TriggerMouse(int button);
@@ -47,18 +41,20 @@ public:
 	long GetMouseWheel() const;
 
 private:
-	//--- インスタンス管理 ---
+	//==================================================
+	// private methods
+	//==================================================
 
 	Input() = default;
 	~Input() = default;
 
-	//--- 内部変数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
-	IDirectInput8* directInput_ = nullptr;
+	Microsoft::WRL::ComPtr<IDirectInput8> directInput_ = nullptr;
 
-	IDirectInputDevice8* keyboard_ = nullptr;
-	std::array<BYTE, 256> key_{};
-	std::array<BYTE, 256> preKey_{};
+	Keyboard m_keyboard;
 
 	IDirectInputDevice8* mouse_ = nullptr;
 	DIMOUSESTATE2 mouseState_{};
