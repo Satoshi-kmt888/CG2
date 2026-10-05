@@ -168,6 +168,9 @@
     <ClCompile Include="..\Source\Input\Mouse.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Input\Gamepad.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\Audio.h">
@@ -303,6 +306,9 @@
       <Filter>Source\Input</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Input\Mouse.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Input\Gamepad.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
   </ItemGroup>

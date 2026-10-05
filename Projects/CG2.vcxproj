@@ -214,6 +214,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp" />
     <ClCompile Include="..\Source\Graphics\SwapChain.cpp" />
     <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
+    <ClCompile Include="..\Source\Input\Gamepad.cpp" />
     <ClCompile Include="..\Source\Input\Input.cpp" />
     <ClCompile Include="..\Source\Input\Keyboard.cpp" />
     <ClCompile Include="..\Source\Input\Mouse.cpp" />
@@ -262,6 +263,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Graphics\SwapChain.h" />
     <ClInclude Include="..\Source\Graphics\TextureManager.h" />
     <ClInclude Include="..\Source\Input\DigitalState.h" />
+    <ClInclude Include="..\Source\Input\Gamepad.h" />
     <ClInclude Include="..\Source\Input\Input.h" />
     <ClInclude Include="..\Source\Input\Keyboard.h" />
     <ClInclude Include="..\Source\Input\Mouse.h" />
