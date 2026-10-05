@@ -2,6 +2,7 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 
+#include "Input/Gamepad.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
@@ -22,12 +23,14 @@ public:
 	//コピー・ムーブ禁止
 	Input(const Input&) = delete;
 	Input& operator=(const Input&) = delete;
-	Input(const Input&&) = delete;
+	Input(Input&&) = delete;
 	Input& operator=(const Input&&) = delete;
 
 	bool Initialize(HINSTANCE hInstance, HWND hwnd);
 
 	void Update();
+
+	void Finalize();
 
 	bool PushKey(uint8_t key) const { return m_keyboard.Push(key); }
 	bool TriggerKey(uint8_t key) const { return m_keyboard.Trigger(key); }
@@ -40,6 +43,9 @@ public:
 	long GetMouseMoveX() const { return m_mouse.GetMoveX(); }
 	long GetMouseMoveY() const { return m_mouse.GetMoveY(); }
 	long GetMouseWheel() const { return m_mouse.GetWheel(); }
+
+	bool PushGamepad(GamepadButton button) const { return m_gamepad.Push(button); }
+	void SetVibration(float left, float right) { return m_gamepad.SetVibration(left, right); }
 
 private:
 	//==================================================
@@ -57,4 +63,5 @@ private:
 
 	Keyboard m_keyboard;
 	Mouse m_mouse;
+	Gamepad m_gamepad{ 0 };
 };

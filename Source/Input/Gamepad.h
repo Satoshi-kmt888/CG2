@@ -2,6 +2,9 @@
 
 #include "Input/DigitalState.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <Windows.h>
 #include <XInput.h>
 
 enum class GamepadButton : uint8_t {
@@ -35,6 +38,8 @@ public:
 	// public methods
 	//==================================================
 
+	explicit Gamepad(uint32_t index = 0) :m_index(index) {}
+
 	void Update();
 
 	bool IsConnected() const { return m_connected; }
@@ -47,8 +52,13 @@ public:
 	GamepadStick GetRightStick() const { return m_rightStick; }
 
 	float GetLeftTrigger() const { return m_leftTrigger; }
-	float GetLeftTrigger() const { return m_rightTrigger; }
+	float GetRightTrigger() const { return m_rightTrigger; }
 
+	/// <summary>
+	/// 振動の強さを0.0f~1.0fで設定する
+	/// </summary>
+	/// <param name="left">低周波モーター</param>
+	/// <param name="right">高周波モーター</param>
 	void SetVibration(float left, float right);
 
 private:

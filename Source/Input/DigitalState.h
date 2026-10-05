@@ -22,6 +22,11 @@ public:
 		}
 	}
 
+	void Update(const std::bitset<N>& bits) {
+		m_pre = m_cur;
+		m_cur = bits;
+	}
+
 	void Reset() {
 		m_pre = m_cur;
 		m_cur.reset();

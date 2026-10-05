@@ -35,4 +35,8 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 void Input::Update() {
 	m_keyboard.Update();
 	m_mouse.Update();
+	m_gamepad.Update();
+}
+
+void Input::Finalize() {
 }
