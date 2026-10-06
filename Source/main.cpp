@@ -100,7 +100,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-#ifdef _DEBUG
+#ifdef DEVELOP
 		if (Input::GetInstance()->GetKeyboard().Trigger(DIK_F1)) {
 			isDebugCameraEnabled = !isDebugCameraEnabled;
 			camera = isDebugCameraEnabled ? &debugCamera.GetCamera() : &mainCamera;
