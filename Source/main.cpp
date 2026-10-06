@@ -5,9 +5,11 @@
 #include "Graphics/GraphicsSystem.h"
 #include "Graphics/RootSignature.h"
 #include "Graphics/ShaderCompiler.h"
+#include "Input/Input.h"
 #include "Math/Transform.h"
 #include "Math/Vector4.h"
 #include "Scene/Camera.h"
+#include "Scene/DebugCamera.h"
 #include "Scene/DirectionalLight.h"
 #include "Scene/Model.h"
 
@@ -68,8 +70,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		return false;
 	}
 
+	//メインカメラ(切り替える)
+	Camera mainCamera{ 1280.0f, 720.0f };
+
+	//デバッグカメラ(切り替える)
+	DebugCamera debugCamera{};
+	bool isDebugCameraEnabled = false;
+
 	//カメラ
-	auto camera = std::make_unique<Camera>(1280.0f, 720.0f);
+	Camera const* camera = &mainCamera;
 
 	//ライト
 	auto light = std::make_unique<DirectionalLight>();
@@ -91,8 +100,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-		//カメラを更新
-		camera->Update();
+#ifdef _DEBUG
+		if (Input::GetInstance()->GetKeyboard().Trigger(DIK_F1)) {
+			isDebugCameraEnabled = !isDebugCameraEnabled;
+			camera = isDebugCameraEnabled ? &debugCamera.GetCamera() : &mainCamera;
+		}
+#endif
+
+		if (isDebugCameraEnabled) {
+			debugCamera.Update();
+		} else {
+			mainCamera.Update();
+		}
+
 		//ライトを更新
 		light->Update();
 

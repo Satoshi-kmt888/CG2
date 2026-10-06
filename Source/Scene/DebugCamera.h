@@ -1,43 +1,48 @@
 #pragma once
 
-#include "Scene/Camera.h"
 #include "Math/Vector3.h"
+#include "Scene/Camera.h"
+
+class Input;
 
 /// <summary>
 /// デバッグカメラ
 /// /// </summary>
 class DebugCamera {
 public:
-	//--- インスタンス管理 ---
+	//==================================================
+	// public methods
+	//==================================================
 
 	DebugCamera();
 	~DebugCamera() = default;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// 更新処理
 	/// </summary>
 	void Update();
 
-	//--- ゲッター ---
-
-	Camera& GetCamera() { return camera_; }
+	Camera& GetCamera() { return m_camera; }
 
 private:
-	//--- 内部関数 ---
+	//==================================================
+	// private methods
+	//==================================================
 
 	void Rotate();
-
 	void Move();
 
-	//--- 内部変数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
-	Camera camera_;
+	Input* m_input = nullptr;
 
-	float zoomSpeed_ = 0.01f;
-	float rotateSensitivity_ = 0.002f;
-	float yaw_;
-	float pitch_;
-	Vector3 forward_ = { 0.0f, 0.0f, 0.0f };
+	Camera m_camera;
+
+	float m_zoomSpeed = 0.01f;
+	float m_rotateSensitivity = 0.002f;
+	float m_yaw;
+	float m_pitch;
+	Vector3 m_forward = {};
 };

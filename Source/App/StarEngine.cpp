@@ -24,7 +24,9 @@ namespace StarEngine {
 		graphicsSystem->Initialize(winApp->GetHwnd(), winApp->GetClientWidth(), winApp->GetClientHeight());
 
 		//入力処理の初期化
-		Input::GetInstance()->Initialize(winApp->GetHInstance(), winApp->GetHwnd());
+		if (!Input::GetInstance()->Initialize(winApp->GetHInstance(), winApp->GetHwnd())) {
+			return;
+		}
 
 		//音声系統の初期化
 		Audio::GetInstance()->Initialize();
