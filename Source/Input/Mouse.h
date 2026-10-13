@@ -30,7 +30,7 @@ public:
 	// public methods
 	//==================================================
 
-	[[nodiscard]] bool Initialize(IDirectInput8* directInput, HWND hwnd);
+	[[nodiscard]] bool Initialize(IDirectInput8* direct_input, HWND hwnd);
 
 	void Update();
 
@@ -47,10 +47,10 @@ private:
 	// private variables
 	//==================================================
 
-	static constexpr size_t kButtonCount = 8;
+	static constexpr size_t k_button_count = 8;
 
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> m_device;
-	DigitalState<kButtonCount> m_buttons;
+	DigitalState<k_button_count> m_buttons;
 	DIMOUSESTATE2 m_state{};
 };
 

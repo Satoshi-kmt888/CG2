@@ -5,13 +5,13 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-bool Mouse::Initialize(IDirectInput8* directInput, HWND hwnd) {
-	if (!directInput) {
+bool Mouse::Initialize(IDirectInput8* direct_input, HWND hwnd) {
+	if (!direct_input) {
 		LOG_ERROR("引数がnullptrです。DirectInputの生成に失敗している可能性があります。");
 		return false;
 	}
 
-	if (FAILED(directInput->CreateDevice(GUID_SysMouse, &m_device, nullptr))) {
+	if (FAILED(direct_input->CreateDevice(GUID_SysMouse, &m_device, nullptr))) {
 		LOG_ERROR("マウスデバイスの生成に失敗しました。");
 		return false;
 	}

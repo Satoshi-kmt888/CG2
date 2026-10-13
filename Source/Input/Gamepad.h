@@ -53,11 +53,11 @@ public:
 	bool Trigger(GamepadButton button) const { return m_buttons.Trigger(static_cast<size_t>(button)); }
 	bool Release(GamepadButton button) const { return m_buttons.Release(static_cast<size_t>(button)); }
 
-	GamepadStick GetLeftStick() const { return m_leftStick; }
-	GamepadStick GetRightStick() const { return m_rightStick; }
+	GamepadStick GetLeftStick() const { return m_left_stick; }
+	GamepadStick GetRightStick() const { return m_right_stick; }
 
-	float GetLeftTrigger() const { return m_leftTrigger; }
-	float GetRightTrigger() const { return m_rightTrigger; }
+	float GetLeftTrigger() const { return m_left_trigger; }
+	float GetRightTrigger() const { return m_right_trigger; }
 
 	/// <summary>
 	/// 振動の強さを0.0f~1.0fで設定する
@@ -77,16 +77,16 @@ private:
 	// private variables
 	//==================================================
 
-	static constexpr size_t kButtonCount = 16;
-	static constexpr uint32_t kReconnectInterval = 60;
+	static constexpr size_t k_button_count = 16;
+	static constexpr uint32_t k_reconnect_interval = 60;
 
 	uint32_t m_index = 0;
 	bool m_connected = false;
-	uint32_t m_reconnectCounter = 0;
+	uint32_t m_reconnect_counter = 0;
 
-	DigitalState<kButtonCount> m_buttons;
-	GamepadStick m_leftStick;
-	GamepadStick m_rightStick;
-	float m_leftTrigger = 0.0f;
-	float m_rightTrigger = 0.0f;
+	DigitalState<k_button_count> m_buttons;
+	GamepadStick m_left_stick;
+	GamepadStick m_right_stick;
+	float m_left_trigger = 0.0f;
+	float m_right_trigger = 0.0f;
 };

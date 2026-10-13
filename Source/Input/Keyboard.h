@@ -18,7 +18,7 @@ public:
 	// public methods
 	//==================================================
 
-	[[nodiscard]] bool Initialize(IDirectInput8* directInput, HWND hwnd);
+	[[nodiscard]] bool Initialize(IDirectInput8* direct_input, HWND hwnd);
 
 	void Update();
 
@@ -31,8 +31,8 @@ private:
 	// private variables
 	//==================================================
 
-	static constexpr size_t kKeyCount = 256;
+	static constexpr size_t k_key_count = 256;
 
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> m_device;
-	DigitalState<kKeyCount> m_keys;
+	DigitalState<k_key_count> m_keys;
 };

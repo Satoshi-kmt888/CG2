@@ -18,7 +18,7 @@ public:
 	void Update(std::span<const uint8_t, N> raw) {
 		m_pre = m_cur;
 		for (size_t i = 0; i < N; ++i) {
-			m_cur[i] = (raw[i] & kPressedMask) != 0;
+			m_cur[i] = (raw[i] & k_pressed_mask) != 0;
 		}
 	}
 
@@ -47,7 +47,7 @@ private:
 	// private variables
 	//==================================================
 
-	static constexpr uint8_t kPressedMask = 0x80;
+	static constexpr uint8_t k_pressed_mask = 0x80;
 
 	std::bitset<N> m_cur{};
 	std::bitset<N> m_pre{};

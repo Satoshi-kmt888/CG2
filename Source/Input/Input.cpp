@@ -10,21 +10,21 @@ Input* Input::GetInstance() {
 	return &instance;
 }
 
-bool Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
+bool Input::Initialize(HINSTANCE hinstance, HWND hwnd) {
 	HRESULT hr = DirectInput8Create(
-		hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
-		(void**)&m_directInput, nullptr
+		hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
+		(void**)&m_direct_input, nullptr
 	);
 	if (FAILED(hr)) {
 		LOG_ERROR("DirectInputの生成に失敗しました。");
 		return false;
 	}
 
-	if (!m_keyboard.Initialize(m_directInput.Get(), hwnd)) {
+	if (!m_keyboard.Initialize(m_direct_input.Get(), hwnd)) {
 		return false;
 	}
 
-	if (!m_mouse.Initialize(m_directInput.Get(), hwnd)) {
+	if (!m_mouse.Initialize(m_direct_input.Get(), hwnd)) {
 		return false;
 	}
 

@@ -7,13 +7,13 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-bool Keyboard::Initialize(IDirectInput8* directInput, HWND hwnd) {
-	if (!directInput) {
+bool Keyboard::Initialize(IDirectInput8* direct_input, HWND hwnd) {
+	if (!direct_input) {
 		LOG_ERROR("引数がnullptrです。DirectInputの生成に失敗している可能性があります。");
 		return false;
 	}
 
-	if (FAILED(directInput->CreateDevice(GUID_SysKeyboard, &m_device, nullptr))) {
+	if (FAILED(direct_input->CreateDevice(GUID_SysKeyboard, &m_device, nullptr))) {
 		LOG_ERROR("キーボードデバイスの生成に失敗しました。");
 		return false;
 	}
@@ -42,7 +42,7 @@ void Keyboard::Update() {
 		return;
 	}
 
-	std::array<uint8_t, kKeyCount> raw{};
+	std::array<uint8_t, k_key_count> raw{};
 	HRESULT hr = m_device->GetDeviceState(static_cast<DWORD>(sizeof(raw)), raw.data());
 
 	if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED) {

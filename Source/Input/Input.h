@@ -26,7 +26,7 @@ public:
 	Input(Input&&) = delete;
 	Input& operator=(Input&&) = delete;
 
-	[[nodiscard]]bool Initialize(HINSTANCE hInstance, HWND hwnd);
+	[[nodiscard]] bool Initialize(HINSTANCE hinstance, HWND hwnd);
 
 	void Update();
 
@@ -49,7 +49,7 @@ private:
 	// private variables
 	//==================================================
 
-	Microsoft::WRL::ComPtr<IDirectInput8> m_directInput;
+	Microsoft::WRL::ComPtr<IDirectInput8> m_direct_input;
 
 	Keyboard m_keyboard;
 	Mouse m_mouse;
