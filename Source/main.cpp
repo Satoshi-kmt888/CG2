@@ -23,7 +23,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	D3D12ResourceLeakChecker leakCheck;
 
 	//エンジンの初期化
-	StarEngine::Initialize();
+	StarEngine::Initialize(L"CG3");
 
 	//ルートシグネチャ
 	auto rootSignature = std::make_unique<RootSignature>();

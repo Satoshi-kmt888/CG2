@@ -3,134 +3,114 @@
 #include "App/StringUtility.h"
 #include "Debugger/Logger.h"
 
-#include <imgui.h>
-
-#ifdef USE_IMGUI
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#endif
-
-WinApp* WinApp::GetInstance() {
-	static WinApp instance;
-	return &instance;
+WinApp::~WinApp() {
+	Destroy();
 }
 
-bool WinApp::Initialize() {
-	//アプリケーションのインスタンスハンドルを取得
-	HINSTANCE hInstance = GetModuleHandle(nullptr);
-	if (!hInstance) {
-		//インスタンスハンドルの取得失敗ログ
+std::unique_ptr<WinApp> WinApp::Create(const wchar_t* title, uint32_t width, uint32_t height) {
+	HINSTANCE hinstance = GetModuleHandle(nullptr);
+	if (!hinstance) {
 		LOG_ERROR("ModuleHandle の取得に失敗しました。");
-		return false;
+		return nullptr;
 	}
 
-	//ウィンドウの設定
-	WNDCLASSEX wc = {};
-	wc.cbSize = sizeof(WNDCLASSEX);                        //WNDCLASSEX構造体のサイズを指定
-	wc.style = CS_HREDRAW | CS_VREDRAW;                    //ウィンドウスタイル(水平・垂直方向の再描画)
-	wc.lpfnWndProc = WindowProc;                           //ウィンドウプロシージャ
-	wc.hIcon = LoadIcon(hInstance, IDI_APPLICATION);       //アプリケーションのアイコン
-	wc.hCursor = LoadCursor(hInstance, IDC_ARROW);         //アプリケーションで使用するカーソル
-	wc.hbrBackground = GetSysColorBrush(COLOR_BACKGROUND); //ウィンドウの背景色
-	wc.lpszMenuName = nullptr;                             //ウィンドウメニューを表すリソース名(メニューバー)
-	wc.lpszClassName = kWindowClassName;                   //ウィンドウクラスを識別する名前(アプリケーション名がおすすめ)
-	wc.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);     //タイトルバーに表示するアイコン(16x16)
-
-	//ウィンドウクラスの登録
-	if (!RegisterClassEx(&wc)) {
-		//ウィンドウクラスの登録失敗ログ
-		LOG_ERROR("ウィンドウクラスの登録に失敗しました。クラス名: {}", StringUtility::ConvertString(kWindowClassName));
-		return false;
+	//1枚目のウィンドウの時のみ登録を行う
+	if (s_window_count == 0 && !Register(hinstance, WindowProc)) {
+		return nullptr;
 	}
 
-	//インスタンスハンドルの設定
-	m_hInstance = hInstance;
+	auto instance = std::make_unique<WinApp>();
 
-	//ウィンドウサイズを設定
 	RECT rect = {};
-	rect.right = static_cast<LONG>(m_clientWidth);
-	rect.bottom = static_cast<LONG>(m_clientHeight);
+	rect.right = static_cast<LONG>(width);
+	rect.bottom = static_cast<LONG>(height);
 
-	//ウィンドウサイズを調整
 	auto style = WS_OVERLAPPEDWINDOW;
 	AdjustWindowRect(&rect, style, FALSE);
 
-	//ウィンドウを生成
-	m_hWnd = CreateWindowEx(
-	0,                                  //拡張するウィンドウのウィンドウスタイル
-	kWindowClassName,                   //ウィンドウクラス名
-	kWindowClassName,                   //タイトルバーに表示する文字列
-	style,                              //作成するウィンドウのスタイル
-	CW_USEDEFAULT,                      //生成されるx座標の初期値(Windowsに任せる)
-	CW_USEDEFAULT,                      //生成されるy座標の初期値(Windowsに任せる)
-	rect.right - rect.left,             //ウィンドウの幅
-	rect.bottom - rect.top,             //ウィンドウの高さ
-	nullptr,                            //親/オーナーウィンドウハンドルの指定
-	nullptr,                            //メニュー/子ウィンドウIDの指定
-	m_hInstance,                         //インスタンスハンドル
-	this                                //オプション
+	instance->m_hwnd = CreateWindowEx(
+	0,                      //拡張するウィンドウのウィンドウスタイル
+	k_window_class_name,    //ウィンドウクラス名
+	title,                  //タイトルバーに表示する文字列
+	style,                  //作成するウィンドウのスタイル
+	CW_USEDEFAULT,          //生成されるx座標の初期値(Windowsに任せる)
+	CW_USEDEFAULT,          //生成されるy座標の初期値(Windowsに任せる)
+	rect.right - rect.left, //ウィンドウの幅
+	rect.bottom - rect.top, //ウィンドウの高さ
+	nullptr,                //親/オーナーウィンドウハンドルの指定
+	nullptr,                //メニュー/子ウィンドウIDの指定
+	hinstance,              //インスタンスハンドル
+	nullptr                 //オプション
 	);
 
-	if (!m_hWnd) {
-		//ウィンドウ生成の失敗ログ
-		LOG_ERROR("ウィンドウの生成に失敗しました。");
-		return false;
+	if (!instance->m_hwnd) {
+		LOG_ERROR("ウィンドウの生成に失敗しました。タイトル: {}", StringUtility::ConvertString(title));
+
+		//1枚もウィンドウがない場合に登録が残らないようにする
+		if (s_window_count == 0) {
+			Unregister(hinstance);
+		}
+
+		return nullptr;
 	}
 
+	instance->m_hinstance = hinstance;
+	instance->m_width = width;
+	instance->m_height = height;
+	++s_window_count;
+
 	//ウィンドウを表示
-	ShowWindow(m_hWnd, SW_SHOWNORMAL);
-	UpdateWindow(m_hWnd);
-	SetFocus(m_hWnd);
+	ShowWindow(instance->m_hwnd, SW_SHOWNORMAL);
+	UpdateWindow(instance->m_hwnd);
+	SetFocus(instance->m_hwnd);
 
-	LOG_INFO("WinApp の初期化が正常に完了しました。クライアント解像度: {}x{}", m_clientWidth, m_clientHeight);
-
-	return true;
+	LOG_INFO("WinApp の初期化が正常に完了しました。クライアント解像度: {}x{}", instance->m_width, instance->m_height);
+	return instance;
 }
 
-bool WinApp::ProcessMessage() const {
+bool WinApp::ProcessMessage() {
 	MSG msg{};
 
 	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 
-		//ループ中にWM_QUITを検出したら即座に終了
 		if (msg.message == WM_QUIT) {
-			//終了メッセージ検知ログ
 			LOG_INFO("WM_QUIT を検知しました。メッセージループを終了します。");
 			return false;
 		}
 	}
 
-	//正常終了
 	return true;
 }
 
-void WinApp::Finalize() {
-	if (m_hWnd) {
-		DestroyWindow(m_hWnd);
-		m_hWnd = nullptr;
+void WinApp::Destroy() {
+	if (!m_hwnd) {
+		return;
 	}
 
-	if (m_hInstance) {
-		//ウィンドウの登録解除
-		UnregisterClass(kWindowClassName, m_hInstance);
-		m_hInstance = nullptr;
+	if (m_hwnd) {
+		DestroyWindow(m_hwnd);
 	}
+	m_hwnd = nullptr;
 
-	LOG_INFO("WinApp の解放処理が完了しました。");
+	--s_window_count;
+
+	if (s_window_count == 0) {
+		Unregister(m_hinstance);
+	}
+	m_hinstance = nullptr;
+
+	LOG_INFO("ウィンドウの破棄が完了しました。");
 }
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-#ifdef USE_IMGUI
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+	if (s_message_hook && s_message_hook(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
-#endif
 
-	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
 	case WM_DESTROY:
-		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
 		return 0;
 
@@ -139,4 +119,30 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 	}
 
 	return DefWindowProc(hwnd, msg, wparam, lparam);
+}
+
+bool WinApp::Register(HINSTANCE hinstance, WNDPROC window_proc) {
+	//ウィンドウの設定
+	WNDCLASSEX wc = {};
+	wc.hInstance = hinstance;
+	wc.cbSize = sizeof(WNDCLASSEX);                        //WNDCLASSEX構造体のサイズを指定
+	wc.style = CS_HREDRAW | CS_VREDRAW;                    //ウィンドウスタイル(水平・垂直方向の再描画)
+	wc.lpfnWndProc = window_proc;                          //ウィンドウプロシージャ
+	wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);         //アプリケーションのアイコン
+	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);           //アプリケーションで使用するカーソル
+	wc.hbrBackground = GetSysColorBrush(COLOR_BACKGROUND); //ウィンドウの背景色
+	wc.lpszMenuName = nullptr;                             //ウィンドウメニューを表すリソース名(メニューバー)
+	wc.lpszClassName = k_window_class_name;                //ウィンドウクラスを識別する名前(アプリケーション名がおすすめ)
+	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);       //タイトルバーに表示するアイコン(16x16)
+
+	if (!RegisterClassEx(&wc)) {
+		LOG_ERROR("ウィンドウクラスの登録に失敗しました。クラス名: {}", StringUtility::ConvertString(k_window_class_name));
+		return false;
+	}
+
+	return true;
+}
+
+void WinApp::Unregister(HINSTANCE hinstance) {
+	UnregisterClass(k_window_class_name, hinstance);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 /// <summary>
 /// エンジン全体のライフサイクルを管理するコアシステム
 /// </summary>
@@ -7,7 +9,7 @@ namespace StarEngine {
 	/// <summary>
 	/// 
 	/// </summary>
-	void Initialize();
+	void Initialize(const wchar_t* window_title, uint32_t window_width = 1280, uint32_t window_height = 720);
 
 	/// <summary>
 	/// 

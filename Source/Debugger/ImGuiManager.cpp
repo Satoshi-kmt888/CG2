@@ -4,6 +4,8 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 #include <imgui.h>
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
 ImGuiManager* ImGuiManager::GetInstance() {
@@ -13,6 +15,8 @@ ImGuiManager* ImGuiManager::GetInstance() {
 
 void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, DXGI_FORMAT rtvFormat) {
 #ifdef USE_IMGUI
+	m_hwnd = hwnd;
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -54,5 +58,17 @@ void ImGuiManager::Finalize() {
 	ImGui::DestroyContext();
 
 	DescriptorManager::GetInstance()->Free(descriptorHandle_);
+#endif
+}
+
+bool ImGuiManager::HandleWindowMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+#ifdef USE_IMGUI
+	if (hwnd != GetInstance()->m_hwnd) {
+		return false;
+	}
+
+	return ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam) != 0;
+#else
+	return false;
 #endif
 }

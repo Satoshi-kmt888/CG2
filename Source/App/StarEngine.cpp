@@ -10,21 +10,28 @@
 #include "Input/Input.h"
 
 namespace StarEngine {
-	void Initialize() {
+	namespace {
+		std::unique_ptr<WinApp> s_main_window;
+	}
+
+	void Initialize(const wchar_t* window_title, uint32_t window_width, uint32_t window_height) {
 		//デバッグ関連の初期化
 		CrashHandler::Register();
 		Logger::Initialize();
 
 		//ウィンドウの初期化
-		auto* winApp = WinApp::GetInstance();
-		winApp->Initialize();
+		s_main_window = WinApp::Create(window_title, window_width, window_height);
+		if (!s_main_window) {
+			LOG_ERROR("メインウィンドウの生成に失敗しました。");
+			return;
+		}
 
 		//DirectX12基盤の初期化
 		auto* graphicsSystem = GraphicsSystem::GetInstance();
-		graphicsSystem->Initialize(winApp->GetHwnd(), winApp->GetClientWidth(), winApp->GetClientHeight());
+		graphicsSystem->Initialize(s_main_window->GetHwnd(), s_main_window->GetClientWidth(), s_main_window->GetClientHeight());
 
 		//入力処理の初期化
-		if (!Input::GetInstance()->Initialize(winApp->GetHInstance(), winApp->GetHwnd())) {
+		if (!Input::GetInstance()->Initialize(s_main_window->GetHInstance(), s_main_window->GetHwnd())) {
 			return;
 		}
 
@@ -34,14 +41,18 @@ namespace StarEngine {
 		//マネージャーの初期化
 		TextureManager::GetInstance()->Initialize(graphicsSystem->GetDevice(), graphicsSystem->GetCommandList());
 		ImGuiManager::GetInstance()->Initialize(
-			winApp->GetHwnd(),
+			s_main_window->GetHwnd(),
 			graphicsSystem->GetDevice(),
 			graphicsSystem->GetSwapChainDesc().BufferCount,
 			graphicsSystem->GetRTVDesc().Format
 		);
+
+		WinApp::SetMessageHook(ImGuiManager::HandleWindowMessage);
 	}
 
 	void Finalize() {
+		WinApp::SetMessageHook(nullptr);
+
 		//マネージャー類の終了処理
 		ImGuiManager::GetInstance()->Finalize();
 		TextureManager::GetInstance()->Finalize();
@@ -52,7 +63,7 @@ namespace StarEngine {
 		//DirectX12基盤の終了
 		GraphicsSystem::GetInstance()->Finalize();
 		//WinAppの終了
-		WinApp::GetInstance()->Finalize();
+		s_main_window->Destroy();
 		//ログクラスの終了
 		Logger::Finalize();
 	}
@@ -70,7 +81,7 @@ namespace StarEngine {
 	}
 
 	bool ProcessMessage() {
-		return WinApp::GetInstance()->ProcessMessage();
+		return WinApp::ProcessMessage();
 	}
 }//namespace StarEngine
 

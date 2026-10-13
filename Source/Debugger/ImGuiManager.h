@@ -3,15 +3,17 @@
 #include "Graphics/DescriptorManager.h"
 
 #include <d3d12.h>
-#include <Windows.h>
 #include <dxgiformat.h>
+#include <Windows.h>
 
 /// <summary>
 /// ImGuiの 初期化 / フレーム管理 / 描画 / 破棄 を行うシングルトンクラス
 /// </summary>
 class ImGuiManager {
 public:
-	//--- インスタンス管理 ---
+	//==================================================
+	// publice methods
+	//==================================================
 
 	/// <summary>
 	/// インスタンスの取得
@@ -19,12 +21,8 @@ public:
 	/// <returns></returns>
 	static ImGuiManager* GetInstance();
 
-	//--- コピーガード ---
-
 	ImGuiManager(const ImGuiManager&) = delete;
 	ImGuiManager& operator=(const ImGuiManager&) = delete;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// 初期化
@@ -51,14 +49,21 @@ public:
 	/// </summary>
 	void Finalize();
 
+	static bool HandleWindowMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
 private:
-	//--- インスタンス管理 ---
+	//==================================================
+	// private methods
+	//==================================================
 
 	ImGuiManager() = default;
 	~ImGuiManager() = default;
 
-	//--- 内部変数 ---
+	//==================================================
+	// private variables
+	//==================================================
 
 	DescriptorHandle descriptorHandle_{};
+	HWND m_hwnd = nullptr;
 };
 
