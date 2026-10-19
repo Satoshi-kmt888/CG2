@@ -311,6 +311,9 @@
     <ClInclude Include="..\Source\Input\Gamepad.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Math\Quaternion.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shader\Object3d.hlsli">

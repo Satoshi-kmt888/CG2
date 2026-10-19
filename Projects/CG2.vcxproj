@@ -268,6 +268,7 @@ xcopy "$(SolutionDir)Resources" "$(OutDir)Resources" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Input\Keyboard.h" />
     <ClInclude Include="..\Source\Input\Mouse.h" />
     <ClInclude Include="..\Source\Math\Matrix4x4.h" />
+    <ClInclude Include="..\Source\Math\Quaternion.h" />
     <ClInclude Include="..\Source\Math\Transform.h" />
     <ClInclude Include="..\Source\Math\Vector2.h" />
     <ClInclude Include="..\Source\Math\Vector3.h" />
