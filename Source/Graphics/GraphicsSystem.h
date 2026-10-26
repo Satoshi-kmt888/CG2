@@ -5,8 +5,7 @@
 #include "Graphics/SwapChain.h"
 
 #include <array>
-
-class WinApp;
+#include <chrono>
 
 /// <summary>
 /// DirectX12の各コンポーネントを統括し、描画パイプラインの前後処理を管理するシングルトンクラス
@@ -53,8 +52,8 @@ public:
 
 	ID3D12Device* GetDevice() const { return m_device.GetDevice(); }
 	ID3D12GraphicsCommandList* GetCommandList() { return m_command.GetCommandList(); }
-	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return m_swapChain.GetSwapChainDesc(); }
-	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return m_swapChain.GetRTVDesc(); }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return m_swap_chain.GetSwapChainDesc(); }
+	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return m_swap_chain.GetRTVDesc(); }
 
 private:
 	//==================================================
@@ -64,17 +63,24 @@ private:
 	GraphicsSystem() = default;
 	~GraphicsSystem() = default;
 
+	void InitializeFixFPS();
+	void UpdateFixFPS();
+
 	//==================================================
 	// private variables
 	//==================================================
 
+	int i = 0;
+
 	//画面のクリアカラー
-	static constexpr std::array<float, 4> kClearColor = { 0.392f, 0.584f, 0.929f, 1.0f };
+	static constexpr std::array<float, 4> k_clear_color = { 0.392f, 0.584f, 0.929f, 1.0f };
 
 	GraphicsDevice m_device;  //GPUデバイス管理
 	CommandContext m_command; //コマンドキュー・リスト/同期の管理
-	SwapChain m_swapChain;    //バックバッファ表示・深度バッファの管理
+	SwapChain m_swap_chain;    //バックバッファ表示・深度バッファの管理
 
-	D3D12_RECT m_scissorRect{};
+	D3D12_RECT m_scissor_rect{};
 	D3D12_VIEWPORT m_viewport{};
+
+	std::chrono::steady_clock::time_point m_reference;
 };

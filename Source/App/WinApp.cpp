@@ -3,6 +3,8 @@
 #include "App/StringUtility.h"
 #include "Debugger/Logger.h"
 
+#pragma comment(lib, "winmm.lib")
+
 WinApp::~WinApp() {
 	Destroy();
 }
@@ -70,6 +72,7 @@ std::unique_ptr<WinApp> WinApp::Create(const wchar_t* title, uint32_t width, uin
 
 bool WinApp::ProcessMessage() {
 	MSG msg{};
+	timeBeginPeriod(1);
 
 	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
