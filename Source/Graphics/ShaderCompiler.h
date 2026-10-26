@@ -1,27 +1,25 @@
 #pragma once
 
 #include <Windows.h>
-#include <dxcapi.h>
-#include <wrl/client.h>
-#include <string>
 
-template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+#include <dxcapi.h>
+#include <string>
+#include <wrl/client.h>
 
 /// <summary>
-/// HLSLシェーダーのコンパイルを管理するクラス
+/// HLSLシェーダーのコンパイル
 /// </summary>
 class ShaderCompiler {
 public:
-	//--- コンストラクタ・デストラクタ ---
+	template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+	//============================================================
+	// public methods
+	//============================================================
 
 	ShaderCompiler() = default;
 	~ShaderCompiler() = default;
 
-	//--- 公開関数 ---
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
 	void Initialize();
 
 	/// <summary>
@@ -30,20 +28,24 @@ public:
 	/// <param name="filePath"></param>
 	/// <param name="profile"></param>
 	/// <returns></returns>
-	ComPtr<IDxcBlob> Compile(const std::wstring& filePath, const wchar_t* profile);
+	ComPtr<IDxcBlob> Compile(const std::wstring& filename, const wchar_t* profile);
 
 private:
-	//--- 内部関数 ---
+	//============================================================
+	// private methods
+	//============================================================
 
 	/// <summary>
 	/// コンパイルエラーを解析し、詳細なログを出力
 	/// </summary>
 	/// <param name="shdaerResult"></param>
-	void OutputCompileErrors(IDxcResult* shaderResult);
+	void OutputCompileErrors(IDxcResult* shader_result) const;
 
-	//--- 内部変数 ---
+	//============================================================
+	// private variables
+	//============================================================
 
-	ComPtr<IDxcUtils> dxcUtils_ = nullptr;                //!< DXCユーティリティ
-	ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;         //!< DXCコンパイラ
-	ComPtr<IDxcIncludeHandler> includeHandler_ = nullptr; //!< インクルードハンドラ
+	ComPtr<IDxcUtils> m_utils = nullptr;
+	ComPtr<IDxcCompiler3> m_compiler = nullptr;
+	ComPtr<IDxcIncludeHandler> m_include_handler = nullptr;
 };
