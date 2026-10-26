@@ -31,7 +31,7 @@ namespace StarEngine {
 		graphicsSystem->Initialize(s_main_window->GetHwnd(), s_main_window->GetClientWidth(), s_main_window->GetClientHeight());
 
 		//入力処理の初期化
-		if (!Input::GetInstance()->Initialize(s_main_window->GetHInstance(), s_main_window->GetHwnd())) {
+		if (!Input::GetInstance()->Initialize(s_main_window.get())) {
 			return;
 		}
 

@@ -1,5 +1,6 @@
 #include "Input/Input.h"
 
+#include "App/WinApp.h"
 #include "Debugger/Logger.h"
 
 #pragma comment(lib, "dinput8.lib")
@@ -10,9 +11,9 @@ Input* Input::GetInstance() {
 	return &instance;
 }
 
-bool Input::Initialize(HINSTANCE hinstance, HWND hwnd) {
+bool Input::Initialize(WinApp* win_app) {
 	HRESULT hr = DirectInput8Create(
-		hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
+		win_app->GetHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8,
 		(void**)&m_direct_input, nullptr
 	);
 	if (FAILED(hr)) {
@@ -20,11 +21,11 @@ bool Input::Initialize(HINSTANCE hinstance, HWND hwnd) {
 		return false;
 	}
 
-	if (!m_keyboard.Initialize(m_direct_input.Get(), hwnd)) {
+	if (!m_keyboard.Initialize(m_direct_input.Get(), win_app->GetHwnd())) {
 		return false;
 	}
 
-	if (!m_mouse.Initialize(m_direct_input.Get(), hwnd)) {
+	if (!m_mouse.Initialize(m_direct_input.Get(), win_app->GetHwnd())) {
 		return false;
 	}
 

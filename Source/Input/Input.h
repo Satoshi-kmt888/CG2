@@ -9,6 +9,8 @@
 #include <dinput.h>
 #include <wrl/client.h>
 
+class WinApp;
+
 /// <summary>
 /// 入力処理を管理するクラス
 /// </summary>
@@ -26,7 +28,7 @@ public:
 	Input(Input&&) = delete;
 	Input& operator=(Input&&) = delete;
 
-	[[nodiscard]] bool Initialize(HINSTANCE hinstance, HWND hwnd);
+	[[nodiscard]] bool Initialize(WinApp* win_app);
 
 	void Update();
 
