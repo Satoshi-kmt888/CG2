@@ -50,8 +50,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//コンパイラ
 	auto compiler = std::make_unique<ShaderCompiler>();
 	compiler->Initialize();
-	auto vsBlob = compiler->Compile(L"Shader/Object3d.VS.hlsl", L"vs_6_0");
-	auto psBlob = compiler->Compile(L"Shader/Object3d.PS.hlsl", L"ps_6_0");
+	auto vsBlob = compiler->Compile(L"Resource/Shader/Object3d.VS.hlsl", L"vs_6_0");
+	auto psBlob = compiler->Compile(L"Resource/Shader/Object3d.PS.hlsl", L"ps_6_0");
 	if (!vsBlob || !psBlob) return false;
 
 	//パイプライン

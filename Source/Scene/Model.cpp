@@ -87,7 +87,7 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionHorizontal, uint32_t
 
 	model->mesh_->CreateBuffer(device);
 
-	model->material_->SetTexture("Resources/uvChecker.png");
+	model->material_->SetTexture("Resource/uvChecker.png");
 	model->material_->CreateBuffer(device);
 
 	model->CreateBuffer(device);
@@ -173,7 +173,7 @@ void Model::LoadOBJ(const std::string& filename) {
 	std::vector<Vector3> normals; //法線
 	std::vector<Vector2> texCoords; //uv座標
 	std::string line; //ファイルから読み込んだ1行を格納
-	std::ifstream file("Resources/" + filename); //ファイルを開く
+	std::ifstream file("Resource/" + filename); //ファイルを開く
 	assert(file.is_open()); //開かなかったら止める
 
 	while (std::getline(file, line)) {
@@ -242,7 +242,7 @@ void Model::LoadOBJ(const std::string& filename) {
 void Model::LoadMaterialTemplateFile(const std::string& filename) {
 	//必要な変数を宣言
 	std::string line; //ファイルから読み込んだ1行を格納
-	std::ifstream file("Resources/" + filename); //ファイルを開く
+	std::ifstream file("Resource/" + filename); //ファイルを開く
 	assert(file.is_open()); //開けなかったら止める
 
 	while (std::getline(file, line)) {
@@ -255,7 +255,7 @@ void Model::LoadMaterialTemplateFile(const std::string& filename) {
 			std::string textureFilename;
 			s >> textureFilename;
 			//連結してファイルパスにする
-			material_->SetTexture("Resources/" + textureFilename);
+			material_->SetTexture("Resource/" + textureFilename);
 		}
 	}
 }
