@@ -52,6 +52,7 @@ public:
 
 	ID3D12Device* GetDevice() const { return m_device.GetDevice(); }
 	ID3D12GraphicsCommandList* GetCommandList() { return m_command.GetCommandList(); }
+	ID3D12CommandQueue* GetCommandQueue() { return m_command.GetCommandQueue(); }
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return m_swap_chain.GetSwapChainDesc(); }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRTVDesc() const { return m_swap_chain.GetRTVDesc(); }
 

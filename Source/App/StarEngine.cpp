@@ -43,6 +43,7 @@ namespace StarEngine {
 		ImGuiManager::GetInstance()->Initialize(
 			s_main_window->GetHwnd(),
 			graphicsSystem->GetDevice(),
+			graphicsSystem->GetCommandQueue(),
 			graphicsSystem->GetSwapChainDesc().BufferCount,
 			graphicsSystem->GetRTVDesc().Format
 		);

@@ -31,7 +31,7 @@ public:
 	/// <param name="device"></param>
 	/// <param name="bufferCount"></param>
 	/// <param name="rtvFormat"></param>
-	void Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, DXGI_FORMAT rtvFormat);
+	void Initialize(HWND hwnd, ID3D12Device* device, ID3D12CommandQueue* cmd_queue, int bufferCount, DXGI_FORMAT rtvFormat);
 
 	/// <summary>
 	/// フレーム開始処理

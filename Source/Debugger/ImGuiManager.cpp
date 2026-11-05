@@ -13,7 +13,7 @@ ImGuiManager* ImGuiManager::GetInstance() {
 	return &instance;
 }
 
-void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, DXGI_FORMAT rtvFormat) {
+void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, ID3D12CommandQueue* cmd_queue, int bufferCount, DXGI_FORMAT rtvFormat) {
 #ifdef USE_IMGUI
 	m_hwnd = hwnd;
 
@@ -25,11 +25,17 @@ void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, int bufferCount, 
 	auto descriptorManager = DescriptorManager::GetInstance();
 	ID3D12DescriptorHeap* descriptorHeap = descriptorManager->GetHeap(DescriptorType::SRV_CBV_UAV);
 	descriptorHandle_ = descriptorManager->Allocate(DescriptorType::SRV_CBV_UAV);
-	ImGui_ImplDX12_Init(
-		device, bufferCount, rtvFormat, descriptorHeap,
-		descriptorHandle_.cpuHandle,
-		descriptorHandle_.gpuHandle
-	);
+
+	ImGui_ImplDX12_InitInfo init_info{};
+	init_info.Device = device;
+	init_info.CommandQueue = cmd_queue;
+	init_info.NumFramesInFlight = bufferCount;
+	init_info.RTVFormat = rtvFormat;
+	init_info.SrvDescriptorHeap = descriptorHeap;
+	init_info.LegacySingleSrvCpuDescriptor = descriptorHandle_.cpuHandle;
+	init_info.LegacySingleSrvGpuDescriptor = descriptorHandle_.gpuHandle;
+
+	ImGui_ImplDX12_Init(&init_info);
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->Build();
 #endif
