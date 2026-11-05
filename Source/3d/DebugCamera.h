@@ -1,7 +1,7 @@
 #pragma once
 
+#include "3d/Camera.h"
 #include "Math/Vector3.h"
-#include "Scene/Camera.h"
 
 class Input;
 

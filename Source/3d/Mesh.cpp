@@ -1,4 +1,4 @@
-#include "Scene/Mesh.h"
+#include "Mesh.h"
 
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
@@ -75,7 +75,7 @@ void Mesh::Draw(ID3D12GraphicsCommandList* commandList) const {
 		LOG_ERROR("Mesh::Draw メンバ変数vertexBuffer_がnullptrです。Mesh::CreateBufferでvertexBuffer_を作成してください。");
 		return;
 	}
-	
+
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_); //頂点バッファのセット
 
 	//インデックスの有無でドローコールを行う

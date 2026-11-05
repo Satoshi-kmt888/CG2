@@ -1,4 +1,4 @@
-#include "Scene/Material.h"
+#include "Material.h"
 
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"

@@ -19,26 +19,11 @@
     <Filter Include="Source\App">
       <UniqueIdentifier>{8bb982a1-1967-4066-876b-a913e9595787}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene">
-      <UniqueIdentifier>{9104f98b-99f9-490d-8350-ed7c921991d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Debugger">
       <UniqueIdentifier>{04768ed7-c720-4646-838f-4dcfdc21454f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Pipeline">
       <UniqueIdentifier>{f834e1f1-d1a5-40ec-9b7e-cd5dc8f96b25}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Nobody">
-      <UniqueIdentifier>{908940af-5805-4e55-bf01-a0e8c2c395cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Instrument">
-      <UniqueIdentifier>{51b5fec6-fe63-4a82-a7f4-20ddd2551413}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Instrument\Camera">
-      <UniqueIdentifier>{799ce9cc-62f6-4f28-8cb0-4e62876a7a12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Instrument\Light">
-      <UniqueIdentifier>{4ae75538-c326-4ae4-aaa2-cf6f9f8dbe2b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{32d8fe0b-b83c-4d2f-a7b1-51fb70d8e27e}</UniqueIdentifier>
@@ -51,6 +36,12 @@
     </Filter>
     <Filter Include="External\imgui">
       <UniqueIdentifier>{8c09e505-c3e9-41ea-810e-b8018bb9c5a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\2d">
+      <UniqueIdentifier>{2018b6db-7f10-4af2-b59c-4e1a404179f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\3d">
+      <UniqueIdentifier>{11832291-2fd6-4086-bcef-45ce68401122}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,62 +81,11 @@
     <ClCompile Include="..\Source\Debugger\CrashHandler.cpp">
       <Filter>Source\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Debugger\ImGuiManager.cpp">
-      <Filter>Source\Debugger</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Debugger\Logger.cpp">
       <Filter>Source\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Scene\Material.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\Mesh.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\Model.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\Sprite.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\BlendState.cpp">
-      <Filter>Source\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\DepthStencilState.cpp">
-      <Filter>Source\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp">
-      <Filter>Source\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\RootSignature.cpp">
-      <Filter>Source\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp">
-      <Filter>Source\Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\TextureManager.cpp">
-      <Filter>Source\Nobody</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Graphics\RasterizerState.cpp">
-      <Filter>Source\Pipeline</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\Graphics\DescriptorManager.cpp">
       <Filter>Source\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\App\StringUtility.cpp">
-      <Filter>Source\Nobody</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\App\StarEngine.cpp">
-      <Filter>Source\Nobody</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\Camera.cpp">
-      <Filter>Source\Instrument\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\DebugCamera.cpp">
-      <Filter>Source\Instrument\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Scene\DirectionalLight.cpp">
-      <Filter>Source\Instrument\Light</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Input\Keyboard.cpp">
       <Filter>Source\Input</Filter>
@@ -176,6 +116,57 @@
     </ClCompile>
     <ClCompile Include="..\External\imgui\imgui_widgets.cpp">
       <Filter>External\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\BlendState.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\DepthStencilState.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\GraphicsPipeline.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\RasterizerState.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\RootSignature.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\ShaderCompiler.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\App\StarEngine.cpp">
+      <Filter>Source\App</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\App\StringUtility.cpp">
+      <Filter>Source\App</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Graphics\TextureManager.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\3d\Camera.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\3d\DebugCamera.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\3d\DirectionalLight.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\3d\Material.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\3d\Mesh.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\3d\Model.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\2d\ImGuiManager.cpp">
+      <Filter>Source\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\2d\Sprite.cpp">
+      <Filter>Source\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -224,62 +215,11 @@
     <ClInclude Include="..\Source\Debugger\D3D12ResourceLeakChecker.h">
       <Filter>Source\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Debugger\ImGuiManager.h">
-      <Filter>Source\Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Debugger\Logger.h">
       <Filter>Source\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Scene\Material.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\Mesh.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\Model.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\Sprite.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\BlendState.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\DepthStencilState.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\ShaderCompiler.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\RootSignature.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\TextureManager.h">
-      <Filter>Source\Nobody</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Graphics\RasterizerState.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Graphics\DescriptorManager.h">
       <Filter>Source\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\App\StringUtility.h">
-      <Filter>Source\Nobody</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\App\StarEngine.h">
-      <Filter>Source\Nobody</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\Camera.h">
-      <Filter>Source\Instrument\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\DebugCamera.h">
-      <Filter>Source\Instrument\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Scene\DirectionalLight.h">
-      <Filter>Source\Instrument\Light</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Input\DigitalState.h">
       <Filter>Source\Input</Filter>
@@ -319,6 +259,57 @@
     </ClInclude>
     <ClInclude Include="..\External\imgui\imstb_truetype.h">
       <Filter>External\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\BlendState.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\DepthStencilState.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\GraphicsPipeline.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\RasterizerState.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\RootSignature.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\ShaderCompiler.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\App\StarEngine.h">
+      <Filter>Source\App</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\App\StringUtility.h">
+      <Filter>Source\App</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Graphics\TextureManager.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\Camera.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\DebugCamera.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\DirectionalLight.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\Material.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\Mesh.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\Model.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\2d\ImGuiManager.h">
+      <Filter>Source\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\2d\Sprite.h">
+      <Filter>Source\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

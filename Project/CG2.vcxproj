@@ -177,24 +177,25 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClCompile Include="..\External\imgui\imgui_widgets.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Source\2d\ImGuiManager.cpp" />
+    <ClCompile Include="..\Source\2d\Sprite.cpp" />
+    <ClCompile Include="..\Source\3d\Camera.cpp" />
+    <ClCompile Include="..\Source\3d\DebugCamera.cpp" />
+    <ClCompile Include="..\Source\3d\DirectionalLight.cpp" />
+    <ClCompile Include="..\Source\3d\Material.cpp" />
+    <ClCompile Include="..\Source\3d\Mesh.cpp" />
+    <ClCompile Include="..\Source\3d\Model.cpp" />
     <ClCompile Include="..\Source\App\StarEngine.cpp" />
     <ClCompile Include="..\Source\App\StringUtility.cpp" />
     <ClCompile Include="..\Source\App\WinApp.cpp" />
     <ClCompile Include="..\Source\Audio\Audio.cpp" />
     <ClCompile Include="..\Source\Debugger\CrashHandler.cpp" />
-    <ClCompile Include="..\Source\Debugger\ImGuiManager.cpp" />
     <ClCompile Include="..\Source\Debugger\Logger.cpp" />
-    <ClCompile Include="..\Source\Graphics\BlendState.cpp" />
     <ClCompile Include="..\Source\Graphics\CommandContext.cpp" />
     <ClCompile Include="..\Source\Graphics\D3D12Utility.cpp" />
-    <ClCompile Include="..\Source\Graphics\DepthStencilState.cpp" />
     <ClCompile Include="..\Source\Graphics\DescriptorManager.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsDevice.cpp" />
-    <ClCompile Include="..\Source\Graphics\GraphicsPipeline.cpp" />
     <ClCompile Include="..\Source\Graphics\GraphicsSystem.cpp" />
-    <ClCompile Include="..\Source\Graphics\RasterizerState.cpp" />
-    <ClCompile Include="..\Source\Graphics\RootSignature.cpp" />
-    <ClCompile Include="..\Source\Graphics\ShaderCompiler.cpp" />
     <ClCompile Include="..\Source\Graphics\SwapChain.cpp" />
     <ClCompile Include="..\Source\Graphics\TextureManager.cpp" />
     <ClCompile Include="..\Source\Input\Gamepad.cpp" />
@@ -207,13 +208,12 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     </ClCompile>
     <ClCompile Include="..\Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="..\Source\Math\Transform.cpp" />
-    <ClCompile Include="..\Source\Scene\Camera.cpp" />
-    <ClCompile Include="..\Source\Scene\DebugCamera.cpp" />
-    <ClCompile Include="..\Source\Scene\DirectionalLight.cpp" />
-    <ClCompile Include="..\Source\Scene\Material.cpp" />
-    <ClCompile Include="..\Source\Scene\Mesh.cpp" />
-    <ClCompile Include="..\Source\Scene\Model.cpp" />
-    <ClCompile Include="..\Source\Scene\Sprite.cpp" />
+    <ClCompile Include="..\Source\Pipeline\BlendState.cpp" />
+    <ClCompile Include="..\Source\Pipeline\DepthStencilState.cpp" />
+    <ClCompile Include="..\Source\Pipeline\GraphicsPipeline.cpp" />
+    <ClCompile Include="..\Source\Pipeline\RasterizerState.cpp" />
+    <ClCompile Include="..\Source\Pipeline\RootSignature.cpp" />
+    <ClCompile Include="..\Source\Pipeline\ShaderCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\imgui\backends\imgui_impl_dx12.h" />
@@ -224,25 +224,26 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="..\External\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\External\imgui\imstb_textedit.h" />
     <ClInclude Include="..\External\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\Source\2d\ImGuiManager.h" />
+    <ClInclude Include="..\Source\2d\Sprite.h" />
+    <ClInclude Include="..\Source\3d\Camera.h" />
+    <ClInclude Include="..\Source\3d\DebugCamera.h" />
+    <ClInclude Include="..\Source\3d\DirectionalLight.h" />
+    <ClInclude Include="..\Source\3d\Material.h" />
+    <ClInclude Include="..\Source\3d\Mesh.h" />
+    <ClInclude Include="..\Source\3d\Model.h" />
     <ClInclude Include="..\Source\App\StarEngine.h" />
     <ClInclude Include="..\Source\App\StringUtility.h" />
     <ClInclude Include="..\Source\App\WinApp.h" />
     <ClInclude Include="..\Source\Audio\Audio.h" />
     <ClInclude Include="..\Source\Debugger\CrashHandler.h" />
     <ClInclude Include="..\Source\Debugger\D3D12ResourceLeakChecker.h" />
-    <ClInclude Include="..\Source\Debugger\ImGuiManager.h" />
     <ClInclude Include="..\Source\Debugger\Logger.h" />
-    <ClInclude Include="..\Source\Graphics\BlendState.h" />
     <ClInclude Include="..\Source\Graphics\CommandContext.h" />
     <ClInclude Include="..\Source\Graphics\D3D12Utility.h" />
-    <ClInclude Include="..\Source\Graphics\DepthStencilState.h" />
     <ClInclude Include="..\Source\Graphics\DescriptorManager.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsDevice.h" />
-    <ClInclude Include="..\Source\Graphics\GraphicsPipeline.h" />
     <ClInclude Include="..\Source\Graphics\GraphicsSystem.h" />
-    <ClInclude Include="..\Source\Graphics\RasterizerState.h" />
-    <ClInclude Include="..\Source\Graphics\RootSignature.h" />
-    <ClInclude Include="..\Source\Graphics\ShaderCompiler.h" />
     <ClInclude Include="..\Source\Graphics\SwapChain.h" />
     <ClInclude Include="..\Source\Graphics\TextureManager.h" />
     <ClInclude Include="..\Source\Input\DigitalState.h" />
@@ -256,13 +257,12 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Math\Vector2.h" />
     <ClInclude Include="..\Source\Math\Vector3.h" />
     <ClInclude Include="..\Source\Math\Vector4.h" />
-    <ClInclude Include="..\Source\Scene\Camera.h" />
-    <ClInclude Include="..\Source\Scene\DebugCamera.h" />
-    <ClInclude Include="..\Source\Scene\DirectionalLight.h" />
-    <ClInclude Include="..\Source\Scene\Material.h" />
-    <ClInclude Include="..\Source\Scene\Mesh.h" />
-    <ClInclude Include="..\Source\Scene\Model.h" />
-    <ClInclude Include="..\Source\Scene\Sprite.h" />
+    <ClInclude Include="..\Source\Pipeline\BlendState.h" />
+    <ClInclude Include="..\Source\Pipeline\DepthStencilState.h" />
+    <ClInclude Include="..\Source\Pipeline\GraphicsPipeline.h" />
+    <ClInclude Include="..\Source\Pipeline\RasterizerState.h" />
+    <ClInclude Include="..\Source\Pipeline\RootSignature.h" />
+    <ClInclude Include="..\Source\Pipeline\ShaderCompiler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resource\Shader\Object3d.hlsli" />

@@ -1,4 +1,4 @@
-#include "Scene/DebugCamera.h"
+#include "DebugCamera.h"
 
 #include "Input/Input.h"
 

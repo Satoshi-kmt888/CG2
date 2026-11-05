@@ -1,17 +1,17 @@
 #include "App/StarEngine.h"
 
+#include "3d/Camera.h"
+#include "3d/DebugCamera.h"
+#include "3d/DirectionalLight.h"
+#include "3d/Model.h"
 #include "Debugger/D3D12ResourceLeakChecker.h"
-#include "Graphics/GraphicsPipeline.h"
 #include "Graphics/GraphicsSystem.h"
-#include "Graphics/RootSignature.h"
-#include "Graphics/ShaderCompiler.h"
 #include "Input/Input.h"
 #include "Math/Transform.h"
 #include "Math/Vector4.h"
-#include "Scene/Camera.h"
-#include "Scene/DebugCamera.h"
-#include "Scene/DirectionalLight.h"
-#include "Scene/Model.h"
+#include "Pipeline/GraphicsPipeline.h"
+#include "Pipeline/RootSignature.h"
+#include "Pipeline/ShaderCompiler.h"
 
 #include <imgui.h>
 #include <memory>

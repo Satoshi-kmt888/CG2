@@ -1,10 +1,9 @@
 #pragma once
 
+#include "3d/Material.h"
+#include "3d/Mesh.h"
 #include "Math/Matrix4x4.h"
-#include "Math/Vector2.h"
 #include "Math/Transform.h"
-#include "Scene/Material.h"
-#include "Scene/Mesh.h"
 
 #include <d3d12.h>
 #include <memory>
@@ -14,11 +13,10 @@
 template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 /// <summary>
-/// 2Dスプライトを管理すクラス
+/// 3Dオブジェクトのインスタンスを管理するクラス
 /// </summary>
-class Sprite {
+class Model {
 public:
-	//--- 内部データ ---
 
 	//GPUへ送るための座標変換行列データ
 	struct TransformationMatrix {
@@ -28,23 +26,31 @@ public:
 
 	//--- インスタンス管理 ---
 
-	Sprite() = default;
-	~Sprite();
+	Model() = default;
+	~Model();
 
-	//--- 公開関数
+	//--- 公開関数 ---
 
 	/// <summary>
-	/// 描画処理
+	/// 簡易的な球モデルを生成する
+	/// </summary>
+	/// <param name="textureFilePath"></param>
+	/// <returns>生成された球モデル</returns>
+	static std::unique_ptr<Model> CreateSphere(uint32_t divisionHorizontal = 16, uint32_t divisionVertical = 16);
+
+	/// <summary>
+	/// OBJファイルからモデルを生成する
+	/// </summary>
+	/// <param name="filename"></param>
+	/// <returns>生成されたモデル</returns>
+	static std::unique_ptr<Model> CreateFromOBJ(const std::string& filename);
+
+	/// <summary>
+	/// 
 	/// </summary>
 	/// <param name="transform"></param>
 	/// <param name="viewProjectionMatrix"></param>
-	void Draw(Transform& transform, const Matrix4x4& viewProjectionMatrix);
-
-	/// <summary>
-	/// 通常のスプライトを生成
-	/// </summary>
-	/// <returns></returns>
-	static std::unique_ptr<Sprite> Create();
+	void Draw(const Transform& transform, const Matrix4x4& viewProjectionMatrix);
 
 	//--- ゲッター ---
 
@@ -61,15 +67,23 @@ public:
 private:
 	//--- 内部関数 ---
 
+	/// <summary>
+	/// バッファの生成
+	/// </summary>
+	/// <param name="device"></param>
 	void CreateBuffer(ID3D12Device* device);
 
-	//--- 内部変数 ---
+	void LoadOBJ(const std::string& filename);
+
+	void LoadMaterialTemplateFile(const std::string& filename);
+
+	//--- メンバ変数 ---
 
 	//座標変換リソース
 	ComPtr<ID3D12Resource> transformationBuffer_ = nullptr;
 	TransformationMatrix* transformationData_ = nullptr;
 
-	//パーツへの参照
+	//パーツへの参照・所有
 	std::unique_ptr<Mesh> mesh_ = nullptr;
 	std::unique_ptr<Material> material_ = nullptr;
 };
