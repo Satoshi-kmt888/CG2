@@ -16,12 +16,6 @@
     <Filter Include="Source\Audio">
       <UniqueIdentifier>{93a0d605-e66f-4b11-92c4-8ed34e3f858a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{c938937c-2b87-4d63-8ba7-2ef0dd5c6703}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\App">
       <UniqueIdentifier>{8bb982a1-1967-4066-876b-a913e9595787}</UniqueIdentifier>
     </Filter>
@@ -46,6 +40,18 @@
     <Filter Include="Source\Instrument\Light">
       <UniqueIdentifier>{4ae75538-c326-4ae4-aaa2-cf6f9f8dbe2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{32d8fe0b-b83c-4d2f-a7b1-51fb70d8e27e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\Shader">
+      <UniqueIdentifier>{c938937c-2b87-4d63-8ba7-2ef0dd5c6703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{9f585e87-2a14-4ce4-98e4-5c70ff16f056}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\imgui">
+      <UniqueIdentifier>{56255a66-6eb0-453a-8497-b613db26ecba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Audio\Audio.cpp">
@@ -64,25 +70,25 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\imgui.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\imgui_tables.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\backends\imgui_impl_dx12.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\externals\imgui\backends\imgui_impl_win32.cpp">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\Math\Transform.cpp">
       <Filter>Source\Math</Filter>
@@ -192,28 +198,28 @@
       <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\imconfig.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\imgui.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\imgui_internal.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\imstb_rectpack.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\imstb_textedit.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\imstb_truetype.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\backends\imgui_impl_dx12.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\externals\imgui\backends\imgui_impl_win32.h">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Math\Vector3.h">
       <Filter>Source\Math</Filter>
@@ -317,20 +323,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shader\Object3d.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Resource\Shader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shader\Object3d.PS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Shader\Object3d.VS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Resource\Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\externals\imgui\LICENSE.txt">
-      <Filter>imgui</Filter>
+      <Filter>External\imgui</Filter>
     </Text>
   </ItemGroup>
 </Project>
