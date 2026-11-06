@@ -4,6 +4,7 @@
 #include "3d/DebugCamera.h"
 #include "3d/DirectionalLight.h"
 #include "3d/Model.h"
+#include "3d/Particle.h"
 #include "Debugger/D3D12ResourceLeakChecker.h"
 #include "Graphics/GraphicsSystem.h"
 #include "Input/Input.h"
@@ -90,8 +91,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//モデル
 	auto model = Model::CreatePlane();
 	model->SetLightType(2);
-	Transform transform{};
+	Transform transform_model{};
 	Vector4 model_color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	Particle particle{};
+	particle.Initialize();
+	Transform transform_particle{};
+	UINT particle_count = 10;
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -132,9 +138,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Separator();
 
 		//フェンスモデルのSRT
-		ImGui::DragFloat3("model.translation", &transform.translation.x, 0.01f);
-		ImGui::DragFloat3("model.rotation", &transform.rotation.x, 0.01f);
-		ImGui::DragFloat3("model.scale", &transform.scale.x, 0.01f);
+		ImGui::DragFloat3("model.translation", &transform_model.translation.x, 0.01f);
+		ImGui::DragFloat3("model.rotation", &transform_model.rotation.x, 0.01f);
+		ImGui::DragFloat3("model.scale", &transform_model.scale.x, 0.01f);
 
 		ImGui::End();
 
@@ -157,7 +163,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 
 		//平面モデルを描画
-		model->Draw(transform, camera->GetViewProjMatrix());
+		model->Draw(transform_model, camera->GetViewProjMatrix());
+		particle.Draw(transform_particle, camera->GetViewProjMatrix(), particle_count);
 
 		//====================
 		// ↑描画処理↑

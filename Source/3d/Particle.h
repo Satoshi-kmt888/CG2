@@ -1,6 +1,8 @@
 #pragma once
 
-#include "3d/Mesh.h"
+#include "3d/Model.h"
+
+#include <memory>
 
 /// <summary>
 /// 
@@ -14,7 +16,9 @@ public:
 	Particle();
 	~Particle();
 
-	void Draw();
+	void Initialize();
+	void Update();
+	void Draw(const Transform& transform, const Matrix4x4& view_projection_matrix, UINT instance_count);
 
 private:
 	//=========================================================
@@ -24,5 +28,7 @@ private:
 	//=========================================================
 	// private variables
 	//=========================================================
+
+	std::unique_ptr<Model> m_model;
 };
 
