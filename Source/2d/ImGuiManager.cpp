@@ -38,6 +38,7 @@ void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, ID3D12CommandQueu
 	ImGui_ImplDX12_Init(&init_info);
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->Build();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 #endif
 }
 

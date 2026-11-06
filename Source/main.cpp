@@ -135,6 +135,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::DragFloat3("model.scale", &transform.scale.x, 0.01f);
 
 		ImGui::End();
+
+		ImGui::Begin("Debug");
+		ImGui::End();
 #endif
 
 		//====================
