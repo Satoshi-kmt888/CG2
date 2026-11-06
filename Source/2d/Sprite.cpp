@@ -32,8 +32,8 @@ std::unique_ptr<Sprite> Sprite::Create() {
 	for (const auto& v : vertices) {
 		Mesh::VertexData vertex{};
 		vertex.position = { v.position.x, v.position.y, v.position.z, 1.0f };
-		vertex.texCoord.x = v.texCoord.x;
-		vertex.texCoord.y = v.texCoord.y;
+		vertex.texcoord.x = v.texcoord.x;
+		vertex.texcoord.y = v.texcoord.y;
 		vertex.normal = v.normal;
 
 		sprite->mesh_->AddVertex(vertex);

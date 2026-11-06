@@ -20,45 +20,47 @@
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//リークチェック(デストラクタでチェックが入る)
-	D3D12ResourceLeakChecker leakCheck;
+	D3D12ResourceLeakChecker leak_check;
 
 	//エンジンの初期化
 	StarEngine::Initialize(L"CG3");
 
 	//ルートシグネチャ
-	auto rootSignature = std::make_unique<RootSignature>();
-	rootSignature->AddCBV(0, D3D12_SHADER_VISIBILITY_PIXEL);
-	rootSignature->AddCBV(0, D3D12_SHADER_VISIBILITY_VERTEX);
-	D3D12_DESCRIPTOR_RANGE descriptorRange{};
-	descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange.NumDescriptors = 1;
-	descriptorRange.BaseShaderRegister = 0;
-	descriptorRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	std::vector<D3D12_DESCRIPTOR_RANGE> ranges = { descriptorRange };
-	rootSignature->AddDescriptorTable(ranges, D3D12_SHADER_VISIBILITY_PIXEL);
-	rootSignature->AddCBV(1, D3D12_SHADER_VISIBILITY_PIXEL);
-	rootSignature->AddStaticSampler(
+	auto root_signature = std::make_unique<RootSignature>();
+	root_signature->AddCBV(0, D3D12_SHADER_VISIBILITY_PIXEL);
+	root_signature->AddCBV(0, D3D12_SHADER_VISIBILITY_VERTEX);
+	D3D12_DESCRIPTOR_RANGE descriptor_range{};
+	descriptor_range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptor_range.NumDescriptors = 1;
+	descriptor_range.BaseShaderRegister = 0;
+	descriptor_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	std::vector<D3D12_DESCRIPTOR_RANGE> ranges = { descriptor_range };
+	root_signature->AddDescriptorTable(ranges, D3D12_SHADER_VISIBILITY_PIXEL);
+	root_signature->AddCBV(1, D3D12_SHADER_VISIBILITY_PIXEL);
+	root_signature->AddStaticSampler(
 		0,
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_SHADER_VISIBILITY_PIXEL
 	);
-	if (!rootSignature->Build(GraphicsSystem::GetInstance()->GetDevice())) {
+	if (!root_signature->Build(GraphicsSystem::GetInstance()->GetDevice())) {
 		return false;
 	}
 
 	//コンパイラ
 	auto compiler = std::make_unique<ShaderCompiler>();
 	compiler->Initialize();
-	auto vsBlob = compiler->Compile(L"Resource/Shader/Object3d.VS.hlsl", L"vs_6_0");
-	auto psBlob = compiler->Compile(L"Resource/Shader/Object3d.PS.hlsl", L"ps_6_0");
-	if (!vsBlob || !psBlob) return false;
+	auto vs_blob = compiler->Compile(L"Resource/Shader/Object3d.VS.hlsl", L"vs_6_0");
+	auto ps_blob = compiler->Compile(L"Resource/Shader/Object3d.PS.hlsl", L"ps_6_0");
+	if (!vs_blob || !ps_blob) {
+		return false;
+	}
 
 	//パイプライン
 	auto pipeline = std::make_unique<GraphicsPipeline>();
-	pipeline->SetRootSignature(rootSignature.get())
-		.SetVertexShader(vsBlob.Get())
-		.SetPixelShader(psBlob.Get())
+	pipeline->SetRootSignature(root_signature.get())
+		.SetVertexShader(vs_blob.Get())
+		.SetPixelShader(ps_blob.Get())
 		.AddInputLayout("POSITION", DXGI_FORMAT_R32G32B32A32_FLOAT, 0)
 		.AddInputLayout("TEXCOORD", DXGI_FORMAT_R32G32_FLOAT, 0)
 		.AddInputLayout("NORMAL", DXGI_FORMAT_R32G32B32_FLOAT, 0)
@@ -71,25 +73,25 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	//メインカメラ(切り替える)
-	Camera mainCamera{ 1280.0f, 720.0f };
+	Camera main_camera{ 1280.0f, 720.0f };
 
 	//デバッグカメラ(切り替える)
-	DebugCamera debugCamera{};
-	bool isDebugCameraEnabled = false;
+	DebugCamera debug_camera{};
+	bool is_debug_camera_enabled = false;
 
 	//カメラ
-	Camera const* camera = &mainCamera;
+	Camera const* camera = &main_camera;
 
 	//ライト
 	auto light = std::make_unique<DirectionalLight>();
 	light->Initialize();
-	Vector4 lightColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4 light_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//モデル
-	auto plane = Model::CreateFromOBJ("fence.obj");
-	plane->SetLightType(2);
+	auto model = Model::CreatePlane();
+	model->SetLightType(2);
 	Transform transform{};
-	Vector4 modelColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4 model_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -107,10 +109,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 #endif
 
-		if (isDebugCameraEnabled) {
-			debugCamera.Update();
+		if (is_debug_camera_enabled) {
+			debug_camera.Update();
 		} else {
-			mainCamera.Update();
+			main_camera.Update();
 		}
 
 		//ライトを更新
@@ -120,12 +122,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Begin("Settings");
 
 		//平面モデルのカラー
-		ImGui::ColorEdit4("plane color", &modelColor.x);
-		plane->SetColor(modelColor);
+		ImGui::ColorEdit4("plane color", &model_color.x);
+		model->SetColor(model_color);
 
 		//ライト
-		ImGui::ColorEdit4("light color", &lightColor.x);
-		light->SetColor(lightColor);
+		ImGui::ColorEdit4("light color", &light_color.x);
+		light->SetColor(light_color);
 
 		ImGui::Separator();
 
@@ -149,13 +151,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//====================
 
 		auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
-		commandList->SetGraphicsRootSignature(rootSignature->Get());
+		commandList->SetGraphicsRootSignature(root_signature->Get());
 		commandList->SetPipelineState(pipeline->Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 
 		//平面モデルを描画
-		plane->Draw(transform, camera->GetViewProjMatrix());
+		model->Draw(transform, camera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑

@@ -168,6 +168,9 @@
     <ClCompile Include="..\Source\2d\Sprite.cpp">
       <Filter>Source\2d</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\3d\Particle.cpp">
+      <Filter>Source\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\Audio.h">
@@ -310,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\2d\Sprite.h">
       <Filter>Source\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\3d\Particle.h">
+      <Filter>Source\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

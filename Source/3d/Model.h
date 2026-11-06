@@ -10,33 +10,31 @@
 #include <string>
 #include <wrl/client.h>
 
-template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 /// <summary>
 /// 3Dオブジェクトのインスタンスを管理するクラス
 /// </summary>
 class Model {
 public:
-
-	//GPUへ送るための座標変換行列データ
 	struct TransformationMatrix {
 		Matrix4x4 wvp;
 		Matrix4x4 world;
 	};
 
-	//--- インスタンス管理 ---
+	//=========================================================
+	// public methods
+	//=========================================================
 
 	Model() = default;
 	~Model();
 
-	//--- 公開関数 ---
+	static std::unique_ptr<Model> CreatePlane();
 
 	/// <summary>
 	/// 簡易的な球モデルを生成する
 	/// </summary>
 	/// <param name="textureFilePath"></param>
 	/// <returns>生成された球モデル</returns>
-	static std::unique_ptr<Model> CreateSphere(uint32_t divisionHorizontal = 16, uint32_t divisionVertical = 16);
+	static std::unique_ptr<Model> CreateSphere(uint32_t division_horizontal = 16, uint32_t division_vertical = 16);
 
 	/// <summary>
 	/// OBJファイルからモデルを生成する
@@ -50,22 +48,28 @@ public:
 	/// </summary>
 	/// <param name="transform"></param>
 	/// <param name="viewProjectionMatrix"></param>
-	void Draw(const Transform& transform, const Matrix4x4& viewProjectionMatrix);
+	void Draw(const Transform& transform, const Matrix4x4& view_projection_matrix);
 
-	//--- ゲッター ---
+	void Draw(const Transform& transform, const Matrix4x4& view_projection_matrix, UINT instance_count);
 
-	const Vector4& GetColor() const { return material_->GetColor(); }
-	uint32_t GetLightType() const { return material_->GetLightType(); }
-	const Transform& GetUVTransform() const { return material_->GetTransform(); }
+	//=========================================================
+	// accessor
+	//=========================================================
 
-	//--- セッター ---
+	const Vector4& GetColor() const { return m_material->GetColor(); }
+	uint32_t GetLightType() const { return m_material->GetLightType(); }
+	const Transform& GetUVTransform() const { return m_material->GetTransform(); }
 
-	void SetColor(const Vector4& color) { material_->SetColor(color); }
-	void SetLightType(uint32_t lightType) { material_->SetLightType(lightType); }
-	void SetUVTransform(const Transform& transform) { material_->SetTransform(transform); }
+	//---------------------------------------------------------
+
+	void SetColor(const Vector4& color) { m_material->SetColor(color); }
+	void SetLightType(uint32_t lightType) { m_material->SetLightType(lightType); }
+	void SetUVTransform(const Transform& transform) { m_material->SetTransform(transform); }
 
 private:
-	//--- 内部関数 ---
+	//=========================================================
+	// private methods
+	//=========================================================
 
 	/// <summary>
 	/// バッファの生成
@@ -77,13 +81,15 @@ private:
 
 	void LoadMaterialTemplateFile(const std::string& filename);
 
-	//--- メンバ変数 ---
+	//=========================================================
+	// private variables
+	//=========================================================
 
 	//座標変換リソース
-	ComPtr<ID3D12Resource> transformationBuffer_ = nullptr;
-	TransformationMatrix* transformationData_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_transformation_buffer = nullptr;
+	TransformationMatrix* m_transformation_data = nullptr;
 
 	//パーツへの参照・所有
-	std::unique_ptr<Mesh> mesh_ = nullptr;
-	std::unique_ptr<Material> material_ = nullptr;
+	std::unique_ptr<Mesh> m_mesh = nullptr;
+	std::unique_ptr<Material> m_material = nullptr;
 };

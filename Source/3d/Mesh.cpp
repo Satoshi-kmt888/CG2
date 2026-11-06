@@ -7,13 +7,13 @@
 #include <dxgiformat.h>
 
 void Mesh::AddVertex(const VertexData& vertex) {
-	vertices_.emplace_back(vertex);
-	vertexCount_ = static_cast<UINT>(vertices_.size());
+	m_vertices.emplace_back(vertex);
+	m_vertex_count = static_cast<UINT>(m_vertices.size());
 }
 
 void Mesh::AddIndex(uint32_t index) {
-	indices_.emplace_back(index);
-	indexCount_ = static_cast<UINT>(indices_.size());
+	m_indices.emplace_back(index);
+	m_index_count = static_cast<UINT>(m_indices.size());
 }
 
 void Mesh::CreateBuffer(ID3D12Device* device) {
@@ -22,67 +22,89 @@ void Mesh::CreateBuffer(ID3D12Device* device) {
 		return;
 	}
 
-	if (vertices_.empty()) {
+	if (m_vertices.empty()) {
 		LOG_ERROR("Mesh::CreateBuffer メンバ変数vertices_に頂点データがありません。AddVertexで頂点データを追加してください。");
 		return;
 	}
 
 	//頂点バッファの作成
-	size_t vertexSize = sizeof(VertexData) * vertices_.size();
-	vertexBuffer_ = D3D12Utility::CreateBufferResource(device, vertexSize);
+	size_t vertex_size = sizeof(VertexData) * m_vertices.size();
+	m_vertex_buffer = D3D12Utility::CreateBufferResource(device, vertex_size);
 
 	//頂点バッファの転送
-	void* vertexPtr = nullptr;
-	vertexBuffer_->Map(0, nullptr, &vertexPtr);
-	std::memcpy(vertexPtr, vertices_.data(), vertexSize);
-	vertexBuffer_->Unmap(0, nullptr);
+	void* vertex_ptr = nullptr;
+	m_vertex_buffer->Map(0, nullptr, &vertex_ptr);
+	std::memcpy(vertex_ptr, m_vertices.data(), vertex_size);
+	m_vertex_buffer->Unmap(0, nullptr);
 
 	//ビューの設定
-	vertexBufferView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress();
-	vertexBufferView_.SizeInBytes = static_cast<UINT>(vertexSize);
-	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	m_vertex_buffer_view.BufferLocation = m_vertex_buffer->GetGPUVirtualAddress();
+	m_vertex_buffer_view.SizeInBytes = static_cast<UINT>(vertex_size);
+	m_vertex_buffer_view.StrideInBytes = sizeof(VertexData);
 
 	//インデックスバッファの作成と転送(インデックスが存在する場合)
-	if (indexCount_ > 0) {
+	if (m_index_count > 0) {
 		//インデックスバッファの作成
-		size_t indexSize = sizeof(uint32_t) * indices_.size();
-		indexBuffer_ = D3D12Utility::CreateBufferResource(device, indexSize);
+		size_t index_size = sizeof(uint32_t) * m_indices.size();
+		m_index_buffer = D3D12Utility::CreateBufferResource(device, index_size);
 
 		//インデックスバッファの転送
-		void* indexPtr = nullptr;
-		indexBuffer_->Map(0, nullptr, &indexPtr);
-		std::memcpy(indexPtr, indices_.data(), indexSize);
-		indexBuffer_->Unmap(0, nullptr);
+		void* index_ptr = nullptr;
+		m_index_buffer->Map(0, nullptr, &index_ptr);
+		std::memcpy(index_ptr, m_indices.data(), index_size);
+		m_index_buffer->Unmap(0, nullptr);
 
 		//ビューの設定
-		indexBufferView_.BufferLocation = indexBuffer_->GetGPUVirtualAddress();
-		indexBufferView_.SizeInBytes = static_cast<UINT>(indexSize);
-		indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+		m_index_buffer_view.BufferLocation = m_index_buffer->GetGPUVirtualAddress();
+		m_index_buffer_view.SizeInBytes = static_cast<UINT>(index_size);
+		m_index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
 	}
 
 	//バッファを作成し終えたので配列の中身を空にする
-	vertices_.clear();
-	indices_.clear();
+	m_vertices.clear();
+	m_indices.clear();
 }
 
-void Mesh::Draw(ID3D12GraphicsCommandList* commandList) const {
-	if (!commandList) {
+void Mesh::Draw(ID3D12GraphicsCommandList* command_list) const {
+	if (!command_list) {
 		LOG_ERROR("Mesh::Draw 引数commandListがnullptrです。");
 		return;
 	}
 
-	if (!vertexBuffer_) {
+	if (!m_vertex_buffer) {
 		LOG_ERROR("Mesh::Draw メンバ変数vertexBuffer_がnullptrです。Mesh::CreateBufferでvertexBuffer_を作成してください。");
 		return;
 	}
 
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_); //頂点バッファのセット
+	command_list->IASetVertexBuffers(0, 1, &m_vertex_buffer_view); //頂点バッファのセット
 
 	//インデックスの有無でドローコールを行う
-	if (indexCount_ > 0) {
-		commandList->IASetIndexBuffer(&indexBufferView_);
-		commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
+	if (m_index_count > 0) {
+		command_list->IASetIndexBuffer(&m_index_buffer_view);
+		command_list->DrawIndexedInstanced(m_index_count, 1, 0, 0, 0);
 	} else {
-		commandList->DrawInstanced(vertexCount_, 1, 0, 0);
+		command_list->DrawInstanced(m_vertex_count, 1, 0, 0);
+	}
+}
+
+void Mesh::Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count) {
+	if (!command_list) {
+		LOG_ERROR("Mesh::Draw 引数commandListがnullptrです。");
+		return;
+	}
+
+	if (!m_vertex_buffer) {
+		LOG_ERROR("Mesh::Draw メンバ変数vertexBuffer_がnullptrです。Mesh::CreateBufferでvertexBuffer_を作成してください。");
+		return;
+	}
+
+	command_list->IASetVertexBuffers(0, 1, &m_vertex_buffer_view); //頂点バッファのセット
+
+	//インデックスの有無でドローコールを行う
+	if (m_index_count > 0) {
+		command_list->IASetIndexBuffer(&m_index_buffer_view);
+		command_list->DrawIndexedInstanced(m_index_count, instance_count, 0, 0, 0);
+	} else {
+		command_list->DrawInstanced(m_vertex_count, instance_count, 0, 0);
 	}
 }

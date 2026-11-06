@@ -9,28 +9,24 @@
 #include <vector>
 #include <wrl/client.h>
 
-template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 /// <summary>
 ///  GPU上の頂点バッファ・インデックスバッファを管理するクラス
 /// </summary>
 class Mesh {
 public:
-	//--- 内部データ構造体 ---
-
 	//頂点1つ分が保持するデータ構造体
 	struct VertexData {
 		Vector4 position; //ローカル座標
-		Vector2 texCoord; //uv座標
+		Vector2 texcoord; //uv座標
 		Vector3 normal;   //法線ベクトル
 	};
 
-	//--- インスタンス管理 ---
+	//=========================================================
+	// public methods
+	//=========================================================
 
 	Mesh() = default;
 	~Mesh() = default;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// 頂点データの追加
@@ -54,20 +50,29 @@ public:
 	/// ドローコールを実行
 	/// </summary>
 	/// <param name="commandList"></param>
-	void Draw(ID3D12GraphicsCommandList* commandList) const;
+	void Draw(ID3D12GraphicsCommandList* command_list) const;
+
+	/// <summary>
+	/// インスタンシング描画用
+	/// </summary>
+	/// <param name="command_list"></param>
+	/// <param name="instance_count"></param>
+	void Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count);
 
 private:
-	//--- メンバ変数 ---
+	//=========================================================
+	// private variables
+	//=========================================================
 
 	//頂点
-	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	std::vector<VertexData> vertices_{};
-	UINT vertexCount_ = 0;
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_vertex_buffer = nullptr;
+	D3D12_VERTEX_BUFFER_VIEW m_vertex_buffer_view{};
+	std::vector<VertexData> m_vertices{};
+	UINT m_vertex_count = 0;
 
 	//インデックス
-	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-	std::vector<uint32_t> indices_{};
-	UINT indexCount_ = 0;
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_index_buffer = nullptr;
+	D3D12_INDEX_BUFFER_VIEW m_index_buffer_view{};
+	std::vector<uint32_t> m_indices{};
+	UINT m_index_count = 0;
 };
