@@ -50,8 +50,6 @@ public:
 	/// <param name="viewProjectionMatrix"></param>
 	void Draw(const Transform& transform, const Matrix4x4& view_projection_matrix);
 
-	void Draw(const Transform& transform, const Matrix4x4& view_projection_matrix, UINT instance_count);
-
 	//=========================================================
 	// accessor
 	//=========================================================

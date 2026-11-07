@@ -173,28 +173,6 @@ void Model::Draw(const Transform& transform, const Matrix4x4& view_projection_ma
 	m_mesh->Draw(commandList);
 }
 
-void Model::Draw(const Transform& transform, const Matrix4x4& view_projection_matrix, UINT instance_count) {
-	auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
-
-	if (!m_transformation_buffer) {
-		LOG_ERROR("Model::Draw メンバ変数transformationBuffer_がnullptrです。Model::CreateBufferでtransformationBuffer_を作成してください。");
-		return;
-	}
-
-	//ワールド変換データを更新
-	m_transformation_data->world = Transform::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
-	m_transformation_data->wvp = m_transformation_data->world * view_projection_matrix;
-
-	//マテリアルを更新
-	m_material->Update();
-
-	commandList->SetGraphicsRootConstantBufferView(1, m_transformation_buffer->GetGPUVirtualAddress());
-
-	//コマンド実行
-	m_material->SetGraphicsCommand(commandList, 0, 2);
-	m_mesh->Draw(commandList, instance_count);
-}
-
 void Model::CreateBuffer(ID3D12Device* device) {
 	m_transformation_buffer = D3D12Utility::CreateBufferResource(device, sizeof(TransformationMatrix));
 	if (!m_transformation_buffer) {

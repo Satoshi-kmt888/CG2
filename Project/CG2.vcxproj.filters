@@ -322,12 +322,21 @@
     <None Include="..\Resource\Shader\Object3d.hlsli">
       <Filter>Resource\Shader</Filter>
     </None>
+    <None Include="..\Resource\Shader\Particle.hlsli">
+      <Filter>Resource\Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resource\Shader\Object3d.PS.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resource\Shader\Object3d.VS.hlsl">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\Shader\Particle.PS.hlsl">
+      <Filter>Resource\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resource\Shader\Particle.VS.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
   </ItemGroup>

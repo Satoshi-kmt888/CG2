@@ -6,6 +6,7 @@
 #include "3d/Model.h"
 #include "3d/Particle.h"
 #include "Debugger/D3D12ResourceLeakChecker.h"
+#include "Graphics/D3D12Utility.h"
 #include "Graphics/GraphicsSystem.h"
 #include "Input/Input.h"
 #include "Math/Transform.h"
@@ -14,6 +15,7 @@
 #include "Pipeline/RootSignature.h"
 #include "Pipeline/ShaderCompiler.h"
 
+#include <array>
 #include <imgui.h>
 #include <memory>
 #include <Windows.h>
@@ -28,15 +30,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//ルートシグネチャ
 	auto root_signature = std::make_unique<RootSignature>();
+
+	D3D12_DESCRIPTOR_RANGE descriptor_range_texture{};
+	descriptor_range_texture.BaseShaderRegister = 0;
+	descriptor_range_texture.NumDescriptors = 1;
+	descriptor_range_texture.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptor_range_texture.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	D3D12_DESCRIPTOR_RANGE descriptor_range_instancing{};
+	descriptor_range_instancing.BaseShaderRegister = 0;
+	descriptor_range_instancing.NumDescriptors = 1;
+	descriptor_range_instancing.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptor_range_instancing.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	std::vector<D3D12_DESCRIPTOR_RANGE> ranges = { descriptor_range_texture, descriptor_range_instancing };
 	root_signature->AddCBV(0, D3D12_SHADER_VISIBILITY_PIXEL);
 	root_signature->AddCBV(0, D3D12_SHADER_VISIBILITY_VERTEX);
-	D3D12_DESCRIPTOR_RANGE descriptor_range{};
-	descriptor_range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptor_range.NumDescriptors = 1;
-	descriptor_range.BaseShaderRegister = 0;
-	descriptor_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	std::vector<D3D12_DESCRIPTOR_RANGE> ranges = { descriptor_range };
-	root_signature->AddDescriptorTable(ranges, D3D12_SHADER_VISIBILITY_PIXEL);
+	root_signature->AddDescriptorTable({ descriptor_range_texture }, D3D12_SHADER_VISIBILITY_PIXEL);
+	root_signature->AddDescriptorTable({ descriptor_range_instancing }, D3D12_SHADER_VISIBILITY_VERTEX);
 	root_signature->AddCBV(1, D3D12_SHADER_VISIBILITY_PIXEL);
 	root_signature->AddStaticSampler(
 		0,
@@ -51,8 +62,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//コンパイラ
 	auto compiler = std::make_unique<ShaderCompiler>();
 	compiler->Initialize();
-	auto vs_blob = compiler->Compile(L"Resource/Shader/Object3d.VS.hlsl", L"vs_6_0");
-	auto ps_blob = compiler->Compile(L"Resource/Shader/Object3d.PS.hlsl", L"ps_6_0");
+	auto vs_blob = compiler->Compile(L"Resource/Shader/Particle.VS.hlsl", L"vs_6_0");
+	auto ps_blob = compiler->Compile(L"Resource/Shader/Particle.PS.hlsl", L"ps_6_0");
 	if (!vs_blob || !ps_blob) {
 		return false;
 	}
@@ -88,16 +99,31 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	light->Initialize();
 	Vector4 light_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	//モデル
-	auto model = Model::CreatePlane();
-	model->SetLightType(2);
-	Transform transform_model{};
-	Vector4 model_color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
+	//パーティクル
+	const UINT k_particle_count = 10;
 	Particle particle{};
-	particle.Initialize();
-	Transform transform_particle{};
-	UINT particle_count = 10;
+	particle.Initialize(k_particle_count);
+	std::array<Transform, k_particle_count> transform_particles;
+	for (uint32_t i = 0; i < k_particle_count; ++i) {
+		transform_particles[i].scale = { 1.0f, 1.0f, 1.0f };
+		transform_particles[i].rotation = { 0.0f, 0.0f, 0.0f };
+		transform_particles[i].translation = { static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f };
+	}
+
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC instancing_srv_desc{};
+	instancing_srv_desc.Format = DXGI_FORMAT_UNKNOWN;
+	instancing_srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	instancing_srv_desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	instancing_srv_desc.Buffer.FirstElement = 0;
+	instancing_srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	instancing_srv_desc.Buffer.NumElements = k_particle_count;
+	instancing_srv_desc.Buffer.StructureByteStride = sizeof(Particle::TransformationMatrix);
+	const auto allocation = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
+	const D3D12_CPU_DESCRIPTOR_HANDLE instancing_srv_handle_cpu = allocation.cpuHandle;
+	const D3D12_GPU_DESCRIPTOR_HANDLE instancing_srv_handle_gpu = allocation.gpuHandle;
+	GraphicsSystem::GetInstance()->GetDevice()->CreateShaderResourceView(particle.GetResource(), &instancing_srv_desc, instancing_srv_handle_cpu);
+
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -108,10 +134,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-#ifdef DEVELOP
+#ifdef _DEBUG
 		if (Input::GetInstance()->GetKeyboard().Trigger(DIK_F1)) {
-			isDebugCameraEnabled = !isDebugCameraEnabled;
-			camera = isDebugCameraEnabled ? &debugCamera.GetCamera() : &mainCamera;
+			is_debug_camera_enabled = !is_debug_camera_enabled;
+			camera = is_debug_camera_enabled ? &debug_camera.GetCamera() : &main_camera;
 		}
 #endif
 
@@ -126,22 +152,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #ifdef USE_IMGUI
 		ImGui::Begin("Settings");
-
-		//平面モデルのカラー
-		ImGui::ColorEdit4("plane color", &model_color.x);
-		model->SetColor(model_color);
-
-		//ライト
-		ImGui::ColorEdit4("light color", &light_color.x);
-		light->SetColor(light_color);
-
-		ImGui::Separator();
-
-		//フェンスモデルのSRT
-		ImGui::DragFloat3("model.translation", &transform_model.translation.x, 0.01f);
-		ImGui::DragFloat3("model.rotation", &transform_model.rotation.x, 0.01f);
-		ImGui::DragFloat3("model.scale", &transform_model.scale.x, 0.01f);
-
 		ImGui::End();
 
 		ImGui::Begin("Debug");
@@ -160,11 +170,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->SetGraphicsRootSignature(root_signature->Get());
 		commandList->SetPipelineState(pipeline->Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootConstantBufferView(4, light->GetGPUVirtualAddress());
+		commandList->SetGraphicsRootDescriptorTable(3, instancing_srv_handle_gpu);
 
 		//平面モデルを描画
-		model->Draw(transform_model, camera->GetViewProjMatrix());
-		particle.Draw(transform_particle, camera->GetViewProjMatrix(), particle_count);
+		particle.Draw(transform_particles, camera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑
