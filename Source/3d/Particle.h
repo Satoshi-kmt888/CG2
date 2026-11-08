@@ -48,6 +48,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> m_transformation_buffer = nullptr;
 	TransformationMatrix* m_transformation_data = nullptr;
 
+	D3D12_GPU_DESCRIPTOR_HANDLE m_instancing_srv_gpu_handle{};
+
 	std::unique_ptr<Model> m_model;
 	std::unique_ptr<Mesh> m_mesh;
 	std::unique_ptr<Material> m_material;

@@ -44,6 +44,21 @@ void Particle::Initialize(UINT instance_count) {
 	m_material->CreateBuffer(device);
 
 	CreateBuffer(device);
+
+
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc{};
+	srv_desc.Format = DXGI_FORMAT_UNKNOWN;
+	srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srv_desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srv_desc.Buffer.FirstElement = 0;
+	srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	srv_desc.Buffer.NumElements = instance_count;
+	srv_desc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+
+	const DescriptorHandle allocation = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
+	m_instancing_srv_gpu_handle = allocation.gpuHandle;
+	device->CreateShaderResourceView(m_transformation_buffer.Get(), &srv_desc, allocation.cpuHandle);
 }
 
 void Particle::Update() {
@@ -51,7 +66,7 @@ void Particle::Update() {
 }
 
 void Particle::Draw(std::span<const Transform> transforms, const Matrix4x4& view_projection_matrix) {
-	auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
+	auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!m_transformation_buffer) {
 		LOG_ERROR("Model::Draw メンバ変数transformationBuffer_がnullptrです。Model::CreateBufferでtransformationBuffer_を作成してください。");
@@ -67,12 +82,14 @@ void Particle::Draw(std::span<const Transform> transforms, const Matrix4x4& view
 		m_transformation_data[i].wvp = mat_world * view_projection_matrix;
 	}
 
+	command_list->SetGraphicsRootDescriptorTable(2, m_instancing_srv_gpu_handle);
+
 	//マテリアルを更新
 	m_material->Update();
 
 	//コマンド実行
-	m_material->SetGraphicsCommand(commandList, 0, 2);
-	m_mesh->Draw(commandList, m_instance_count);
+	m_material->SetGraphicsCommand(command_list, 0, 1);
+	m_mesh->Draw(command_list, m_instance_count);
 }
 
 void Particle::CreateBuffer(ID3D12Device* device) {

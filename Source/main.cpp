@@ -12,6 +12,7 @@
 #include "Math/Vector4.h"
 
 #include "Pipeline/PipelineObject3D.h"
+#include "Pipeline/PipelineParticle.h"
 
 #include <array>
 #include <imgui.h>
@@ -31,6 +32,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		return false;
 	}
 
+	PipelineParticle pipeline_particle{};
+	if (!pipeline_particle.Initialize(GraphicsSystem::GetInstance()->GetDevice())) {
+		return false;
+	}
+
 	//メインカメラ(切り替える)
 	Camera main_camera{ 1280.0f, 720.0f };
 
@@ -46,6 +52,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	light->Initialize();
 	Vector4 color_light = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+	//モデル
 	Transform transform_model = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
@@ -54,6 +61,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto model = Model::CreatePlane();
 	model->SetLightType(2);
 	Vector4 color_model = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	//パーティクル
+	const uint32_t k_particle_count = 10;
+	Particle particle{};
+	particle.Initialize(k_particle_count);
+	std::array<Transform, k_particle_count> transform_particles;
+	for (uint32_t i = 0; i < k_particle_count; ++i) {
+		transform_particles[i].scale = { 1.0f, 1.0f, 1.0f };
+		transform_particles[i].rotation = { 0.0f, 0.0f, 0.0f };
+		transform_particles[i].translation = { static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f };
+	}
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -128,6 +146,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 
 		model->Draw(transform_model, camera->GetViewProjMatrix());
+
+		pipeline_particle.Bind(command_list);
+
+		particle.Draw(transform_particles, camera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑
