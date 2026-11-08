@@ -39,13 +39,13 @@ std::unique_ptr<Model> Model::CreatePlane() {
 
 	//頂点データを生成
 	Mesh::VertexData vertex;
-	vertex = { { -0.5f, 0.5f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } };   // 左上
+	vertex = { { -0.5f, 0.5f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } };   // 左上
 	model->m_mesh->AddVertex(vertex);
-	vertex = { { 0.5f, 0.5f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } };  // 右上
+	vertex = { { 0.5f, 0.5f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } };  // 右上
 	model->m_mesh->AddVertex(vertex);
-	vertex = { { -0.5f, -0.5f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } };  // 左下
+	vertex = { { -0.5f, -0.5f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } };  // 左下
 	model->m_mesh->AddVertex(vertex);
-	vertex = { { 0.5f, -0.5f, 0.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } }; // 右下
+	vertex = { { 0.5f, -0.5f, 0.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }; // 右下
 	model->m_mesh->AddVertex(vertex);
 
 	//インデックスデータを生成

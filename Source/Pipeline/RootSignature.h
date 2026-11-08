@@ -5,26 +5,24 @@
 #include <vector>
 #include <wrl/client.h>
 
-template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 /// <summary>
-/// ルートシグネチャ簡易的に構築するコンポーネントクラス
+/// ルートシグネチャを簡易的に構築するコンポーネントクラス
 /// </summary>
 class RootSignature {
 public:
-	//--- インスタンス管理 ---
+	//=========================================================
+	// publice methods
+	//=========================================================
 
 	RootSignature() = default;
 	~RootSignature() = default;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// ルートパラメータにCBVデータを追加
 	/// </summary>
 	/// <param name="shaderRegister">HLSL側のレジスタ番号</param>
 	/// <param name="visibility">このパラメータにアクセスできるシェーダーステージ</param>
-	void AddCBV(UINT shaderRegister, D3D12_SHADER_VISIBILITY visibility);
+	void AddCBV(UINT shader_register, D3D12_SHADER_VISIBILITY visibility);
 
 	/// <summary>
 	/// ディスクリプターテーブルを追加
@@ -41,8 +39,8 @@ public:
 	/// <param name="filter">フィルター</param>
 	/// <param name="addressMode">アドレスモード</param>
 	/// <param name="visibility">このパラメータにアクセスできるシェーダーステージ</param>
-	void AddStaticSampler(UINT shaderRegister, D3D12_FILTER filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE addressMode = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+	void AddStaticSampler(UINT shader_register, D3D12_FILTER filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE address_mode = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_PIXEL);
 
 	/// <summary>
@@ -52,25 +50,31 @@ public:
 	/// <returns>生成成功時にtrue</returns>
 	[[nodiscard]] bool Build(ID3D12Device* device);
 
-	//--- ゲッター ---
+	//=========================================================
+	// accessor
+	//=========================================================
 
-	ID3D12RootSignature* Get() const { return rootSignature_.Get(); }
+	ID3D12RootSignature* Get() const { return m_root_signature.Get(); }
 
 private:
-	//--- 内部関数 ---
+	//=========================================================
+	// private methods
+	//=========================================================
 
 	/// <summary>
 	/// 設定データ構築用コンテナをクリア
 	/// </summary>
 	void Clear();
 
-	//--- 内部変数 ---
+	//=========================================================
+	// private variables
+	//=========================================================
 
 	//ルートシグネチャ
-	ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_root_signature = nullptr;
 
 	//設定データを保持するコンテナ
-	std::deque<D3D12_DESCRIPTOR_RANGE> descriptorRanges_;
-	std::vector<D3D12_ROOT_PARAMETER> rootParameters_;
-	std::vector<D3D12_STATIC_SAMPLER_DESC> samplerDescs_;
+	std::deque<D3D12_DESCRIPTOR_RANGE> m_descriptor_ranges;
+	std::vector<D3D12_ROOT_PARAMETER> m_root_parameters;
+	std::vector<D3D12_STATIC_SAMPLER_DESC> m_sampler_descs;
 };

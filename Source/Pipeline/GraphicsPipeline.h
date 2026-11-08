@@ -5,11 +5,11 @@
 #include "RasterizerState.h"
 
 #include <d3d12.h>
-#include <dxcapi.h>
-#include <wrl/client.h>
-#include <vector>
 #include <deque>
+#include <dxcapi.h>
 #include <string>
+#include <vector>
+#include <wrl/client.h>
 
 template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
@@ -17,30 +17,30 @@ class RootSignature;
 
 class GraphicsPipeline {
 public:
-	//--- インスタンス管理 ---
+	//============================================================
+	// publice methods
+	//============================================================
 
 	GraphicsPipeline();
 	~GraphicsPipeline() = default;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// パイプラインに紐づけるルートシグネチャを設定
 	/// </summary>
 	/// <param name="rootSignature"></param>
-	GraphicsPipeline& SetRootSignature(const RootSignature* rootSignature);
+	GraphicsPipeline& SetRootSignature(const RootSignature* root_signature);
 
 	/// <summary>
 	/// 頂点シェーダーを設定
 	/// </summary>
 	/// <param name="vsBlob"></param>
-	GraphicsPipeline& SetVertexShader(IDxcBlob* vsBlob);
+	GraphicsPipeline& SetVertexShader(IDxcBlob* vs_blob);
 
 	/// <summary>
 	/// ピクセルシェーダーを設定
 	/// </summary>
 	/// <param name="vsBlob"></param>
-	GraphicsPipeline& SetPixelShader(IDxcBlob* psBlob);
+	GraphicsPipeline& SetPixelShader(IDxcBlob* ps_blob);
 
 	/// <summary>
 	/// 頂点入力レイアウトを1要素ずつ動的に追加
@@ -48,37 +48,37 @@ public:
 	/// <param name="semanticName">セマンティック名（"POSITION", "TEXCOORD" など）</param>
 	/// <param name="format">データの型（DXGI_FORMAT_R32G32B32_FLOAT など）</param>
 	/// <param name="semanticIndex">同じセマンティック名がある場合のインデックス（デフォルトは0）</param>
-	GraphicsPipeline& AddInputLayout(const std::string& semanticName, DXGI_FORMAT format, UINT semanticIndex = 0);
+	GraphicsPipeline& AddInputLayout(const std::string& semantic_name, DXGI_FORMAT format, UINT semantic_index = 0);
 
 	/// <summary>
 	/// ブレンドステートプリセットを設定
 	/// </summary>
 	/// <param name="blendState"></param>
-	GraphicsPipeline& SetBlendState(const BlendState& blendState);
+	GraphicsPipeline& SetBlendState(const BlendState& blend_state);
 
 	/// <summary>
 	/// ラスタライザステートプリセットを設定
 	/// </summary>
 	/// <param name="rasterizerState"></param>
-	GraphicsPipeline& SetRasterizerState(const RasterizerState& rasterizerState);
+	GraphicsPipeline& SetRasterizerState(const RasterizerState& rasterizer_state);
 
 	/// <summary>
 	/// デプスステンシルステートプリセットを設定
 	/// </summary>
 	/// <param name="depthStencilState"></param>
-	GraphicsPipeline& SetDepthStencilState(const DepthStencilState& depthStencilState);
+	GraphicsPipeline& SetDepthStencilState(const DepthStencilState& depth_stencil_state);
 
 	/// <summary>
 	/// RTVのフォーマット設定
 	/// </summary>
 	/// <param name="rtvFormat"></param>
-	GraphicsPipeline& SetRenderTargetFormat(DXGI_FORMAT rtvFormat);
+	GraphicsPipeline& SetRenderTargetFormat(DXGI_FORMAT rtv_format);
 
 	/// <summary>
 	/// DSVのフォーマット設定
 	/// </summary>
 	/// <param name="dsvFormat"></param>
-	GraphicsPipeline& SetDepthStencilFormat(DXGI_FORMAT dsvFormat);
+	GraphicsPipeline& SetDepthStencilFormat(DXGI_FORMAT dsv_format);
 
 	/// <summary>
 	/// 生成したパラメータをもとにPSOを構成
@@ -87,32 +87,38 @@ public:
 	/// <returns></returns>
 	[[nodiscard]] bool Build(ID3D12Device* device);
 
-	//--- ゲッター ---
+	//============================================================
+	// accessor
+	//============================================================
 
-	ID3D12PipelineState* Get() const { return pipelineState_.Get(); }
+	ID3D12PipelineState* Get() const { return m_pipeline_state.Get(); }
 
 private:
-	//--- 内部関数 ---
+	//============================================================
+	// private methods
+	//============================================================
 
 	/// <summary>
 	/// パイプラインの生成に使用した一時配列と一時バイナリデータをクリア
 	/// </summary>
 	void Clear();
 
-	//--- 内部変数 ---
+	//============================================================
+	// private variables
+	//============================================================
 
 	//生成されるPSOオブジェクト
-	ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
+	ComPtr<ID3D12PipelineState> m_pipeline_state = nullptr;
 
 	//パイプライン構築用
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc_{};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_desc{};
 
 	//頂点レイアウトデータ
-	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs_;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> m_input_element_descs;
 
-	std::deque<std::string> semanticNames_;
+	std::deque<std::string> m_semantic_names;
 
 	//シェーダーBlob
-	ComPtr<IDxcBlob> vsBlob_ = nullptr;
-	ComPtr<IDxcBlob> psBlob_ = nullptr;
+	ComPtr<IDxcBlob> m_vs_blob = nullptr;
+	ComPtr<IDxcBlob> m_ps_blob = nullptr;
 };

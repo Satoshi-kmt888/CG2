@@ -171,6 +171,9 @@
     <ClCompile Include="..\Source\3d\Particle.cpp">
       <Filter>Source\3d</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Pipeline\PipelineObject3D.cpp">
+      <Filter>Source\Pipeline</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Audio\Audio.h">
@@ -317,9 +320,15 @@
     <ClInclude Include="..\Source\3d\Particle.h">
       <Filter>Source\3d</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\PipelineObject3D.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Pipeline\GraphicsPipelineDesc.h">
+      <Filter>Source\Pipeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resource\Shader\Object3d.hlsli">
+    <None Include="..\Resource\Shader\Object3D.hlsli">
       <Filter>Resource\Shader</Filter>
     </None>
     <None Include="..\Resource\Shader\Particle.hlsli">
@@ -327,10 +336,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resource\Shader\Object3d.PS.hlsl">
+    <FxCompile Include="..\Resource\Shader\Object3D.PS.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resource\Shader\Object3d.VS.hlsl">
+    <FxCompile Include="..\Resource\Shader\Object3D.VS.hlsl">
       <Filter>Resource\Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resource\Shader\Particle.PS.hlsl">

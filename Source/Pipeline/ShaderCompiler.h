@@ -20,7 +20,7 @@ public:
 	ShaderCompiler() = default;
 	~ShaderCompiler() = default;
 
-	void Initialize();
+	[[nodiscard]] bool Initialize();
 
 	/// <summary>
 	/// HLSLファイルを読み込み、コンパイルしてバイナリを取得する
@@ -28,7 +28,7 @@ public:
 	/// <param name="filePath"></param>
 	/// <param name="profile"></param>
 	/// <returns></returns>
-	ComPtr<IDxcBlob> Compile(const std::wstring& filename, const wchar_t* profile);
+	[[nodiscard]] ComPtr<IDxcBlob> Compile(const std::wstring& filename, const wchar_t* profile);
 
 private:
 	//============================================================

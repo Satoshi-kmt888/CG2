@@ -212,6 +212,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Pipeline\BlendState.cpp" />
     <ClCompile Include="..\Source\Pipeline\DepthStencilState.cpp" />
     <ClCompile Include="..\Source\Pipeline\GraphicsPipeline.cpp" />
+    <ClCompile Include="..\Source\Pipeline\PipelineObject3D.cpp" />
     <ClCompile Include="..\Source\Pipeline\RasterizerState.cpp" />
     <ClCompile Include="..\Source\Pipeline\RootSignature.cpp" />
     <ClCompile Include="..\Source\Pipeline\ShaderCompiler.cpp" />
@@ -262,21 +263,23 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="..\Source\Pipeline\BlendState.h" />
     <ClInclude Include="..\Source\Pipeline\DepthStencilState.h" />
     <ClInclude Include="..\Source\Pipeline\GraphicsPipeline.h" />
+    <ClInclude Include="..\Source\Pipeline\GraphicsPipelineDesc.h" />
+    <ClInclude Include="..\Source\Pipeline\PipelineObject3D.h" />
     <ClInclude Include="..\Source\Pipeline\RasterizerState.h" />
     <ClInclude Include="..\Source\Pipeline\RootSignature.h" />
     <ClInclude Include="..\Source\Pipeline\ShaderCompiler.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resource\Shader\Object3d.hlsli" />
+    <None Include="..\Resource\Shader\Object3D.hlsli" />
     <None Include="..\Resource\Shader\Particle.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Resource\Shader\Object3d.PS.hlsl">
+    <FxCompile Include="..\Resource\Shader\Object3D.PS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\Resource\Shader\Object3d.VS.hlsl">
+    <FxCompile Include="..\Resource\Shader\Object3D.VS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

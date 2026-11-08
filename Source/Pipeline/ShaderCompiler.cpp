@@ -7,15 +7,24 @@
 
 #pragma comment(lib, "dxcompiler.lib")
 
-void ShaderCompiler::Initialize() {
+bool ShaderCompiler::Initialize() {
 	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&m_utils));
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		return false;
+	}
+
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&m_compiler));
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		return false;
+	}
 
 	//現時点でincludeしないが、includeに対応するための設定を行っておく
 	hr = m_utils->CreateDefaultIncludeHandler(&m_include_handler);
-	assert(SUCCEEDED(hr));
+	if (FAILED(hr)) {
+		return false;
+	}
+
+	return true;
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::Compile(const std::wstring& filename, const wchar_t* profile) {
