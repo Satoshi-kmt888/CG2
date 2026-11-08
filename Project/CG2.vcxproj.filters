@@ -34,14 +34,14 @@
     <Filter Include="External">
       <UniqueIdentifier>{9f585e87-2a14-4ce4-98e4-5c70ff16f056}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\imgui">
-      <UniqueIdentifier>{8c09e505-c3e9-41ea-810e-b8018bb9c5a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\2d">
       <UniqueIdentifier>{2018b6db-7f10-4af2-b59c-4e1a404179f2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\3d">
       <UniqueIdentifier>{11832291-2fd6-4086-bcef-45ce68401122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\imgui">
+      <UniqueIdentifier>{9d33d20f-1b76-44a1-a266-1d0826db3124}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
