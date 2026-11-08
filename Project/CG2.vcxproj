@@ -156,12 +156,6 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_dx12.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_win32.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\External\imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -169,6 +163,12 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\External\imgui\imgui_draw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui_impl_dx12.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui_impl_win32.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\External\imgui\imgui_tables.cpp">
@@ -219,10 +219,10 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClCompile Include="..\Source\Pipeline\ShaderCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\External\imgui\backends\imgui_impl_dx12.h" />
-    <ClInclude Include="..\External\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\External\imgui\imconfig.h" />
     <ClInclude Include="..\External\imgui\imgui.h" />
+    <ClInclude Include="..\External\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="..\External\imgui\imgui_impl_win32.h" />
     <ClInclude Include="..\External\imgui\imgui_internal.h" />
     <ClInclude Include="..\External\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\External\imgui\imstb_textedit.h" />
