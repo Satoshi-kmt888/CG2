@@ -6,7 +6,7 @@ on:
   # masterブランチへのプッシュでも実行する
   push:
     branches:
-      -master 
+      - master 
 
 # 検出する不要なファイルのパターンを定義する環境変数
 # --- 重要 ---
@@ -22,7 +22,7 @@ env:
 jobs:
   check-files:
     name: 不要なファイルを検索
-    runs-on: nbuntu-  latest
+    runs-on: nbuntu-latest
 
     steps:
       - name: Checkout
@@ -58,7 +58,7 @@ jobs:
           if [ -n "$UNUSED_LIST" ]; then
             echo "::error::不要なファイルまたはディレクトリが見つかりました。"
             echo "$UNUSED_LIST"
-            exit1
+            exit 1
           fi
 
-          echo"リポジトリはクリーンです。"
+          echo "リポジトリはクリーンです。"
