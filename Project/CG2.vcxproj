@@ -179,6 +179,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     </ClCompile>
     <ClCompile Include="Source\2d\ImGuiManager.cpp" />
     <ClCompile Include="Source\2d\Sprite.cpp" />
+    <ClCompile Include="Source\2d\SpriteCommon.cpp" />
     <ClCompile Include="Source\3d\Camera.cpp" />
     <ClCompile Include="Source\3d\DebugCamera.cpp" />
     <ClCompile Include="Source\3d\DirectionalLight.cpp" />
@@ -229,6 +230,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\2d\ImGuiManager.h" />
     <ClInclude Include="Source\2d\Sprite.h" />
+    <ClInclude Include="Source\2d\SpriteCommon.h" />
     <ClInclude Include="Source\3d\Camera.h" />
     <ClInclude Include="Source\3d\DebugCamera.h" />
     <ClInclude Include="Source\3d\DirectionalLight.h" />

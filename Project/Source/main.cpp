@@ -1,5 +1,7 @@
 #include "App/StarEngine.h"
 
+#include "2d/Sprite.h"
+#include "2d/SpriteCommon.h"
 #include "3d/Camera.h"
 #include "3d/DebugCamera.h"
 #include "3d/DirectionalLight.h"
@@ -46,32 +48,46 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//カメラ
 	Camera const* camera = &main_camera;
+	Camera camera_2d{ 1280.0f, 720.0f };
 
 	//ライト
 	auto light = std::make_unique<DirectionalLight>();
 	light->Initialize();
 	Vector4 color_light = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	//モデル
-	Transform transform_model = {
+	auto sprite_common = SpriteCommon::GetInstance();
+	if (!sprite_common->Initialize(GraphicsSystem::GetInstance()->GetDevice())) {
+		return false;
+	}
+
+	//スプライト
+	Transform transform_sprite = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f }
 	};
-	auto model = Model::CreatePlane();
-	model->SetLightType(2);
-	Vector4 color_model = { 1.0f, 1.0f, 1.0f, 1.0f };
+	auto sprite = Sprite::Create();
+
+	//モデル
+	//Transform transform_model = {
+	//	{ 1.0f, 1.0f, 1.0f },
+	//	{ 0.0f, 0.0f, 0.0f },
+	//	{ 0.0f, 0.0f, 0.0f }
+	//};
+	//auto model = Model::CreatePlane();
+	//model->SetLightType(2);
+	//Vector4 color_model = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//パーティクル
-	const uint32_t k_particle_count = 10;
-	Particle particle{};
-	particle.Initialize(k_particle_count);
-	std::array<Transform, k_particle_count> transform_particles;
-	for (uint32_t i = 0; i < k_particle_count; ++i) {
-		transform_particles[i].scale = { 1.0f, 1.0f, 1.0f };
-		transform_particles[i].rotation = { 0.0f, 0.0f, 0.0f };
-		transform_particles[i].translation = { static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f };
-	}
+	//const uint32_t k_particle_count = 10;
+	//Particle particle{};
+	//particle.Initialize(k_particle_count);
+	//std::array<Transform, k_particle_count> transform_particles;
+	//for (uint32_t i = 0; i < k_particle_count; ++i) {
+	//	transform_particles[i].scale = { 1.0f, 1.0f, 1.0f };
+	//	transform_particles[i].rotation = { 0.0f, 0.0f, 0.0f };
+	//	transform_particles[i].translation = { static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f };
+	//}
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -110,15 +126,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		ImGui::Begin("Debug");
 
+		if (ImGui::CollapsingHeader("Sprite")) {
+			ImGui::DragFloat3("transform: translation", &transform_sprite.translation.x, 0.01f);
+			ImGui::DragFloat3("transform: rotation", &transform_sprite.rotation.x, 0.01f);
+			ImGui::DragFloat3("transform: scale", &transform_sprite.scale.x, 0.01f);
+		}
+
 		if (ImGui::CollapsingHeader("Model")) {
 			//モデルのトランスフォーム
-			ImGui::DragFloat3("transform: translation", &transform_model.translation.x, 0.01f);
-			ImGui::DragFloat3("transform: rotation", &transform_model.rotation.x, 0.01f);
-			ImGui::DragFloat3("transform: scale", &transform_model.scale.x, 0.01f);
+			//ImGui::DragFloat3("transform: translation", &transform_model.translation.x, 0.01f);
+			//ImGui::DragFloat3("transform: rotation", &transform_model.rotation.x, 0.01f);
+			//ImGui::DragFloat3("transform: scale", &transform_model.scale.x, 0.01f);
 
-			//モデルの色
-			ImGui::ColorEdit4("color", &color_model.x);
-			model->SetColor(color_model);
+			////モデルの色
+			//ImGui::ColorEdit4("color", &color_model.x);
+			//model->SetColor(color_model);
 		}
 
 		ImGui::End();
@@ -129,6 +151,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		} else {
 			main_camera.Update();
 		}
+		camera_2d.Update();
 
 		//ライトを更新
 		light->Update();
@@ -142,14 +165,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//====================
 
 		auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
-		pipeline_object3d.Bind(command_list);
+		//pipeline_object3d.Bind(command_list);
+
+		//model->Draw(transform_model, camera->GetViewProjMatrix());
+
+		//pipeline_particle.Bind(command_list);
+
+		//particle.Draw(transform_particles, camera->GetViewProjMatrix());
+
+		sprite_common->SetPipelineState(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
-
-		model->Draw(transform_model, camera->GetViewProjMatrix());
-
-		pipeline_particle.Bind(command_list);
-
-		particle.Draw(transform_particles, camera->GetViewProjMatrix());
+		sprite->Draw(transform_sprite, camera_2d.GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑
@@ -159,6 +185,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		StarEngine::EndFrame();
 	}
 
+	sprite_common->Finalize();
 	//エンジンの終了
 	StarEngine::Finalize();
 

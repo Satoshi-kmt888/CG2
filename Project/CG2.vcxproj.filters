@@ -177,6 +177,9 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp">
       <Filter>External\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\2d\SpriteCommon.cpp">
+      <Filter>Source\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Audio\Audio.h">
@@ -331,6 +334,9 @@
     </ClInclude>
     <ClInclude Include="External\imgui\imstb_truetype.h">
       <Filter>External\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\2d\SpriteCommon.h">
+      <Filter>Source\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

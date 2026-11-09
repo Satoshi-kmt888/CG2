@@ -18,20 +18,18 @@ template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 /// </summary>
 class Sprite {
 public:
-	//--- 内部データ ---
-
 	//GPUへ送るための座標変換行列データ
 	struct TransformationMatrix {
 		Matrix4x4 wvp;
 		Matrix4x4 world;
 	};
 
-	//--- インスタンス管理 ---
+	//=========================================================
+	// public methods
+	//=========================================================
 
 	Sprite() = default;
 	~Sprite();
-
-	//--- 公開関数
 
 	/// <summary>
 	/// 描画処理
@@ -46,24 +44,30 @@ public:
 	/// <returns></returns>
 	static std::unique_ptr<Sprite> Create();
 
-	//--- ゲッター ---
+	//=========================================================
+	// accessor
+	//=========================================================
 
 	const Vector4& GetColor() const { return material_->GetColor(); }
 	uint32_t GetLightType() const { return material_->GetLightType(); }
 	const Transform& GetUVTransform() const { return material_->GetTransform(); }
 
-	//--- セッター ---
+	//---------------------------------------------------------
 
 	void SetColor(const Vector4& color) { material_->SetColor(color); }
 	void SetLightType(uint32_t lightType) { material_->SetLightType(lightType); }
 	void SetUVTransform(const Transform& transform) { material_->SetTransform(transform); }
 
 private:
-	//--- 内部関数 ---
+	//=========================================================
+	// private methods
+	//=========================================================
 
 	void CreateBuffer(ID3D12Device* device);
 
-	//--- 内部変数 ---
+	//=========================================================
+	// private variables
+	//=========================================================
 
 	//座標変換リソース
 	ComPtr<ID3D12Resource> transformationBuffer_ = nullptr;

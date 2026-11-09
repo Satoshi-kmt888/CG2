@@ -22,10 +22,10 @@ std::unique_ptr<Sprite> Sprite::Create() {
 
 	//頂点データを配列に格納
 	Mesh::VertexData vertices[] = {
-		{ { -0.5f, -0.5f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } }, // 左上
-		{ { 0.5f, -0.5f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } }, // 右上
-		{ { -0.5f, 0.5f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }, // 左下
-		{ { 0.5f, 0.5f, 0.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }, // 右下
+		{ { -0.5f, 0.5f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } }, // 左上
+		{ { 0.5f, 0.5f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } }, // 右上
+		{ { -0.5f, -0.5f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }, // 左下
+		{ { 0.5f, -0.5f, 0.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }, // 右下
 	};
 
 	//メッシュ側に転送
@@ -51,7 +51,7 @@ std::unique_ptr<Sprite> Sprite::Create() {
 	sprite->mesh_->CreateBuffer(device);
 
 	//マテリアルにテクスチャをセットしてバッファを作る
-	sprite->material_->SetTexture("Resources/uvChecker.png");
+	sprite->material_->SetTexture("Resource/uvChecker.png");
 	sprite->material_->CreateBuffer(device);
 	sprite->material_->SetLightType(0); //ライティングはオフ
 
