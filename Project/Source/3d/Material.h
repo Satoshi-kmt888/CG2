@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Math/Matrix4x4.h"
-#include "Math/Transform.h"
 #include "Math/Vector4.h"
+#include "Math/WorldTransform.h"
 
 #include <array>
 #include <cstdint>
@@ -66,13 +66,13 @@ public:
 
 	const Vector4& GetColor() const { return surfaceData_->color; }
 	int32_t GetLightType() const { return surfaceData_->lightType; }
-	const Transform& GetTransform() const { return transform_; }
+	const WorldTransform& GetTransform() const { return transform_; }
 
 	//--- セッター ----
 
 	void SetColor(const Vector4& color) { surfaceData_->color = color; }
 	void SetLightType(int32_t lightType) { surfaceData_->lightType = lightType; }
-	void SetTransform(const Transform& transform) { transform_ = transform; }
+	void SetTransform(const WorldTransform& transform) { transform_ = transform; }
 
 private:
 	//--- 内部変数 ---
@@ -81,5 +81,5 @@ private:
 	SurfaceData* surfaceData_ = nullptr;
 	const TextureData* textureData_ = nullptr;
 
-	Transform transform_ = {};
+	WorldTransform transform_ = {};
 };

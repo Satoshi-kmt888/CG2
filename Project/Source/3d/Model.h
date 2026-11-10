@@ -3,7 +3,7 @@
 #include "3d/Material.h"
 #include "3d/Mesh.h"
 #include "Math/Matrix4x4.h"
-#include "Math/Transform.h"
+#include "Math/WorldTransform.h"
 
 #include <d3d12.h>
 #include <memory>
@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	/// <param name="transform"></param>
 	/// <param name="viewProjectionMatrix"></param>
-	void Draw(const Transform& transform, const Matrix4x4& view_projection_matrix);
+	void Draw(const WorldTransform& transform, const Matrix4x4& view_projection_matrix);
 
 	//=========================================================
 	// accessor
@@ -56,13 +56,13 @@ public:
 
 	const Vector4& GetColor() const { return m_material->GetColor(); }
 	uint32_t GetLightType() const { return m_material->GetLightType(); }
-	const Transform& GetUVTransform() const { return m_material->GetTransform(); }
+	const WorldTransform& GetUVTransform() const { return m_material->GetTransform(); }
 
 	//---------------------------------------------------------
 
 	void SetColor(const Vector4& color) { m_material->SetColor(color); }
 	void SetLightType(uint32_t lightType) { m_material->SetLightType(lightType); }
-	void SetUVTransform(const Transform& transform) { m_material->SetTransform(transform); }
+	void SetUVTransform(const WorldTransform& transform) { m_material->SetTransform(transform); }
 
 private:
 	//=========================================================

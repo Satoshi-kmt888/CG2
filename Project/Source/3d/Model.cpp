@@ -147,7 +147,7 @@ std::unique_ptr<Model> Model::CreateFromOBJ(const std::string& filename) {
 	return model;
 }
 
-void Model::Draw(const Transform& transform, const Matrix4x4& view_projection_matrix) {
+void Model::Draw(const WorldTransform& transform, const Matrix4x4& view_projection_matrix) {
 	auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!m_transformation_buffer) {

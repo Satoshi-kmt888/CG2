@@ -12,17 +12,20 @@ struct Vector3 {
 	float z = 0.0f;
 
 	//==================================================
-	// Base Operations
+	// base operations
 	//==================================================
 
+	//ノルムの2乗
 	float LengthSquared() const noexcept {
 		return (x * x) + (y * y) + (z * z);
 	}
 
+	//ノルム
 	float Length() const noexcept {
 		return std::sqrt(LengthSquared());
 	}
 
+	//正規化(非破壊)
 	Vector3 Normalized() const noexcept {
 		if (float length_squared = LengthSquared(); length_squared > 0.0f) {
 			float length_inv = 1.0f / std::sqrt(length_squared);
@@ -33,7 +36,7 @@ struct Vector3 {
 	}
 
 	//==================================================
-	// Operators
+	// operators
 	//==================================================
 
 	/*--- 単項演算子 ---*/
@@ -112,21 +115,25 @@ struct Vector3 {
 };
 
 //======================================================
-// Vector Functions
+// functions
 //======================================================
 
-inline float Length(const Vector3& v) noexcept {
-	return v.Length();
+//ノルム
+inline float Length(const Vector3& vector) noexcept {
+	return vector.Length();
 }
 
+//正規化
 inline Vector3 Normalize(const Vector3& vector) noexcept {
 	return vector.Normalized();
 }
 
+//内積
 inline float Dot(const Vector3& v1, const Vector3& v2) noexcept {
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
+//外積
 inline Vector3 Cross(const Vector3& v1, const Vector3& v2) noexcept {
 	return Vector3{
 		(v1.y * v2.z) - (v1.z * v2.y),

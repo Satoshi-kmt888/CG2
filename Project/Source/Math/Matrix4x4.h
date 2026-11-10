@@ -1,7 +1,7 @@
 #pragma once
 
-struct Vector3;
-struct Quaternion;
+#include "Quaternion.h"
+#include "Vector3.h"
 
 /// <summary>
 /// 4x4行列
@@ -10,13 +10,10 @@ struct Matrix4x4 {
 	float m[4][4];
 
 	//==================================================
-	// Base Operations
+	// base operations
 	//==================================================
 
-	/// <summary>
-	/// 単位行列
-	/// </summary>
-	/// <returns></returns>
+	//単位行列
 	static Matrix4x4 Identity() noexcept {
 		Matrix4x4 result{};
 
@@ -28,10 +25,7 @@ struct Matrix4x4 {
 		return result;
 	}
 
-	/// <summary>
-	/// 転置行列
-	/// </summary>
-	/// <returns></returns>
+	//転置行列
 	Matrix4x4 Transpose() const noexcept {
 		Matrix4x4 result{};
 
@@ -44,15 +38,14 @@ struct Matrix4x4 {
 		return result;
 	}
 
-	/// <summary>
-	/// 逆行列
-	/// </summary>
-	/// <returns></returns>
+	//逆行列
 	Matrix4x4 Inversed() const noexcept;
 
 	//==================================================
-	// Operators
+	// operators
 	//==================================================
+
+	/*--- 二項演算子 ---*/
 
 	friend Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) noexcept {
 		Matrix4x4 result{};
@@ -78,24 +71,32 @@ struct Matrix4x4 {
 		return result;
 	}
 
-	friend Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) noexcept {
+	friend Matrix4x4 operator*(Matrix4x4 m1, const Matrix4x4& m2) noexcept {
+		m1 *= m2;
+		return m1;
+	}
+
+	/*--- 複合代入演算子 ---*/
+
+	Matrix4x4& operator*=(const Matrix4x4& matrix) {
 		Matrix4x4 result{};
 
 		for (int row = 0; row < 4; ++row) {
 			for (int col = 0; col < 4; ++col) {
 				result.m[row][col] =
-					m1.m[row][0] * m2.m[0][col] +
-					m1.m[row][1] * m2.m[1][col] +
-					m1.m[row][2] * m2.m[2][col] +
-					m1.m[row][3] * m2.m[3][col];
+					m[row][0] * matrix.m[0][col] +
+					m[row][1] * matrix.m[1][col] +
+					m[row][2] * matrix.m[2][col] +
+					m[row][3] * matrix.m[3][col];
 			}
 		}
 
-		return result;
+		*this = result;
+		return *this;
 	}
 
 	//======================================================
-	// Functions
+	// functions
 	//======================================================
 
 	//拡縮行列を生成
@@ -116,9 +117,9 @@ struct Matrix4x4 {
 	static Matrix4x4 MakeAffine(const Vector3& scale, const Vector3& rotation, const Vector3& translation) noexcept;
 
 	//透視投影行列を生成
-	static Matrix4x4 MakePerspective(float fov_y, float near_clip, float far_clip, float aspect_ratio) noexcept;
+	static Matrix4x4 MakePerspective(float fov_y, float aspect_ratio, float near_clip, float far_clip) noexcept;
 	//正射影行列を生成
-	static Matrix4x4 MakeOrthographic(float width, float height, float near_clip, float far_clip) noexcept;
+	static Matrix4x4 MakeOrthographic(float left, float top, float right, float bottom, float near_clip, float far_clip) noexcept;
 	//ビューポート行列を生成
 	static Matrix4x4 MakeViewport(float width, float height, float min_depth, float max_depth, float left, float top) noexcept;
 };

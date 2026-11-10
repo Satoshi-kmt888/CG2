@@ -11,9 +11,9 @@
 #include "Debugger/D3D12ResourceLeakChecker.h"
 #include "Graphics/GraphicsSystem.h"
 #include "Input/Input.h"
-#include "Math/Transform.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
+#include "Math/WorldTransform.h"
 
 #include "Pipeline/PipelineObject3D.h"
 #include "Pipeline/PipelineParticle.h"
@@ -71,7 +71,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	//スプライト
-	Transform sprite_transform = {
+	WorldTransform sprite_transform = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f }
@@ -79,12 +79,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto sprite = Sprite::Create();
 
 	//モデル
-	Transform model_transform = {
+	WorldTransform model_transform = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f }
 	};
-	auto model = Model::CreatePlane();
+	auto model = Model::CreateSphere();
 	model->SetLightType(2);
 	Vector4 model_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -133,6 +133,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//---------------------
 
 		ImGui::Begin("Settings");
+
+		if (ImGui::CollapsingHeader("Camera")) {
+			Vector3 translation = camera_2d.GetTranslation();
+			ImGui::DragFloat3("transform: translation", &translation.x, 0.01f);
+			camera_2d.SetTranslation(translation);
+
+			Vector3 rotation = camera_2d.GetRotation();
+			ImGui::DragFloat3("transform: rotation", &rotation.x, 0.01f);
+			camera_2d.SetRotation(rotation);
+		}
 
 		if (ImGui::CollapsingHeader("DirectionalLight")) {
 			//ライトの色
@@ -202,7 +212,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//スプライト
 		sprite_common->SetPipelineState(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
-		sprite->Draw(sprite_transform, camera_2d.GetViewProjMatrix());
+		//sprite->Draw(sprite_transform, camera_2d.GetViewProjMatrix());
 
 		//パーティクル
 		pipeline_particle.Bind(command_list);

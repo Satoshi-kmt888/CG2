@@ -88,9 +88,9 @@ void ParticleSystem::Draw(const Matrix4x4& view_projection_matrix) {
 
 		float alpha = 1.0f - (particle.current_time / particle.life_time);
 
-		const Matrix4x4 mat_world = particle.transform.UpdateMatrix();
-		m_transformation_data[num_instance].world = mat_world;
-		m_transformation_data[num_instance].wvp = mat_world * view_projection_matrix;
+		particle.transform.UpdateMatrix();
+		m_transformation_data[num_instance].world = particle.transform.mat_world;
+		m_transformation_data[num_instance].wvp = particle.transform.mat_world * view_projection_matrix;
 
 		m_transformation_data[num_instance].color = particle.color;
 		m_transformation_data[num_instance].color.w = alpha;

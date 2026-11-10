@@ -60,9 +60,6 @@
     <ClCompile Include="Source\main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Math\Transform.cpp">
-      <Filter>Source\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Graphics\CommandContext.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
@@ -180,6 +177,9 @@
     <ClCompile Include="Source\2d\SpriteCommon.cpp">
       <Filter>Source\2d</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Math\Quaternion.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Audio\Audio.h">
@@ -203,7 +203,7 @@
     <ClInclude Include="Source\Math\Vector3.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Math\Transform.h">
+    <ClInclude Include="Source\Math\WorldTransform.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="Source\Graphics\CommandContext.h">

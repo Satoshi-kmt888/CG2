@@ -3,8 +3,8 @@
 #include "3d/Material.h"
 #include "3d/Mesh.h"
 #include "Math/Matrix4x4.h"
-#include "Math/Transform.h"
 #include "Math/Vector2.h"
+#include "Math/WorldTransform.h"
 
 #include <d3d12.h>
 #include <memory>
@@ -36,7 +36,7 @@ public:
 	/// </summary>
 	/// <param name="transform"></param>
 	/// <param name="viewProjectionMatrix"></param>
-	void Draw(Transform& transform, const Matrix4x4& viewProjectionMatrix);
+	void Draw(WorldTransform& transform, const Matrix4x4& viewProjectionMatrix);
 
 	/// <summary>
 	/// 通常のスプライトを生成
@@ -50,13 +50,13 @@ public:
 
 	const Vector4& GetColor() const { return material_->GetColor(); }
 	uint32_t GetLightType() const { return material_->GetLightType(); }
-	const Transform& GetUVTransform() const { return material_->GetTransform(); }
+	const WorldTransform& GetUVTransform() const { return material_->GetTransform(); }
 
 	//---------------------------------------------------------
 
 	void SetColor(const Vector4& color) { material_->SetColor(color); }
 	void SetLightType(uint32_t lightType) { material_->SetLightType(lightType); }
-	void SetUVTransform(const Transform& transform) { material_->SetTransform(transform); }
+	void SetUVTransform(const WorldTransform& transform) { material_->SetTransform(transform); }
 
 private:
 	//=========================================================

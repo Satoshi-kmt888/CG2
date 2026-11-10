@@ -1,8 +1,5 @@
 #include "Matrix4x4.h"
 
-#include "Quaternion.h"
-#include "Vector3.h"
-
 #include <array>
 #include <cmath>
 #include <cstdlib>
@@ -183,7 +180,7 @@ Matrix4x4 Matrix4x4::MakeAffine(const Vector3& scale, const Vector3& rotation, c
 		Matrix4x4::MakeTranslation(translation);
 }
 
-Matrix4x4 Matrix4x4::MakePerspective(float fov_y, float near_clip, float far_clip, float aspect_ratio) noexcept {
+Matrix4x4 Matrix4x4::MakePerspective(float fov_y, float aspect_ratio, float near_clip, float far_clip) noexcept {
 	Matrix4x4 result{};
 
 	float cot = 1.0f / std::tan(fov_y * 0.5f);
@@ -199,24 +196,19 @@ Matrix4x4 Matrix4x4::MakePerspective(float fov_y, float near_clip, float far_cli
 	return result;
 }
 
-Matrix4x4 Matrix4x4::MakeOrthographic(float width, float height, float near_clip, float far_clip) noexcept {
+Matrix4x4 Matrix4x4::MakeOrthographic(float left, float top, float right, float bottom, float near_clip, float far_clip) noexcept {
 	Matrix4x4 result{};
 
-	float left = 0.0f;
-	float right = width;
-	float top = 0.0f;
-	float bottom = height;
+	float inv_width = 1.0f / (right - left);
+	float inv_height = 1.0f / (top - bottom);
+	float inv_depth = 1.0f / (far_clip - near_clip);
 
-	float inverseWidth = 1.0f / (right - left);
-	float inverseHeight = 1.0f / (top - bottom);
-	float inverseDepth = 1.0f / (far_clip - near_clip);
-
-	result.m[0][0] = 2.0f * inverseWidth;
-	result.m[1][1] = 2.0f * inverseHeight;
-	result.m[2][2] = inverseDepth;
-	result.m[3][0] = -(right + left) * inverseWidth;
-	result.m[3][1] = -(top + bottom) * inverseHeight;
-	result.m[3][2] = -near_clip * inverseDepth;
+	result.m[0][0] = 2.0f * inv_width;
+	result.m[1][1] = 2.0f * inv_height;
+	result.m[2][2] = inv_depth;
+	result.m[3][0] = -(right + left) * inv_width;
+	result.m[3][1] = -(top + bottom) * inv_height;
+	result.m[3][2] = -near_clip * inv_depth;
 	result.m[3][3] = 1.0f;
 
 	return result;

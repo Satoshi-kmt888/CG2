@@ -61,7 +61,7 @@ std::unique_ptr<Sprite> Sprite::Create() {
 	return sprite;
 }
 
-void Sprite::Draw(Transform& transform, const Matrix4x4& viewProjectionMatrix) {
+void Sprite::Draw(WorldTransform& transform, const Matrix4x4& viewProjectionMatrix) {
 	auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!transformationBuffer_) {

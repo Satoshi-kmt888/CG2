@@ -209,7 +209,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Develop|x64'">true</WholeProgramOptimization>
     </ClCompile>
     <ClCompile Include="Source\Math\Matrix4x4.cpp" />
-    <ClCompile Include="Source\Math\Transform.cpp" />
+    <ClCompile Include="Source\Math\Quaternion.cpp" />
     <ClCompile Include="Source\Pipeline\BlendState.cpp" />
     <ClCompile Include="Source\Pipeline\DepthStencilState.cpp" />
     <ClCompile Include="Source\Pipeline\GraphicsPipeline.cpp" />
@@ -260,7 +260,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="Source\Input\Mouse.h" />
     <ClInclude Include="Source\Math\Matrix4x4.h" />
     <ClInclude Include="Source\Math\Quaternion.h" />
-    <ClInclude Include="Source\Math\Transform.h" />
+    <ClInclude Include="Source\Math\WorldTransform.h" />
     <ClInclude Include="Source\Math\Vector2.h" />
     <ClInclude Include="Source\Math\Vector3.h" />
     <ClInclude Include="Source\Math\Vector4.h" />

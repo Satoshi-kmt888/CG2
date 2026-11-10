@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Math/Transform.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
+#include "Math/WorldTransform.h"
 
 struct Particle {
-	Transform transform;
+	WorldTransform transform;
 	Vector3 velocity;
 	Vector4 color;
 	float life_time;

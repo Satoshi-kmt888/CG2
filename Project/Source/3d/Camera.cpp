@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include <cassert>
-
 Camera::Camera(float width, float height) {
 	Initialize(width, height);
 }
@@ -12,19 +10,22 @@ void Camera::Initialize(float width, float height) {
 
 	m_rotation = { 0.0f, 0.0f, 0.0f };
 	m_translation = { 0.0f, 0.0f, -10.0f };
-	m_fovY = 45.0f * std::numbers::pi_v<float> / 180.0f;
+	m_fov_y = 45.0f * std::numbers::pi_v<float> / 180.0f;
+	m_look_at = { 0.0f, 0.0f, 0.0f };
+	m_width = 1280.0f;
+	m_height = 720.0f;
 	m_near_clip = 0.1f;
 	m_far_clip = 1000.0f;
-	projectionType_ = ProjectionType::Perspective;
+	m_projection_type = ProjectionType::PROJECTION_PERSPECTIVE;
 
 	UpdateMatrix();
-	isDirty_ = false;
+	m_is_dirty = false;
 }
 
 void Camera::Update() {
-	if (isDirty_) {
+	if (m_is_dirty) {
 		UpdateMatrix();
-		isDirty_ = false;
+		m_is_dirty = false;
 	}
 }
 
@@ -32,35 +33,40 @@ void Camera::Update() {
 void Camera::SetRotation(const Vector3& rotation) {
 	if (m_rotation != rotation) {
 		m_rotation = rotation;
-		isDirty_ = true;
+		m_is_dirty = true;
 	}
 }
 
 void Camera::SetTranslation(const Vector3& translation) {
 	if (m_translation != translation) {
 		m_translation = translation;
-		isDirty_ = true;
+		m_is_dirty = true;
 	}
 }
 
-void Camera::SetFovY(float fovY) {
-	m_fovY = fovY;
-	isDirty_ = true;
+void Camera::SetFovY(float fov_y) {
+	m_fov_y = fov_y;
+	m_is_dirty = true;
+}
+
+void Camera::SetLookAt(const Vector3& look_at) {
+	m_look_at = look_at;
+	m_is_dirty = true;
 }
 
 void Camera::SetWidth(float width) {
 	m_width = width;
-	isDirty_ = true;
+	m_is_dirty = true;
 }
 
 void Camera::SetHeight(float height) {
 	m_height = height;
-	isDirty_ = true;
+	m_is_dirty = true;
 }
 
 void Camera::SetProjectionType(ProjectionType projectionType) {
-	projectionType_ = projectionType;
-	isDirty_ = true;
+	m_projection_type = projectionType;
+	m_is_dirty = true;
 }
 #pragma endregion
 
@@ -70,12 +76,21 @@ void Camera::UpdateMatrix() {
 	m_mat_view = m_mat_world.Inversed();
 
 	//プロジェクション行列の計算
-	if (projectionType_ == ProjectionType::Perspective) {
+	if (m_projection_type == ProjectionType::PROJECTION_PERSPECTIVE) {
 		//透視投影行列を計算
-		m_mat_projection = Matrix4x4::MakePerspective(m_fovY, m_near_clip, m_far_clip, GetAspectRatio());
+		m_mat_projection = Matrix4x4::MakePerspective(m_fov_y, GetAspectRatio(), m_near_clip, m_far_clip);
 	} else {
 		//正射影行列を計算
-		m_mat_projection = Matrix4x4::MakeOrthographic(m_width, m_height, m_near_clip, m_far_clip);
+		float distance = (m_look_at - m_translation).Length();
+		float height = 2.0f * distance * std::tan(m_fov_y * 0.5f);
+		float width = height * GetAspectRatio();
+
+		float left = -width * 0.5f;
+		float top = height * 0.5f;
+		float right = width * 0.5f;
+		float bottom = -height * 0.5f;
+
+		m_mat_projection = Matrix4x4::MakeOrthographic(left, top, right, bottom, m_near_clip, m_far_clip);
 	}
 
 	//ビュー・プロジェクション行列を計算
