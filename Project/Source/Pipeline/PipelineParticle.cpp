@@ -58,9 +58,9 @@ bool PipelineParticle::Initialize(ID3D12Device* device) {
 		.AddInputLayout("POSITION", DXGI_FORMAT_R32G32B32A32_FLOAT, 0)
 		.AddInputLayout("TEXCOORD", DXGI_FORMAT_R32G32_FLOAT, 0)
 		.AddInputLayout("NORMAL", DXGI_FORMAT_R32G32B32_FLOAT, 0)
-		.SetBlendState(BlendStates::Alpha())
+		.SetBlendState(BlendStates::Add())
 		.SetRasterizerState(RasterizerStates::BackCull())
-		.SetDepthStencilState(DepthStencilStates::Default());
+		.SetDepthStencilState(DepthStencilStates::ReadOnly());
 
 	if (!m_pipeline->Build(device)) {
 		LOG_ERROR("PipelineParticle: PSOの生成に失敗しました。");

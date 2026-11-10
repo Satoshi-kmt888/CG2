@@ -147,7 +147,7 @@
     <ClCompile Include="Source\2d\Sprite.cpp">
       <Filter>Source\2d</Filter>
     </ClCompile>
-    <ClCompile Include="Source\3d\Particle.cpp">
+    <ClCompile Include="Source\3d\ParticleSystem.cpp">
       <Filter>Source\3d</Filter>
     </ClCompile>
     <ClCompile Include="Source\Pipeline\PipelineObject3D.cpp">
@@ -299,13 +299,10 @@
     <ClInclude Include="Source\2d\Sprite.h">
       <Filter>Source\2d</Filter>
     </ClInclude>
-    <ClInclude Include="Source\3d\Particle.h">
+    <ClInclude Include="Source\3d\ParticleSystem.h">
       <Filter>Source\3d</Filter>
     </ClInclude>
     <ClInclude Include="Source\Pipeline\PipelineObject3D.h">
-      <Filter>Source\Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Pipeline\GraphicsPipelineDesc.h">
       <Filter>Source\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="Source\Pipeline\PipelineParticle.h">
@@ -337,6 +334,9 @@
     </ClInclude>
     <ClInclude Include="Source\2d\SpriteCommon.h">
       <Filter>Source\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\3d\Particle.h">
+      <Filter>Source\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

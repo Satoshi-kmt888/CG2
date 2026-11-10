@@ -186,7 +186,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClCompile Include="Source\3d\Material.cpp" />
     <ClCompile Include="Source\3d\Mesh.cpp" />
     <ClCompile Include="Source\3d\Model.cpp" />
-    <ClCompile Include="Source\3d\Particle.cpp" />
+    <ClCompile Include="Source\3d\ParticleSystem.cpp" />
     <ClCompile Include="Source\App\StarEngine.cpp" />
     <ClCompile Include="Source\App\StringUtility.cpp" />
     <ClCompile Include="Source\App\WinApp.cpp" />
@@ -238,6 +238,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="Source\3d\Mesh.h" />
     <ClInclude Include="Source\3d\Model.h" />
     <ClInclude Include="Source\3d\Particle.h" />
+    <ClInclude Include="Source\3d\ParticleSystem.h" />
     <ClInclude Include="Source\App\StarEngine.h" />
     <ClInclude Include="Source\App\StringUtility.h" />
     <ClInclude Include="Source\App\WinApp.h" />
@@ -266,7 +267,6 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="Source\Pipeline\BlendState.h" />
     <ClInclude Include="Source\Pipeline\DepthStencilState.h" />
     <ClInclude Include="Source\Pipeline\GraphicsPipeline.h" />
-    <ClInclude Include="Source\Pipeline\GraphicsPipelineDesc.h" />
     <ClInclude Include="Source\Pipeline\PipelineObject3D.h" />
     <ClInclude Include="Source\Pipeline\PipelineParticle.h" />
     <ClInclude Include="Source\Pipeline\RasterizerState.h" />

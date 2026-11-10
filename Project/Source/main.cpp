@@ -7,10 +7,12 @@
 #include "3d/DirectionalLight.h"
 #include "3d/Model.h"
 #include "3d/Particle.h"
+#include "3d/ParticleSystem.h"
 #include "Debugger/D3D12ResourceLeakChecker.h"
 #include "Graphics/GraphicsSystem.h"
 #include "Input/Input.h"
 #include "Math/Transform.h"
+#include "Math/Vector3.h"
 #include "Math/Vector4.h"
 
 #include "Pipeline/PipelineObject3D.h"
@@ -19,6 +21,7 @@
 #include <array>
 #include <imgui.h>
 #include <memory>
+#include <random>
 #include <Windows.h>
 
 //Windowsアプリでのエントリーポイント(main関数)
@@ -28,6 +31,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//エンジンの初期化
 	StarEngine::Initialize(L"CG3");
+
+	//ランダム生成器
+	std::random_device seed_generator;
+	std::mt19937 random_engine(seed_generator());
+
+	//Δタイム
+	const float k_delta_time = 1.0f / 60.0f;
 
 	PipelineObject3D pipeline_object3d{};
 	if (!pipeline_object3d.Initialize(GraphicsSystem::GetInstance()->GetDevice())) {
@@ -61,7 +71,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	}
 
 	//スプライト
-	Transform transform_sprite = {
+	Transform sprite_transform = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f }
@@ -69,25 +79,37 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	auto sprite = Sprite::Create();
 
 	//モデル
-	//Transform transform_model = {
-	//	{ 1.0f, 1.0f, 1.0f },
-	//	{ 0.0f, 0.0f, 0.0f },
-	//	{ 0.0f, 0.0f, 0.0f }
-	//};
-	//auto model = Model::CreatePlane();
-	//model->SetLightType(2);
-	//Vector4 color_model = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Transform model_transform = {
+		{ 1.0f, 1.0f, 1.0f },
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f }
+	};
+	auto model = Model::CreatePlane();
+	model->SetLightType(2);
+	Vector4 model_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//パーティクル
-	//const uint32_t k_particle_count = 10;
-	//Particle particle{};
-	//particle.Initialize(k_particle_count);
-	//std::array<Transform, k_particle_count> transform_particles;
-	//for (uint32_t i = 0; i < k_particle_count; ++i) {
-	//	transform_particles[i].scale = { 1.0f, 1.0f, 1.0f };
-	//	transform_particles[i].rotation = { 0.0f, 0.0f, 0.0f };
-	//	transform_particles[i].translation = { static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f, static_cast<float>(i) * 0.1f };
-	//}
+	const uint32_t k_particle_count = 10;
+
+	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+	std::uniform_real_distribution<float> dist_color(0.0f, 1.0f);
+	std::uniform_real_distribution<float> dist_time(1.0f, 3.0f);
+
+	std::vector<Particle> particles(k_particle_count);
+	for (auto& particle : particles) {
+		particle.transform.translation = { distribution(random_engine), distribution(random_engine), distribution(random_engine) };
+		particle.transform.rotation = { 0.0f, 0.0f, 0.0f };
+		particle.transform.scale = { 1.0f, 1.0f, 1.0f };
+
+		particle.velocity = { distribution(random_engine), distribution(random_engine), distribution(random_engine) };
+		particle.color = { dist_color(random_engine), dist_color(random_engine) , dist_color(random_engine), 1.0f };
+		particle.life_time = dist_time(random_engine);
+		particle.current_time = 0.0f;
+	}
+
+	ParticleSystem particle_system{};
+	particle_system.Initialize(k_particle_count);
+	bool is_move_particle = false;
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -127,20 +149,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Begin("Debug");
 
 		if (ImGui::CollapsingHeader("Sprite")) {
-			ImGui::DragFloat3("transform: translation", &transform_sprite.translation.x, 0.01f);
-			ImGui::DragFloat3("transform: rotation", &transform_sprite.rotation.x, 0.01f);
-			ImGui::DragFloat3("transform: scale", &transform_sprite.scale.x, 0.01f);
+			ImGui::DragFloat3("transform: translation", &sprite_transform.translation.x, 0.01f);
+			ImGui::DragFloat3("transform: rotation", &sprite_transform.rotation.x, 0.01f);
+			ImGui::DragFloat3("transform: scale", &sprite_transform.scale.x, 0.01f);
 		}
 
 		if (ImGui::CollapsingHeader("Model")) {
 			//モデルのトランスフォーム
-			//ImGui::DragFloat3("transform: translation", &transform_model.translation.x, 0.01f);
-			//ImGui::DragFloat3("transform: rotation", &transform_model.rotation.x, 0.01f);
-			//ImGui::DragFloat3("transform: scale", &transform_model.scale.x, 0.01f);
+			ImGui::DragFloat3("transform: translation", &model_transform.translation.x, 0.01f);
+			ImGui::DragFloat3("transform: rotation", &model_transform.rotation.x, 0.01f);
+			ImGui::DragFloat3("transform: scale", &model_transform.scale.x, 0.01f);
 
-			////モデルの色
-			//ImGui::ColorEdit4("color", &color_model.x);
-			//model->SetColor(color_model);
+			//モデルの色
+			ImGui::ColorEdit4("color", &model_color.x);
+			model->SetColor(model_color);
 		}
 
 		ImGui::End();
@@ -156,6 +178,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//ライトを更新
 		light->Update();
 
+		for (auto& particle : particles) {
+			particle.transform.translation += particle.velocity * k_delta_time;
+			particle.current_time += k_delta_time;
+		}
+		particle_system.SetParticle(particles);
+
 		//====================
 		// ↑更新処理↑
 		//====================
@@ -165,17 +193,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//====================
 
 		auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
-		//pipeline_object3d.Bind(command_list);
 
-		//model->Draw(transform_model, camera->GetViewProjMatrix());
+		//モデル
+		pipeline_object3d.Bind(command_list);
+		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
+		model->Draw(model_transform, camera->GetViewProjMatrix());
 
-		//pipeline_particle.Bind(command_list);
-
-		//particle.Draw(transform_particles, camera->GetViewProjMatrix());
-
+		//スプライト
 		sprite_common->SetPipelineState(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
-		sprite->Draw(transform_sprite, camera_2d.GetViewProjMatrix());
+		sprite->Draw(sprite_transform, camera_2d.GetViewProjMatrix());
+
+		//パーティクル
+		pipeline_particle.Bind(command_list);
+		particle_system.Draw(camera->GetViewProjMatrix());
 
 		//====================
 		// ↑描画処理↑

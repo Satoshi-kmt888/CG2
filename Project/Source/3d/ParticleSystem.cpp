@@ -1,4 +1,4 @@
-#include "Particle.h"
+#include "ParticleSystem.h"
 
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
@@ -6,13 +6,11 @@
 
 #include <algorithm>
 
-Particle::Particle() = default;
+ParticleSystem::ParticleSystem() = default;
 
-Particle::~Particle() = default;
+ParticleSystem::~ParticleSystem() = default;
 
-void Particle::Initialize(UINT instance_count) {
-	m_instance_count = instance_count;
-
+void ParticleSystem::Initialize(UINT instance_count) {
 	ID3D12Device* device = GraphicsSystem::GetInstance()->GetDevice();
 
 	m_model = std::make_unique<Model>();
@@ -45,6 +43,9 @@ void Particle::Initialize(UINT instance_count) {
 
 	CreateBuffer(device);
 
+	m_particles.reserve(instance_count);
+
+	m_transformation_data->color = Vector4{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc{};
@@ -53,19 +54,18 @@ void Particle::Initialize(UINT instance_count) {
 	srv_desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	srv_desc.Buffer.FirstElement = 0;
 	srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	srv_desc.Buffer.NumElements = instance_count;
-	srv_desc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	srv_desc.Buffer.NumElements = m_num_max_instance;
+	srv_desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 
 	const DescriptorHandle allocation = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
 	m_instancing_srv_gpu_handle = allocation.gpuHandle;
 	device->CreateShaderResourceView(m_transformation_buffer.Get(), &srv_desc, allocation.cpuHandle);
 }
 
-void Particle::Update() {
-
+void ParticleSystem::Update() {
 }
 
-void Particle::Draw(std::span<const Transform> transforms, const Matrix4x4& view_projection_matrix) {
+void ParticleSystem::Draw(const Matrix4x4& view_projection_matrix) {
 	auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!m_transformation_buffer) {
@@ -73,13 +73,33 @@ void Particle::Draw(std::span<const Transform> transforms, const Matrix4x4& view
 		return;
 	}
 
-	const size_t count = std::min<size_t>(transforms.size(), m_instance_count);
+	const size_t count = std::min<size_t>(m_particles.size(), m_num_max_instance);
+	uint32_t num_instance = 0;
 
 	//ワールド変換データを更新
-	for (uint32_t i = 0; i < m_instance_count; ++i) {
-		const Matrix4x4 mat_world = transforms[i].UpdateMatrix();
-		m_transformation_data[i].world = mat_world;
-		m_transformation_data[i].wvp = mat_world * view_projection_matrix;
+	for (auto& particle:m_particles) {
+		if (num_instance >= m_num_max_instance) {
+			break; //バッファの上限
+		}
+
+		if (particle.life_time <= particle.current_time) {
+			continue;
+		}
+
+		float alpha = 1.0f - (particle.current_time / particle.life_time);
+
+		const Matrix4x4 mat_world = particle.transform.UpdateMatrix();
+		m_transformation_data[num_instance].world = mat_world;
+		m_transformation_data[num_instance].wvp = mat_world * view_projection_matrix;
+
+		m_transformation_data[num_instance].color = particle.color;
+		m_transformation_data[num_instance].color.w = alpha;
+
+		++num_instance;
+	}
+
+	if (num_instance == 0) {
+		return;
 	}
 
 	command_list->SetGraphicsRootDescriptorTable(2, m_instancing_srv_gpu_handle);
@@ -89,11 +109,11 @@ void Particle::Draw(std::span<const Transform> transforms, const Matrix4x4& view
 
 	//コマンド実行
 	m_material->SetGraphicsCommand(command_list, 0, 1);
-	m_mesh->Draw(command_list, m_instance_count);
+	m_mesh->Draw(command_list, num_instance);
 }
 
-void Particle::CreateBuffer(ID3D12Device* device) {
-	m_transformation_buffer = D3D12Utility::CreateBufferResource(device, sizeof(TransformationMatrix) * m_instance_count);
+void ParticleSystem::CreateBuffer(ID3D12Device* device) {
+	m_transformation_buffer = D3D12Utility::CreateBufferResource(device, sizeof(ParticleForGPU) * m_num_max_instance);
 	if (!m_transformation_buffer) {
 		LOG_ERROR("Model::CreateBuffer メンバ変数transformationBuffer_がnullptrです。Model::CreateBufferでtransformationBuffer_を作成してください。");
 		return;
@@ -106,8 +126,8 @@ void Particle::CreateBuffer(ID3D12Device* device) {
 		return;
 	}
 
-	m_transformation_data = static_cast<TransformationMatrix*>(transformation_ptr);
-	for (uint32_t i = 0; i < m_instance_count; ++i) {
+	m_transformation_data = static_cast<ParticleForGPU*>(transformation_ptr);
+	for (uint32_t i = 0; i < m_num_max_instance; ++i) {
 		if (m_transformation_data) {
 			m_transformation_data[i].wvp = Matrix4x4::Identity();
 			m_transformation_data[i].world = Matrix4x4::Identity();
