@@ -73,7 +73,7 @@ void Sprite::Draw(Transform& transform, const Matrix4x4& viewProjectionMatrix) {
 	transform.scale.z = 1.0f;
 	transform.rotation = { 0.0f, 0.0f, transform.rotation.z }; //Rollだけにする
 	transform.translation.z = 0.0f;
-	transformationData_->world = Transform::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
+	transformationData_->world = Matrix4x4::MakeAffine(transform.scale, transform.rotation, transform.translation);
 	transformationData_->wvp = transformationData_->world * viewProjectionMatrix;
 	commandList->SetGraphicsRootConstantBufferView(1, transformationBuffer_->GetGPUVirtualAddress());
 

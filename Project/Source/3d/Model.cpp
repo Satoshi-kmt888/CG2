@@ -3,13 +3,9 @@
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
 #include "Graphics/GraphicsSystem.h"
-#include "Material.h"
-#include "Math/Matrix4x4.h"
-#include "Math/Transform.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
-#include "Mesh.h"
 
 #include <cassert>
 #include <cmath>
@@ -160,7 +156,7 @@ void Model::Draw(const Transform& transform, const Matrix4x4& view_projection_ma
 	}
 
 	//ワールド変換データを更新
-	m_transformation_data->world = Transform::MakeAffineMatrix(transform.scale, transform.rotation, transform.translation);
+	m_transformation_data->world = Matrix4x4::MakeAffine(transform.scale, transform.rotation, transform.translation);
 	m_transformation_data->wvp = m_transformation_data->world * view_projection_matrix;
 
 	//マテリアルを更新

@@ -3,6 +3,7 @@
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
 #include "Graphics/TextureManager.h"
+#include "Math/Matrix4x4.h"
 
 void Material::CreateBuffer(ID3D12Device* device) {
 	if (!device) {
@@ -35,9 +36,9 @@ void Material::Update() {
 	}
 
 	//uv座標変換データの計算
-	Matrix4x4 uvTransformMatrix = Transform::MakeScaleMatrix(transform_.scale);
-	uvTransformMatrix = uvTransformMatrix * Transform::MakeRotateZMatrix(transform_.rotation.z);
-	uvTransformMatrix = uvTransformMatrix * Transform::MakeTranslateMatrix(transform_.translation);
+	Matrix4x4 uvTransformMatrix = Matrix4x4::MakeScale(transform_.scale);
+	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeRotationZ(transform_.rotation.z);
+	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeTranslation(transform_.translation);
 	surfaceData_->uvTransform = uvTransformMatrix;
 }
 

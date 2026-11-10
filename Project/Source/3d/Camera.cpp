@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include "Math/Transform.h"
-
 #include <cassert>
 
 Camera::Camera(float width, float height) {
@@ -9,14 +7,14 @@ Camera::Camera(float width, float height) {
 }
 
 void Camera::Initialize(float width, float height) {
-	width_ = width;
-	height_ = height;
+	m_width = width;
+	m_height = height;
 
-	rotation_ = { 0.0f, 0.0f, 0.0f };
-	translation_ = { 0.0f, 0.0f, -10.0f };
-	fovY_ = 45.0f * std::numbers::pi_v<float> / 180.0f;
-	nearClip_ = 0.1f;
-	farClip_ = 1000.0f;
+	m_rotation = { 0.0f, 0.0f, 0.0f };
+	m_translation = { 0.0f, 0.0f, -10.0f };
+	m_fovY = 45.0f * std::numbers::pi_v<float> / 180.0f;
+	m_near_clip = 0.1f;
+	m_far_clip = 1000.0f;
 	projectionType_ = ProjectionType::Perspective;
 
 	UpdateMatrix();
@@ -32,31 +30,31 @@ void Camera::Update() {
 
 #pragma region Setters
 void Camera::SetRotation(const Vector3& rotation) {
-	if (rotation_ != rotation) {
-		rotation_ = rotation;
+	if (m_rotation != rotation) {
+		m_rotation = rotation;
 		isDirty_ = true;
 	}
 }
 
 void Camera::SetTranslation(const Vector3& translation) {
-	if (translation_ != translation) {
-		translation_ = translation;
+	if (m_translation != translation) {
+		m_translation = translation;
 		isDirty_ = true;
 	}
 }
 
 void Camera::SetFovY(float fovY) {
-	fovY_ = fovY;
+	m_fovY = fovY;
 	isDirty_ = true;
 }
 
 void Camera::SetWidth(float width) {
-	width_ = width;
+	m_width = width;
 	isDirty_ = true;
 }
 
 void Camera::SetHeight(float height) {
-	height_ = height;
+	m_height = height;
 	isDirty_ = true;
 }
 
@@ -68,61 +66,18 @@ void Camera::SetProjectionType(ProjectionType projectionType) {
 
 void Camera::UpdateMatrix() {
 	//ビュー行列の作成
-	Matrix4x4 worldMatrix = Transform::MakeRotateXYZMatrix(rotation_) * Transform::MakeTranslateMatrix(translation_);
-	viewMatrix_ = worldMatrix.Inversed();
+	m_mat_world = Matrix4x4::MakeRotation(m_rotation) * Matrix4x4::MakeTranslation(m_translation);
+	m_mat_view = m_mat_world.Inversed();
 
 	//プロジェクション行列の計算
 	if (projectionType_ == ProjectionType::Perspective) {
 		//透視投影行列を計算
-		projectionMatrix_ = MakePerspectiveMatrix();
+		m_mat_projection = Matrix4x4::MakePerspective(m_fovY, m_near_clip, m_far_clip, GetAspectRatio());
 	} else {
 		//正射影行列を計算
-		projectionMatrix_ = MakeOrthographicMatrix();
+		m_mat_projection = Matrix4x4::MakeOrthographic(m_width, m_height, m_near_clip, m_far_clip);
 	}
 
 	//ビュー・プロジェクション行列を計算
-	viewProjectionMatrix_ = viewMatrix_ * projectionMatrix_;
-}
-
-Matrix4x4 Camera::MakePerspectiveMatrix() const noexcept {
-	Matrix4x4 result{};
-
-	float cot = 1.0f / std::tan(fovY_ * 0.5f);
-	float inverseRange = 1.0f / (farClip_ - nearClip_);
-
-	result.m[0][0] = cot / GetAspectRatio();
-	result.m[1][1] = cot;
-	result.m[2][2] = farClip_ * inverseRange;
-	result.m[2][3] = 1.0f;
-	result.m[3][2] = -nearClip_ * farClip_ * inverseRange;
-	result.m[3][3] = 0.0f;
-
-	return result;
-}
-
-Matrix4x4 Camera::MakeOrthographicMatrix() const noexcept {
-	assert(width_ != 0.0f);
-	assert(height_ != 0.0f);
-	assert(farClip_ != nearClip_);
-
-	Matrix4x4 result{};
-
-	float left = 0.0f;
-	float right = width_;
-	float top = 0.0f;
-	float bottom = height_;
-
-	float inverseWidth = 1.0f / (right - left);
-	float inverseHeight = 1.0f / (top - bottom);
-	float inverseDepth = 1.0f / (farClip_ - nearClip_);
-
-	result.m[0][0] = 2.0f * inverseWidth;
-	result.m[1][1] = 2.0f * inverseHeight;
-	result.m[2][2] = inverseDepth;
-	result.m[3][0] = -(right + left) * inverseWidth;
-	result.m[3][1] = -(top + bottom) * inverseHeight;
-	result.m[3][2] = -nearClip_ * inverseDepth;
-	result.m[3][3] = 1.0f;
-
-	return result;
+	m_mat_view_projection = m_mat_view * m_mat_projection;
 }

@@ -18,12 +18,12 @@ enum class ProjectionType {
 /// </summary>
 class Camera {
 public:
-	//--- コンストラクタ・デストラクタ ---
+	//=========================================================
+	// public methods
+	//=========================================================
 
 	Camera(float width, float height);
 	~Camera() = default;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// 初期化
@@ -37,27 +37,29 @@ public:
 	/// </summary>
 	void Update();
 
-	//--- ゲッター ---
+	//=========================================================
+	// accessor
+	//=========================================================
 
-	const Vector3& GetRotation() const { return rotation_; }
-	const Vector3& GetTranslation() const { return translation_; }
+	const Vector3& GetRotation() const { return m_rotation; }
+	const Vector3& GetTranslation() const { return m_translation; }
 
-	float GetFovY() const { return fovY_; }
-	float GetAspectRatio() const { return width_ / height_; }
-	float GetWidth() const { return width_; }
-	float GetHeight() const { return height_; }
-	float GetNearClip() const { return nearClip_; }
-	float GetFarClip() const { return farClip_; }
+	float GetFovY() const { return m_fovY; }
+	float GetAspectRatio() const { return m_width / m_height; }
+	float GetWidth() const { return m_width; }
+	float GetHeight() const { return m_height; }
+	float GetNearClip() const { return m_near_clip; }
+	float GetFarClip() const { return m_far_clip; }
 
 	bool GetIsDirty() const { return isDirty_; }
 
 	ProjectionType GetProjectionType() const { return projectionType_; }
 
-	const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
-	const Matrix4x4& GetProjectionMatrix() const { return projectionMatrix_; }
-	const Matrix4x4& GetViewProjMatrix() const { return viewProjectionMatrix_; }
+	const Matrix4x4& GetViewMatrix() const { return m_mat_view; }
+	const Matrix4x4& GetProjectionMatrix() const { return m_mat_projection; }
+	const Matrix4x4& GetViewProjMatrix() const { return m_mat_view_projection; }
 
-	//--- セッター ---
+	//---------------------------------------------------------
 
 	void SetRotation(const Vector3& rotation);
 	void SetTranslation(const Vector3& translation);
@@ -69,43 +71,36 @@ public:
 	void SetProjectionType(ProjectionType projectionType);
 
 private:
-	//--- 内部関数 ---
+	//=========================================================
+	// private methods
+	//=========================================================
 
 	/// <summary>
 	/// 行列更新
 	/// </summary>
 	void UpdateMatrix();
 
-	/// <summary>
-	/// 透視投影行列を計算
-	/// </summary>
-	/// <returns></returns>
-	Matrix4x4 MakePerspectiveMatrix() const noexcept;
-
-	/// <summary>
-	/// 静者行列を計算
-	/// </summary>
-	/// <returns></returns>
-	Matrix4x4 MakeOrthographicMatrix() const noexcept;
-
-	//--- 内部変数 ---
+	//=========================================================
+	// private variables
+	//=========================================================
 
 	//ワールド変換
-	Vector3 rotation_ = { 0.0f, 0.0f, 0.0f };
-	Vector3 translation_ = { 0.0f, 0.0f, -10.0f };
+	Vector3 m_translation = { 0.0f, 0.0f, -10.0f };
+	Vector3 m_rotation = { 0.0f, 0.0f, 0.0f };
 
 	//投影パラメータ
-	float fovY_ = 45.0f * std::numbers::pi_v<float> / 180.0f;
-	float width_ = 1280.0f;
-	float height_ = 720.0f;
-	float nearClip_ = 0.1f;
-	float farClip_ = 1000.0f;
+	float m_fovY = 45.0f * std::numbers::pi_v<float> / 180.0f;
+	float m_width = 1280.0f;
+	float m_height = 720.0f;
+	float m_near_clip = 0.1f;
+	float m_far_clip = 1000.0f;
 
 	ProjectionType projectionType_ = ProjectionType::Perspective;
 	bool isDirty_ = true;
 
 	//行列
-	Matrix4x4 viewMatrix_ = Matrix4x4::Identity();
-	Matrix4x4 projectionMatrix_ = Matrix4x4::Identity();
-	Matrix4x4 viewProjectionMatrix_ = Matrix4x4::Identity();
+	Matrix4x4 m_mat_world = Matrix4x4::Identity();
+	Matrix4x4 m_mat_view = Matrix4x4::Identity();
+	Matrix4x4 m_mat_projection = Matrix4x4::Identity();
+	Matrix4x4 m_mat_view_projection = Matrix4x4::Identity();
 };
