@@ -160,7 +160,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//}
 
 		if (ImGui::CollapsingHeader("Particle")) {
-			ImGui::DragInt("count", &particle_count, 1);
+			ImGui::SliderInt("count", &particle_count, 1, 1024);
 
 			if (ImGui::Button("Emit")) {
 				for (int i = 0; i < particle_count; ++i) {
