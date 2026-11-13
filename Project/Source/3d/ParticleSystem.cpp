@@ -11,7 +11,7 @@ ParticleSystem::ParticleSystem() = default;
 
 ParticleSystem::~ParticleSystem() = default;
 
-void ParticleSystem::Initialize(UINT instance_count) {
+void ParticleSystem::Initialize() {
 	ID3D12Device* device = GraphicsSystem::GetInstance()->GetDevice();
 
 	m_model = std::make_unique<Model>();
@@ -39,12 +39,10 @@ void ParticleSystem::Initialize(UINT instance_count) {
 
 	m_mesh->CreateBuffer(device);
 
-	m_material->SetTexture("Resource/circle.png");
+	m_material->SetTexture("Resource/bubble.png");
 	m_material->CreateBuffer(device);
 
 	CreateBuffer(device);
-
-	m_particles.reserve(instance_count);
 
 	m_transformation_data->color = Vector4{ 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -55,7 +53,7 @@ void ParticleSystem::Initialize(UINT instance_count) {
 	srv_desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	srv_desc.Buffer.FirstElement = 0;
 	srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	srv_desc.Buffer.NumElements = m_num_max_instance;
+	srv_desc.Buffer.NumElements = k_num_max_instance;
 	srv_desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 
 	const DescriptorHandle allocation = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
@@ -74,7 +72,7 @@ void ParticleSystem::Draw(const Camera* camera) {
 		return;
 	}
 
-	const size_t count = std::min<size_t>(m_particles.size(), m_num_max_instance);
+	const size_t count = std::min<size_t>(m_particles.size(), k_num_max_instance);
 	uint32_t num_instance = 0;
 
 	Matrix4x4 mat_billboard = camera->GetWorldMatrix();
@@ -83,28 +81,32 @@ void ParticleSystem::Draw(const Camera* camera) {
 	mat_billboard.m[3][2] = 0.0f;
 
 	//ワールド変換データを更新
-	for (auto& particle:m_particles) {
-		if (num_instance >= m_num_max_instance) {
+	for (auto it = m_particles.begin(); it != m_particles.end();) {
+		if (num_instance >= k_num_max_instance) {
 			break; //バッファの上限
 		}
 
-		if (particle.life_time <= particle.current_time) {
+		if (it->life_time <= it->current_time) {
+			it = m_particles.erase(it);
 			continue;
 		}
 
-		float alpha = 1.0f - (particle.current_time / particle.life_time);
+		float alpha = 1.0f - (it->current_time / it->life_time);
+		if (num_instance < k_num_max_instance) {
+			Matrix4x4 mat_scale = Matrix4x4::MakeScale(it->transform.scale);
+			Matrix4x4 mat_translation = Matrix4x4::MakeTranslation(it->transform.translation);
 
-		Matrix4x4 mat_scale = Matrix4x4::MakeScale(particle.transform.scale);
-		Matrix4x4 mat_translation = Matrix4x4::MakeTranslation(particle.transform.translation);
+			it->transform.mat_world = mat_scale * mat_billboard * mat_translation;
+			m_transformation_data[num_instance].world = it->transform.mat_world;
+			m_transformation_data[num_instance].wvp = it->transform.mat_world * camera->GetViewProjMatrix();
 
-		particle.transform.mat_world = mat_scale * mat_billboard * mat_translation;
-		m_transformation_data[num_instance].world = particle.transform.mat_world;
-		m_transformation_data[num_instance].wvp = particle.transform.mat_world * camera->GetViewProjMatrix();
+			m_transformation_data[num_instance].color = it->color;
+			m_transformation_data[num_instance].color.w = alpha;
 
-		m_transformation_data[num_instance].color = particle.color;
-		m_transformation_data[num_instance].color.w = alpha;
+			++num_instance;
+		}
 
-		++num_instance;
+		++it;
 	}
 
 	if (num_instance == 0) {
@@ -122,7 +124,7 @@ void ParticleSystem::Draw(const Camera* camera) {
 }
 
 void ParticleSystem::CreateBuffer(ID3D12Device* device) {
-	m_transformation_buffer = D3D12Utility::CreateBufferResource(device, sizeof(ParticleForGPU) * m_num_max_instance);
+	m_transformation_buffer = D3D12Utility::CreateBufferResource(device, sizeof(ParticleForGPU) * k_num_max_instance);
 	if (!m_transformation_buffer) {
 		LOG_ERROR("Model::CreateBuffer メンバ変数transformationBuffer_がnullptrです。Model::CreateBufferでtransformationBuffer_を作成してください。");
 		return;
@@ -136,7 +138,7 @@ void ParticleSystem::CreateBuffer(ID3D12Device* device) {
 	}
 
 	m_transformation_data = static_cast<ParticleForGPU*>(transformation_ptr);
-	for (uint32_t i = 0; i < m_num_max_instance; ++i) {
+	for (uint32_t i = 0; i < k_num_max_instance; ++i) {
 		if (m_transformation_data) {
 			m_transformation_data[i].wvp = Matrix4x4::Identity();
 			m_transformation_data[i].world = Matrix4x4::Identity();

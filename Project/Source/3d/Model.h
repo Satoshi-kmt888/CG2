@@ -27,14 +27,14 @@ public:
 	Model() = default;
 	~Model();
 
-	static std::unique_ptr<Model> CreatePlane();
+	static std::unique_ptr<Model> CreatePlane(const std::string& filename);
 
 	/// <summary>
 	/// 簡易的な球モデルを生成する
 	/// </summary>
 	/// <param name="textureFilePath"></param>
 	/// <returns>生成された球モデル</returns>
-	static std::unique_ptr<Model> CreateSphere(uint32_t division_horizontal = 16, uint32_t division_vertical = 16);
+	static std::unique_ptr<Model> CreateSphere(const std::string& filename, uint32_t division_horizontal = 16, uint32_t division_vertical = 16);
 
 	/// <summary>
 	/// OBJファイルからモデルを生成する

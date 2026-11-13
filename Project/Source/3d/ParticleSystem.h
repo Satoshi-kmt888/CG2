@@ -7,8 +7,8 @@
 #include "Math/Vector4.h"
 
 #include <d3d12.h>
+#include <list>
 #include <memory>
-#include <span>
 
 class Camera;
 
@@ -30,13 +30,13 @@ public:
 	ParticleSystem();
 	~ParticleSystem();
 
-	void Initialize(UINT instance_count);
+	void Initialize();
 	void Update();
 	void Draw(const Camera* camera);
 
 	ID3D12Resource* GetResource() const { return m_transformation_buffer.Get(); }
 
-	void SetParticle(const std::vector<Particle>& particle) { m_particles = particle; }
+	void SetParticle(const std::list<Particle>& particle) { m_particles = particle; }
 
 private:
 	//=========================================================
@@ -49,7 +49,7 @@ private:
 	// private variables
 	//=========================================================
 
-	const uint32_t m_num_max_instance = 256;
+	const uint32_t k_num_max_instance = 1024;
 
 	//座標変換リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> m_transformation_buffer = nullptr;
@@ -61,8 +61,5 @@ private:
 	std::unique_ptr<Mesh> m_mesh;
 	std::unique_ptr<Material> m_material;
 
-	std::vector<Particle> m_particles;
-
-	const float k_delta_time = 1.0f / 60.0f;
+	std::list<Particle> m_particles;
 };
-

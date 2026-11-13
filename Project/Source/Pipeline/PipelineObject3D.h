@@ -7,7 +7,7 @@ class RootSignature;
 class GraphicsPipeline;
 
 /// <summary>
-/// 
+/// 3Dオブジェクト用パイプライン
 /// </summary>
 class PipelineObject3D {
 public:

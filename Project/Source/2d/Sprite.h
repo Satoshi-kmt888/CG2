@@ -32,17 +32,17 @@ public:
 	~Sprite();
 
 	/// <summary>
-	/// 描画処理
-	/// </summary>
-	/// <param name="transform"></param>
-	/// <param name="viewProjectionMatrix"></param>
-	void Draw(WorldTransform& transform, const Matrix4x4& viewProjectionMatrix);
-
-	/// <summary>
 	/// 通常のスプライトを生成
 	/// </summary>
 	/// <returns></returns>
 	static std::unique_ptr<Sprite> Create();
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	/// <param name="transform"></param>
+	/// <param name="viewProjectionMatrix"></param>
+	void Draw(WorldTransform& transform);
 
 	//=========================================================
 	// accessor

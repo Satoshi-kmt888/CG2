@@ -3,7 +3,7 @@
 #include <d3d12.h>
 #include <memory>
 
-class PipelineObject3D;
+class PipelineObject2D;
 
 /// <summary>
 /// 
@@ -40,5 +40,5 @@ private:
 	// private methods
 	//=========================================================
 
-	std::unique_ptr<PipelineObject3D> m_pipeline;
+	std::unique_ptr<PipelineObject2D> m_pipeline;
 };

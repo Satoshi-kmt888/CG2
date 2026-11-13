@@ -177,6 +177,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClCompile Include="External\imgui\imgui_widgets.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Source\Pipeline\PipelineObject2D.cpp" />
     <ClCompile Include="Source\2d\ImGuiManager.cpp" />
     <ClCompile Include="Source\2d\Sprite.cpp" />
     <ClCompile Include="Source\2d\SpriteCommon.cpp" />
@@ -228,6 +229,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="External\imgui\imstb_rectpack.h" />
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
+    <ClInclude Include="Source\Pipeline\PipelineObject2D.h" />
     <ClInclude Include="Source\2d\ImGuiManager.h" />
     <ClInclude Include="Source\2d\Sprite.h" />
     <ClInclude Include="Source\2d\SpriteCommon.h" />

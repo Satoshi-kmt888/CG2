@@ -26,7 +26,7 @@ Model::~Model() {
 	}
 }
 
-std::unique_ptr<Model> Model::CreatePlane() {
+std::unique_ptr<Model> Model::CreatePlane(const std::string& filename) {
 	ID3D12Device* device = GraphicsSystem::GetInstance()->GetDevice();
 
 	auto model = std::make_unique<Model>();
@@ -54,7 +54,7 @@ std::unique_ptr<Model> Model::CreatePlane() {
 
 	model->m_mesh->CreateBuffer(device);
 
-	model->m_material->SetTexture("Resource/uvChecker.png");
+	model->m_material->SetTexture("Resource/" + filename);
 	model->m_material->CreateBuffer(device);
 
 	model->CreateBuffer(device);
@@ -62,7 +62,7 @@ std::unique_ptr<Model> Model::CreatePlane() {
 	return model;
 }
 
-std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionHorizontal, uint32_t divisionVertical) {
+std::unique_ptr<Model> Model::CreateSphere(const std::string& filename, uint32_t divisionHorizontal, uint32_t divisionVertical) {
 	ID3D12Device* device = GraphicsSystem::GetInstance()->GetDevice();
 
 	auto model = std::make_unique<Model>();
@@ -119,7 +119,7 @@ std::unique_ptr<Model> Model::CreateSphere(uint32_t divisionHorizontal, uint32_t
 
 	model->m_mesh->CreateBuffer(device);
 
-	model->m_material->SetTexture("Resource/uvChecker.png");
+	model->m_material->SetTexture("Resource/" + filename);
 	model->m_material->CreateBuffer(device);
 
 	model->CreateBuffer(device);

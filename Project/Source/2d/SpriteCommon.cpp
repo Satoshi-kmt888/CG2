@@ -1,7 +1,7 @@
 #include "SpriteCommon.h"
 
 #include "Debugger/Logger.h"
-#include "Pipeline/PipelineObject3D.h"
+#include "Pipeline/PipelineObject2D.h"
 
 SpriteCommon* SpriteCommon::GetInstance() {
 	static SpriteCommon instance;
@@ -14,9 +14,9 @@ bool SpriteCommon::Initialize(ID3D12Device* device) {
 		return false;
 	}
 
-	m_pipeline = std::make_unique<PipelineObject3D>();
+	m_pipeline = std::make_unique<PipelineObject2D>();
 	if (!m_pipeline->Initialize(device)) {
-		LOG_ERROR("Object3D用パイプラインの生成に失敗しました。");
+		LOG_ERROR("Object2D用パイプラインの生成に失敗しました。");
 		m_pipeline.reset();
 		return false;
 	}

@@ -180,6 +180,7 @@
     <ClCompile Include="Source\Math\Quaternion.cpp">
       <Filter>Source\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Pipeline\PipelineObject2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Audio\Audio.h">
@@ -338,6 +339,7 @@
     <ClInclude Include="Source\3d\Particle.h">
       <Filter>Source\3d</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Pipeline\PipelineObject2D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Shader\Object3D.hlsli">

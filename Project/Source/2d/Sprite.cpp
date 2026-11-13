@@ -61,7 +61,7 @@ std::unique_ptr<Sprite> Sprite::Create() {
 	return sprite;
 }
 
-void Sprite::Draw(WorldTransform& transform, const Matrix4x4& viewProjectionMatrix) {
+void Sprite::Draw(WorldTransform& transform) {
 	auto commandList = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!transformationBuffer_) {
@@ -73,8 +73,10 @@ void Sprite::Draw(WorldTransform& transform, const Matrix4x4& viewProjectionMatr
 	transform.scale.z = 1.0f;
 	transform.rotation = { 0.0f, 0.0f, transform.rotation.z }; //Rollだけにする
 	transform.translation.z = 0.0f;
+
+	Matrix4x4 mat_projection = Matrix4x4::MakeOrthographic(0.0f, 720.0f, 1280.0f, 0.0f, 0.0f, 100.0f);
 	transformationData_->world = Matrix4x4::MakeAffine(transform.scale, transform.rotation, transform.translation);
-	transformationData_->wvp = transformationData_->world * viewProjectionMatrix;
+	transformationData_->wvp = transformationData_->world * mat_projection;
 	commandList->SetGraphicsRootConstantBufferView(1, transformationBuffer_->GetGPUVirtualAddress());
 
 	//マテリアルを更新
