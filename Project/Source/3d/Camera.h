@@ -56,6 +56,7 @@ public:
 
 	ProjectionType GetProjectionType() const { return m_projection_type; }
 
+	const Matrix4x4& GetWorldMatrix() const { return m_mat_world; }
 	const Matrix4x4& GetViewMatrix() const { return m_mat_view; }
 	const Matrix4x4& GetProjectionMatrix() const { return m_mat_projection; }
 	const Matrix4x4& GetViewProjMatrix() const { return m_mat_view_projection; }
@@ -71,6 +72,9 @@ public:
 	void SetHeight(float height);
 
 	void SetProjectionType(ProjectionType projectionType);
+
+	void SetWorldMatrix(const Matrix4x4& mat_world);
+	void SetViewProjectionMatrix(const Matrix4x4& mat_view_projection);
 
 private:
 	//=========================================================

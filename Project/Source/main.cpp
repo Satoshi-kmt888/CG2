@@ -49,16 +49,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		return false;
 	}
 
-	//メインカメラ(切り替える)
-	Camera main_camera{ 1280.0f, 720.0f };
+	//カメラ
+	Camera camera{ 1280.0f, 720.0f };
+	camera.SetTranslation(Vector3{ 0.0f, 5.0f, -10.0f });
+	camera.SetRotation(Vector3{ std::numbers::pi_v<float> / 3.0f, 0.0f, 0.0f });
 
-	//デバッグカメラ(切り替える)
+	//デバッグカメラ
 	DebugCamera debug_camera{};
 	bool is_debug_camera_enabled = false;
-
-	//カメラ
-	Camera const* camera = &main_camera;
-	Camera camera_2d{ 1280.0f, 720.0f };
 
 	//ライト
 	auto light = std::make_unique<DirectionalLight>();
@@ -93,7 +91,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 	std::uniform_real_distribution<float> dist_color(0.0f, 1.0f);
-	std::uniform_real_distribution<float> dist_time(1.0f, 3.0f);
+	std::uniform_real_distribution<float> dist_time(1.0f, 5.0f);
 
 	std::vector<Particle> particles(k_particle_count);
 	for (auto& particle : particles) {
@@ -120,13 +118,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ↓更新処理↓
 		//====================
 
-#ifdef _DEBUG
-		if (Input::GetInstance()->GetKeyboard().Trigger(DIK_F1)) {
-			is_debug_camera_enabled = !is_debug_camera_enabled;
-			camera = is_debug_camera_enabled ? &debug_camera.GetCamera() : &main_camera;
-		}
-#endif
-
 #ifdef USE_IMGUI
 		//---------------------
 		//課題が変わってもあるといい設定集はここ
@@ -135,18 +126,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Begin("Settings");
 
 		if (ImGui::CollapsingHeader("Camera")) {
-			Vector3 translation = camera_2d.GetTranslation();
-			ImGui::DragFloat3("transform: translation", &translation.x, 0.01f);
-			camera_2d.SetTranslation(translation);
+			Vector3 translation = camera.GetTranslation();
+			ImGui::DragFloat3("transform: translation###Camera::translation", &translation.x, 0.01f);
+			camera.SetTranslation(translation);
 
-			Vector3 rotation = camera_2d.GetRotation();
-			ImGui::DragFloat3("transform: rotation", &rotation.x, 0.01f);
-			camera_2d.SetRotation(rotation);
+			Vector3 rotation = camera.GetRotation();
+			ImGui::DragFloat3("transform: rotation###Camera::rotation", &rotation.x, 0.01f);
+			camera.SetRotation(rotation);
 		}
 
 		if (ImGui::CollapsingHeader("DirectionalLight")) {
 			//ライトの色
-			ImGui::ColorEdit4("color", &color_light.x);
+			ImGui::ColorEdit4("color###DirectionalLight::color ", &color_light.x);
 			light->SetColor(color_light);
 		}
 
@@ -159,38 +150,43 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		ImGui::Begin("Debug");
 
 		if (ImGui::CollapsingHeader("Sprite")) {
-			ImGui::DragFloat3("transform: translation", &sprite_transform.translation.x, 0.01f);
-			ImGui::DragFloat3("transform: rotation", &sprite_transform.rotation.x, 0.01f);
-			ImGui::DragFloat3("transform: scale", &sprite_transform.scale.x, 0.01f);
+			ImGui::DragFloat3("transform: translation###Sprite::translation", &sprite_transform.translation.x, 0.01f);
+			ImGui::DragFloat3("transform: rotation###Sprite::rotation", &sprite_transform.rotation.x, 0.01f);
+			ImGui::DragFloat3("transform: scale###Sprite::scale", &sprite_transform.scale.x, 0.01f);
 		}
 
 		if (ImGui::CollapsingHeader("Model")) {
 			//モデルのトランスフォーム
-			ImGui::DragFloat3("transform: translation", &model_transform.translation.x, 0.01f);
-			ImGui::DragFloat3("transform: rotation", &model_transform.rotation.x, 0.01f);
-			ImGui::DragFloat3("transform: scale", &model_transform.scale.x, 0.01f);
+			ImGui::DragFloat3("transform: translation###Model::translation", &model_transform.translation.x, 0.01f);
+			ImGui::DragFloat3("transform: rotation###Model::rotation", &model_transform.rotation.x, 0.01f);
+			ImGui::DragFloat3("transform: scale###Model::scale", &model_transform.scale.x, 0.01f);
 
 			//モデルの色
-			ImGui::ColorEdit4("color", &model_color.x);
+			ImGui::ColorEdit4("color###Model::color", &model_color.x);
 			model->SetColor(model_color);
 		}
 
 		ImGui::End();
 #endif
 
+#ifdef _DEBUG
+		if (Input::GetInstance()->GetKeyboard().Trigger(DIK_F1)) {
+			is_debug_camera_enabled = !is_debug_camera_enabled;
+		}
+#endif
 		if (is_debug_camera_enabled) {
 			debug_camera.Update();
+			camera.SetViewProjectionMatrix(debug_camera.GetCamera().GetViewProjMatrix());
 		} else {
-			main_camera.Update();
+			camera.Update();
 		}
-		camera_2d.Update();
 
 		//ライトを更新
 		light->Update();
 
 		for (auto& particle : particles) {
-			particle.transform.translation += particle.velocity * k_delta_time;
-			particle.current_time += k_delta_time;
+			particle.transform.translation = particle.velocity * k_delta_time;
+			particle.current_time = k_delta_time;
 		}
 		particle_system.SetParticle(particles);
 
@@ -207,7 +203,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//モデル
 		pipeline_object3d.Bind(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
-		model->Draw(model_transform, camera->GetViewProjMatrix());
+		//model->Draw(model_transform, camera.GetViewProjMatrix());
 
 		//スプライト
 		sprite_common->SetPipelineState(command_list);
@@ -216,7 +212,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//パーティクル
 		pipeline_particle.Bind(command_list);
-		particle_system.Draw(camera->GetViewProjMatrix());
+		particle_system.Draw(&camera);
 
 		//====================
 		// ↑描画処理↑

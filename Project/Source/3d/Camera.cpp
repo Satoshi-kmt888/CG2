@@ -68,6 +68,14 @@ void Camera::SetProjectionType(ProjectionType projectionType) {
 	m_projection_type = projectionType;
 	m_is_dirty = true;
 }
+void Camera::SetWorldMatrix(const Matrix4x4& mat_world) {
+	m_mat_world = mat_world;
+	m_is_dirty = true;
+}
+void Camera::SetViewProjectionMatrix(const Matrix4x4& mat_view_projection) {
+	m_mat_view_projection = mat_view_projection;
+	m_is_dirty = true;
+}
 #pragma endregion
 
 void Camera::UpdateMatrix() {

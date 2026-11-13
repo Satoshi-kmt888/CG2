@@ -1,5 +1,6 @@
 #include "ParticleSystem.h"
 
+#include "Camera.h"
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
 #include "Graphics/GraphicsSystem.h"
@@ -38,7 +39,7 @@ void ParticleSystem::Initialize(UINT instance_count) {
 
 	m_mesh->CreateBuffer(device);
 
-	m_material->SetTexture("Resource/uvChecker.png");
+	m_material->SetTexture("Resource/circle.png");
 	m_material->CreateBuffer(device);
 
 	CreateBuffer(device);
@@ -65,7 +66,7 @@ void ParticleSystem::Initialize(UINT instance_count) {
 void ParticleSystem::Update() {
 }
 
-void ParticleSystem::Draw(const Matrix4x4& view_projection_matrix) {
+void ParticleSystem::Draw(const Camera* camera) {
 	auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
 
 	if (!m_transformation_buffer) {
@@ -75,6 +76,11 @@ void ParticleSystem::Draw(const Matrix4x4& view_projection_matrix) {
 
 	const size_t count = std::min<size_t>(m_particles.size(), m_num_max_instance);
 	uint32_t num_instance = 0;
+
+	Matrix4x4 mat_billboard = camera->GetWorldMatrix();
+	mat_billboard.m[3][0] = 0.0f;
+	mat_billboard.m[3][1] = 0.0f;
+	mat_billboard.m[3][2] = 0.0f;
 
 	//ワールド変換データを更新
 	for (auto& particle:m_particles) {
@@ -88,9 +94,12 @@ void ParticleSystem::Draw(const Matrix4x4& view_projection_matrix) {
 
 		float alpha = 1.0f - (particle.current_time / particle.life_time);
 
-		particle.transform.UpdateMatrix();
+		Matrix4x4 mat_scale = Matrix4x4::MakeScale(particle.transform.scale);
+		Matrix4x4 mat_translation = Matrix4x4::MakeTranslation(particle.transform.translation);
+
+		particle.transform.mat_world = mat_scale * mat_billboard * mat_translation;
 		m_transformation_data[num_instance].world = particle.transform.mat_world;
-		m_transformation_data[num_instance].wvp = particle.transform.mat_world * view_projection_matrix;
+		m_transformation_data[num_instance].wvp = particle.transform.mat_world * camera->GetViewProjMatrix();
 
 		m_transformation_data[num_instance].color = particle.color;
 		m_transformation_data[num_instance].color.w = alpha;

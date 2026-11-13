@@ -10,6 +10,8 @@
 #include <memory>
 #include <span>
 
+class Camera;
+
 /// <summary>
 /// 
 /// </summary>
@@ -30,7 +32,7 @@ public:
 
 	void Initialize(UINT instance_count);
 	void Update();
-	void Draw(const Matrix4x4& view_projection_matrix);
+	void Draw(const Camera* camera);
 
 	ID3D12Resource* GetResource() const { return m_transformation_buffer.Get(); }
 
