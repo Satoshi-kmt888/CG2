@@ -2,7 +2,9 @@
 
 #include "Debugger/Logger.h"
 #include "Graphics/D3D12Utility.h"
+#include "Graphics/GraphicsSystem.h"
 
+#include <array>
 #include <cstdint>
 #include <dxgiformat.h>
 
@@ -65,29 +67,7 @@ void Mesh::CreateBuffer(ID3D12Device* device) {
 	m_indices.clear();
 }
 
-void Mesh::Draw(ID3D12GraphicsCommandList* command_list) const {
-	if (!command_list) {
-		LOG_ERROR("Mesh::Draw 引数commandListがnullptrです。");
-		return;
-	}
-
-	if (!m_vertex_buffer) {
-		LOG_ERROR("Mesh::Draw メンバ変数vertexBuffer_がnullptrです。Mesh::CreateBufferでvertexBuffer_を作成してください。");
-		return;
-	}
-
-	command_list->IASetVertexBuffers(0, 1, &m_vertex_buffer_view); //頂点バッファのセット
-
-	//インデックスの有無でドローコールを行う
-	if (m_index_count > 0) {
-		command_list->IASetIndexBuffer(&m_index_buffer_view);
-		command_list->DrawIndexedInstanced(m_index_count, 1, 0, 0, 0);
-	} else {
-		command_list->DrawInstanced(m_vertex_count, 1, 0, 0);
-	}
-}
-
-void Mesh::Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count) {
+void Mesh::Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count) const {
 	if (!command_list) {
 		LOG_ERROR("Mesh::Draw 引数commandListがnullptrです。");
 		return;
@@ -107,4 +87,34 @@ void Mesh::Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count) {
 	} else {
 		command_list->DrawInstanced(m_vertex_count, instance_count, 0, 0);
 	}
+}
+
+std::unique_ptr<Mesh> Mesh::CreatePlane() {
+	ID3D12Device* device = GraphicsSystem::GetInstance()->GetDevice();
+
+	auto mesh = std::make_unique<Mesh>();
+
+	//頂点データを生成
+	std::array<VertexData, 4> vertices = { {
+		{ { -0.5f, 0.5f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } }, // 左上
+		{ { 0.5f, 0.5f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } }, // 右上
+		{ { -0.5f, -0.5f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }, // 左下
+		{ { 0.5f, -0.5f, 0.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }, // 右下
+	} };
+
+	for (const auto& vertex : vertices) {
+		mesh->AddVertex(vertex);
+	}
+
+	//インデックスデータを生成
+	mesh->AddIndex(0);
+	mesh->AddIndex(1);
+	mesh->AddIndex(2);
+	mesh->AddIndex(2);
+	mesh->AddIndex(1);
+	mesh->AddIndex(3);
+
+	mesh->CreateBuffer(device);
+
+	return mesh;
 }

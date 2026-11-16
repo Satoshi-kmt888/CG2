@@ -40,18 +40,26 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	std::random_device seed_generator;
 	std::mt19937 random_engine(seed_generator());
 
+	//デバイス
+	auto device = GraphicsSystem::GetInstance()->GetDevice();
+
 	//Δタイム
 	const float k_delta_time = 1.0f / 60.0f;
 
+	auto sprite_common = SpriteCommon::GetInstance();
+	if (!sprite_common->Initialize(device)) {
+		return false;
+	}
+
 	//Object3Dパイプライン
 	PipelineObject3D pipeline_object3d{};
-	if (!pipeline_object3d.Initialize(GraphicsSystem::GetInstance()->GetDevice())) {
+	if (!pipeline_object3d.Initialize(device)) {
 		return false;
 	}
 
 	//パーティクルパイプライン
 	PipelineParticle pipeline_particle{};
-	if (!pipeline_particle.Initialize(GraphicsSystem::GetInstance()->GetDevice())) {
+	if (!pipeline_particle.Initialize(device)) {
 		return false;
 	}
 
@@ -67,50 +75,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	light->Initialize();
 	Vector4 color_light = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	//スプライト描画前処理用
-	auto sprite_common = SpriteCommon::GetInstance();
-	if (!sprite_common->Initialize(GraphicsSystem::GetInstance()->GetDevice())) {
-		return false;
-	}
-
 	//スプライト
-	WorldTransform sprite_transform = {
+	auto sprite = Sprite::Create("uvChecker.png");
+	sprite->SetPosition(Vector2{ 0.0f, 0.0f });
+	sprite->SetSize(Vector2{ 256.0f, 256.0f });
+
+	//モデル
+	auto model = Model::CreatePlane("uvChecker.png");
+	WorldTransform model_world_transform = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f }
 	};
-	auto sprite = Sprite::Create();
-
-	//モデル
-	WorldTransform model_transform = {
-		{ 100.0f, 100.0f, 1.0f },
-		{ 0.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 50.0f }
-	};
-	auto model = Model::CreateFromOBJ("skysphere.obj");
-	model->SetLightType(0);
-	Vector4 model_color = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-	/*--- パーティクル ---*/
-
-	//最大数
-	int particle_count = 10;
-
-	//パーティクル本体
-	std::list<Particle> particles;
-
-	//パーティクル管理システム
-	ParticleSystem particle_system{};
-	particle_system.Initialize();
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
 		//フレーム開始処理
 		StarEngine::BeginFrame();
 
-		//====================
-		// ↓更新処理↓
-		//====================
+		//=====================
+		// ↓更新処理ここから↓
+		//=====================
 
 #ifdef USE_IMGUI
 		//---------------------
@@ -143,30 +128,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		ImGui::Begin("Debug");
 
-		//if (ImGui::CollapsingHeader("Sprite")) {
-		//	ImGui::DragFloat2("transform: translation###Sprite::translation", &sprite_transform.translation.x, 1.0f);
-		//	ImGui::DragFloat("transform: rotation###Sprite::rotation", &sprite_transform.rotation.z, 0.01f);
-		//	ImGui::DragFloat2("transform: scale###Sprite::scale", &sprite_transform.scale.x, 1.0f);
-		//}
-
-		//if (ImGui::CollapsingHeader("Model")) {
-		//	//モデルのトランスフォーム
-		//	ImGui::DragFloat3("transform: translation###Model::translation", &model_transform.translation.x, 0.01f);
-		//	ImGui::DragFloat3("transform: rotation###Model::rotation", &model_transform.rotation.x, 0.01f);
-		//	ImGui::DragFloat3("transform: scale###Model::scale", &model_transform.scale.x, 0.01f);
-
-		//	//モデルの色
-		//	ImGui::ColorEdit4("color###Model::color", &model_color.x);
-		//}
-
-		if (ImGui::CollapsingHeader("Particle")) {
-			ImGui::SliderInt("count", &particle_count, 1, 1024);
-
-			if (ImGui::Button("Emit")) {
-				for (int i = 0; i < particle_count; ++i) {
-					particles.push_back(MakeParticle(random_engine));
-				}
-			}
+		if (ImGui::CollapsingHeader("Model")) {
+			ImGui::DragFloat3("translation###ModelTranslation", &model_world_transform.translation.x, 0.01f);
+			ImGui::DragFloat3("rotation###ModelRotation", &model_world_transform.rotation.x, 0.01f);
+			ImGui::DragFloat3("scale###ModelScale", &model_world_transform.scale.x, 0.01f);
 		}
 
 		ImGui::End();
@@ -193,71 +158,35 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		/*--- オブジェクトを更新 ---*/
 
-		model->SetColor(model_color);
+		//=====================
+		// ↑更新処理ここまで↑
+		//=====================
 
-		for (auto particle_iterator = particles.begin(); particle_iterator != particles.end(); ++particle_iterator) {
-			particle_iterator->transform.translation += particle_iterator->velocity * k_delta_time;
-			particle_iterator->current_time += k_delta_time;
-		}
-		particle_system.SetParticle(particles);
-
-		//====================
-		// ↑更新処理↑
-		//====================
-
-		//====================
-		// ↓描画処理↓
-		//====================
+		//=====================
+		// ↓描画処理ここから↓
+		//=====================
 
 		auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
 
-		//---------------------
-		// モデル描画ここから
-		//---------------------
+		//-----------------------------------------------------
 
-		//描画前処理
 		pipeline_object3d.Bind(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 
 		//モデルを描画
-		model->Draw(model_transform, camera.GetViewProjMatrix());
+		model->Draw(model_world_transform, camera.GetViewProjMatrix());
 
-		//---------------------
-		// モデル描画ここまで
-		//---------------------
+		//-----------------------------------------------------
 
-		//---------------------
-		// パーティクル描画ここから
-		//---------------------
-
-		//描画前処理
-		pipeline_particle.Bind(command_list);
-
-		//パーティクルを描画
-		particle_system.Draw(&camera);
-
-		//---------------------
-		// パーティクル描画ここまで
-		//---------------------
-
-		//---------------------
-		// スプライト描画ここから
-		//---------------------
-
-		//描画前処理
 		sprite_common->SetPipelineState(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 
 		//スプライトを描画
-		//sprite->Draw(sprite_transform);
+		sprite->Draw();
 
-		//---------------------
-		// スプライト描画ここまで
-		//---------------------
-
-		//====================
-		// ↑描画処理↑
-		//====================
+		//=====================
+		// ↑描画処理ここまで↑
+		//=====================
 
 		//フレーム終了処理
 		StarEngine::EndFrame();

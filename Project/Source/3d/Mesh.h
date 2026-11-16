@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Graphics/ConstantBuffer.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -50,14 +51,9 @@ public:
 	/// ドローコールを実行
 	/// </summary>
 	/// <param name="commandList"></param>
-	void Draw(ID3D12GraphicsCommandList* command_list) const;
+	void Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count = 1) const;
 
-	/// <summary>
-	/// インスタンシング描画用
-	/// </summary>
-	/// <param name="command_list"></param>
-	/// <param name="instance_count"></param>
-	void Draw(ID3D12GraphicsCommandList* command_list, UINT instance_count);
+	static std::unique_ptr<Mesh> CreatePlane();
 
 private:
 	//=========================================================

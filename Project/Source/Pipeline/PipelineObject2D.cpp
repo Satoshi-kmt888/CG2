@@ -59,7 +59,7 @@ bool PipelineObject2D::Initialize(ID3D12Device* device) {
 		.AddInputLayout("TEXCOORD", DXGI_FORMAT_R32G32_FLOAT, 0)
 		.AddInputLayout("NORMAL", DXGI_FORMAT_R32G32B32_FLOAT, 0)
 		.SetBlendState(BlendStates::None())
-		.SetRasterizerState(RasterizerStates::BackCull())
+		.SetRasterizerState(RasterizerStates::NoCull())
 		.SetDepthStencilState(DepthStencilStates::Disable());
 
 	if (!m_pipeline->Build(device)) {

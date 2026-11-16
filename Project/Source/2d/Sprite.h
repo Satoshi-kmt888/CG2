@@ -2,8 +2,10 @@
 
 #include "3d/Material.h"
 #include "3d/Mesh.h"
+#include "Graphics/ConstantBuffer.h"
 #include "Math/Matrix4x4.h"
 #include "Math/Vector2.h"
+#include "Math/Vector4.h"
 #include "Math/WorldTransform.h"
 
 #include <d3d12.h>
@@ -35,45 +37,52 @@ public:
 	/// 通常のスプライトを生成
 	/// </summary>
 	/// <returns></returns>
-	static std::unique_ptr<Sprite> Create();
+	static std::unique_ptr<Sprite> Create(const std::string& filename);
 
 	/// <summary>
 	/// 描画処理
 	/// </summary>
 	/// <param name="transform"></param>
 	/// <param name="viewProjectionMatrix"></param>
-	void Draw(WorldTransform& transform);
+	void Draw();
 
 	//=========================================================
 	// accessor
 	//=========================================================
 
-	const Vector4& GetColor() const { return material_->GetColor(); }
-	uint32_t GetLightType() const { return material_->GetLightType(); }
-	const WorldTransform& GetUVTransform() const { return material_->GetTransform(); }
+	const Vector4& GetColor() const { return m_material->GetColor(); }
+	uint32_t GetLightType() const { return m_material->GetLightType(); }
+	const WorldTransform& GetUVTransform() const { return m_material->GetTransform(); }
 
 	//---------------------------------------------------------
 
-	void SetColor(const Vector4& color) { material_->SetColor(color); }
-	void SetLightType(uint32_t lightType) { material_->SetLightType(lightType); }
-	void SetUVTransform(const WorldTransform& transform) { material_->SetTransform(transform); }
+	void SetPosition(const Vector2& position) { m_position = position; }
+	void SetRotation(float rotation) { m_rotation = rotation; }
+	void SetSize(const Vector2& size) { m_size = size; }
+	void SetColor(const Vector4& color) { m_material->SetColor(color); }
+
+	void SetUVTransform(const WorldTransform& transform) { m_material->SetTransform(transform); }
 
 private:
 	//=========================================================
 	// private methods
 	//=========================================================
 
-	void CreateBuffer(ID3D12Device* device);
-
 	//=========================================================
 	// private variables
 	//=========================================================
 
-	//座標変換リソース
-	ComPtr<ID3D12Resource> transformationBuffer_ = nullptr;
-	TransformationMatrix* transformationData_ = nullptr;
+	ConstantBuffer<TransformationMatrix> m_buffer;
 
 	//パーツへの参照
-	std::unique_ptr<Mesh> mesh_ = nullptr;
-	std::unique_ptr<Material> material_ = nullptr;
+	std::unique_ptr<Mesh> m_mesh = nullptr;
+	std::unique_ptr<Material> m_material = nullptr;
+
+	WorldTransform m_world_transform{};
+
+	Vector2 m_position{};
+	float m_rotation{};
+	Vector2 m_size{};
+	Vector2 m_anchor_point{};
+	Vector4 m_color{};
 };

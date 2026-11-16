@@ -40,7 +40,9 @@ void ParticleSystem::Initialize() {
 	m_mesh->CreateBuffer(device);
 
 	m_material->SetTexture("Resource/bubble.png");
-	m_material->CreateBuffer(device);
+	if (!m_material->Initialize(device)) {
+		return;
+	}
 
 	CreateBuffer(device);
 

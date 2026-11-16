@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Graphics/ConstantBuffer.h"
 #include "Math/Matrix4x4.h"
 #include "Math/Vector4.h"
 #include "Math/WorldTransform.h"
@@ -11,8 +12,6 @@
 #include <Windows.h>
 #include <wrl/client.h>
 
-template<typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 struct TextureData;
 
 /// <summary>
@@ -20,8 +19,6 @@ struct TextureData;
 /// </summary>
 class Material {
 public:
-	//--- 内部データ構造体 ---
-
 	//GPUへ送るための表面データ
 	struct SurfaceData {
 		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f }; //RGBAの色データ
@@ -30,18 +27,14 @@ public:
 		Matrix4x4 uvTransform = Matrix4x4::Identity();  //uv座標変換データ
 	};
 
-	//--- コンストラクタ・デストラクタ ---
+	//=========================================================
+	// public methods
+	//=========================================================
 
 	Material() = default;
 	~Material() = default;
 
-	//--- 公開関数 ---
-
-	/// <summary>
-	/// バッファの生成
-	/// </summary>
-	/// <param name="device"></param>
-	void CreateBuffer(ID3D12Device* device);
+	[[nodiscard]] bool Initialize(ID3D12Device* device);
 
 	/// <summary>
 	/// 更新処理
@@ -62,23 +55,27 @@ public:
 	/// <param name="filePath"></param>
 	void SetTexture(const std::string& filePath);
 
-	//--- ゲッター ---
+	//=========================================================
+	// accessor
+	//=========================================================
 
-	const Vector4& GetColor() const { return surfaceData_->color; }
-	int32_t GetLightType() const { return surfaceData_->lightType; }
+	const Vector4& GetColor() const { return m_buffer->color; }
+	int32_t GetLightType() const { return m_buffer->lightType; }
 	const WorldTransform& GetTransform() const { return transform_; }
 
-	//--- セッター ----
+	//---------------------------------------------------------
 
-	void SetColor(const Vector4& color) { surfaceData_->color = color; }
-	void SetLightType(int32_t lightType) { surfaceData_->lightType = lightType; }
+	void SetColor(const Vector4& color) { m_buffer->color = color; }
+	void SetLightType(int32_t lightType) { m_buffer->lightType = lightType; }
 	void SetTransform(const WorldTransform& transform) { transform_ = transform; }
 
 private:
-	//--- 内部変数 ---
+	//=========================================================
+	// private methods
+	//=========================================================
 
-	ComPtr<ID3D12Resource> surfaceBuffer_ = nullptr;
-	SurfaceData* surfaceData_ = nullptr;
+	ConstantBuffer<SurfaceData> m_buffer;
+
 	const TextureData* textureData_ = nullptr;
 
 	WorldTransform transform_ = {};

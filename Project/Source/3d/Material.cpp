@@ -5,41 +5,19 @@
 #include "Graphics/TextureManager.h"
 #include "Math/Matrix4x4.h"
 
-void Material::CreateBuffer(ID3D12Device* device) {
-	if (!device) {
-		LOG_ERROR("Material::CreateBufer 引数deviceがnullptrです。");
-		return;
+bool Material::Initialize(ID3D12Device* device) {
+	if (!m_buffer.Create(device)) {
+		LOG_ERROR("定数バッファの生成に失敗しました。");
+		return false;
 	}
 
-	surfaceBuffer_ = D3D12Utility::CreateBufferResource(device, sizeof(SurfaceData));
-	if (!surfaceBuffer_) {
-		LOG_ERROR("Material::CreateBuffer メンバ変数surfaceBuffer_を生成することができませんでした。");
-		return;
-	}
-
-	void* materialPtr = nullptr;
-	HRESULT hr = surfaceBuffer_->Map(0, nullptr, &materialPtr);
-	if (FAILED(hr)) {
-		LOG_ERROR("Material::CreateBuffer メンバ変数surfaceBufferをマッピングすることができませんでした。");
-		return;
-	}
-
-	surfaceData_ = static_cast<SurfaceData*>(materialPtr);
-	if (surfaceData_) {
-		*surfaceData_ = SurfaceData();
-	}
+	return true;
 }
 
 void Material::Update() {
-	if (!surfaceBuffer_) {
-		return;
-	}
-
 	//uv座標変換データの計算
-	Matrix4x4 uvTransformMatrix = Matrix4x4::MakeScale(transform_.scale);
-	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeRotationZ(transform_.rotation.z);
-	uvTransformMatrix = uvTransformMatrix * Matrix4x4::MakeTranslation(transform_.translation);
-	surfaceData_->uvTransform = uvTransformMatrix;
+	Matrix4x4 uvTransformMatrix = Matrix4x4::MakeAffine(transform_.scale, transform_.rotation, transform_.translation);
+	m_buffer->uvTransform = uvTransformMatrix;
 }
 
 void Material::SetGraphicsCommand(ID3D12GraphicsCommandList* commandList, UINT rootParamIndexMaterial, UINT rootParamIndexTexture) const {
@@ -48,12 +26,7 @@ void Material::SetGraphicsCommand(ID3D12GraphicsCommandList* commandList, UINT r
 		return;
 	}
 
-	if (!surfaceBuffer_) {
-		LOG_ERROR("Material::SetGraphicsCommand メンバ変数surfaceBuffer_がnullptrです。Material::CreateBufferでsurfaceBufferを作成してください。");
-		return;
-	}
-
-	commandList->SetGraphicsRootConstantBufferView(rootParamIndexMaterial, surfaceBuffer_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(rootParamIndexMaterial, m_buffer.GetGPUAddress());
 
 	if (textureData_) {
 		commandList->SetGraphicsRootDescriptorTable(rootParamIndexTexture,
@@ -64,5 +37,3 @@ void Material::SetGraphicsCommand(ID3D12GraphicsCommandList* commandList, UINT r
 void Material::SetTexture(const std::string& filePath) {
 	textureData_ = &TextureManager::GetInstance()->Load(filePath);
 }
-
-

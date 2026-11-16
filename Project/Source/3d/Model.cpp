@@ -33,29 +33,12 @@ std::unique_ptr<Model> Model::CreatePlane(const std::string& filename) {
 	model->m_material = std::make_unique<Material>();
 	model->m_mesh = std::make_unique<Mesh>();
 
-	//頂点データを生成
-	Mesh::VertexData vertex;
-	vertex = { { -0.5f, 0.5f, 0.0f, 1.0f },{ 0.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } };   // 左上
-	model->m_mesh->AddVertex(vertex);
-	vertex = { { 0.5f, 0.5f, 0.0f, 1.0f },{ 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } };  // 右上
-	model->m_mesh->AddVertex(vertex);
-	vertex = { { -0.5f, -0.5f, 0.0f, 1.0f },{ 0.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } };  // 左下
-	model->m_mesh->AddVertex(vertex);
-	vertex = { { 0.5f, -0.5f, 0.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } }; // 右下
-	model->m_mesh->AddVertex(vertex);
-
-	//インデックスデータを生成
-	model->m_mesh->AddIndex(0);
-	model->m_mesh->AddIndex(1);
-	model->m_mesh->AddIndex(2);
-	model->m_mesh->AddIndex(2);
-	model->m_mesh->AddIndex(1);
-	model->m_mesh->AddIndex(3);
-
-	model->m_mesh->CreateBuffer(device);
+	model->m_mesh = Mesh::CreatePlane();
 
 	model->m_material->SetTexture("Resource/" + filename);
-	model->m_material->CreateBuffer(device);
+	if (!model->m_material->Initialize(device)) {
+		return nullptr;
+	}
 
 	model->CreateBuffer(device);
 
@@ -120,7 +103,9 @@ std::unique_ptr<Model> Model::CreateSphere(const std::string& filename, uint32_t
 	model->m_mesh->CreateBuffer(device);
 
 	model->m_material->SetTexture("Resource/" + filename);
-	model->m_material->CreateBuffer(device);
+	if (!model->m_material->Initialize(device)) {
+		return nullptr;
+	}
 
 	model->CreateBuffer(device);
 
@@ -140,7 +125,9 @@ std::unique_ptr<Model> Model::CreateFromOBJ(const std::string& filename) {
 
 	model->LoadOBJ(filename);
 
-	model->m_material->CreateBuffer(device);
+	if (!model->m_material->Initialize(device)) {
+		return nullptr;
+	};
 
 	model->CreateBuffer(device);
 
