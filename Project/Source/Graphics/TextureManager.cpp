@@ -23,53 +23,53 @@ TextureManager* TextureManager::GetInstance() {
 
 void TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
 	//メンバ変数に引数のデータを代入
-	device_ = device;
-	commandList_ = commandList;
+	m_device = device;
+	m_command_list = commandList;
 }
 
 void TextureManager::Finalize() {
-	intermediateResource_.clear();
-	textureDataMap_.clear();
+	intermediate_resource.clear();
+	m_data_map.clear();
 }
 
 const TextureData& TextureManager::Load(const std::string& filePath) {
 	//既に読み込み済みならそれを返す
-	if (textureDataMap_.contains(filePath)) {
-		return textureDataMap_[filePath];
+	if (m_data_map.contains(filePath)) {
+		return m_data_map[filePath];
 	}
 
 	//画像ファイルの読み込み
-	DirectX::ScratchImage mipImages = ReadFile(filePath);
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	DirectX::ScratchImage mip_images = ReadFile(filePath);
+	const DirectX::TexMetadata& metadata = mip_images.GetMetadata();
 
 	//リソースの生成とVRAM転送
 	TextureData data;
 	data.metadata = metadata;
-	data.resource = D3D12Utility::CreateTextureResource(device_, metadata);
+	data.resource = D3D12Utility::CreateTextureResource(m_device, metadata);
 
-	intermediateResource_.push_back(UploadTextureData(data.resource.Get(), mipImages));
+	intermediate_resource.push_back(UploadTextureData(data.resource.Get(), mip_images));
 
-	data.descriptorHandle = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
+	data.descriptor_handle = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
 
 	//SRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = static_cast<UINT>(metadata.mipLevels);
+	D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc{};
+	srv_desc.Format = metadata.format;
+	srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srv_desc.Texture2D.MipLevels = static_cast<UINT>(metadata.mipLevels);
 
 	//SRVの生成
-	device_->CreateShaderResourceView(data.resource.Get(), &srvDesc, data.descriptorHandle.cpuHandle);
+	m_device->CreateShaderResourceView(data.resource.Get(), &srv_desc, data.descriptor_handle.cpu_handle);
 
-	textureDataMap_[filePath] = std::move(data);
-	return textureDataMap_[filePath];
+	m_data_map[filePath] = std::move(data);
+	return m_data_map[filePath];
 }
 
 DirectX::ScratchImage TextureManager::ReadFile(const std::string& filePath) {
 	//テクスチャを読み込んで扱えるようにする
 	DirectX::ScratchImage image{};
-	std::wstring filePathW = StringUtility::ConvertString(filePath);
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	std::wstring file_path_w = StringUtility::ConvertString(filePath);
+	HRESULT hr = DirectX::LoadFromWICFile(file_path_w.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	assert(SUCCEEDED(hr));
 
 	const auto& metadata = image.GetMetadata();
@@ -78,38 +78,37 @@ DirectX::ScratchImage TextureManager::ReadFile(const std::string& filePath) {
 	}
 
 	//ミップマップの作成
-	DirectX::ScratchImage mipImages{};
+	DirectX::ScratchImage mip_images{};
 	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(),
-		image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+		image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mip_images);
 	assert(SUCCEEDED(hr));
 
-	return mipImages;
+	return mip_images;
 }
 
-[[nodiscard]]
 Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
 	//中間リソースを作る
-	std::vector<D3D12_SUBRESOURCE_DATA> subResources;
+	std::vector<D3D12_SUBRESOURCE_DATA> sub_resources;
 	HRESULT hr = DirectX::PrepareUpload(
-		device_,
+		m_device,
 		mipImages.GetImages(),
 		mipImages.GetImageCount(),
 		mipImages.GetMetadata(),
-		subResources
+		sub_resources
 	);
 	assert(SUCCEEDED(hr));
-	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subResources.size()));
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = D3D12Utility::CreateBufferResource(device_, intermediateSize);
+	uint64_t intermediate_size = GetRequiredIntermediateSize(texture, 0, UINT(sub_resources.size()));
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediate_resource = D3D12Utility::CreateBufferResource(m_device, intermediate_size);
 
 	//データ転送をコマンドに積む
 	UpdateSubresources(
-		commandList_,
+		m_command_list,
 		texture,
-		intermediateResource.Get(),
+		intermediate_resource.Get(),
 		0,
 		0,
-		UINT(subResources.size()),
-		subResources.data()
+		UINT(sub_resources.size()),
+		sub_resources.data()
 	);
 
 	//ResourceStateを変更する
@@ -120,7 +119,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12R
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
-	commandList_->ResourceBarrier(1, &barrier);
+	m_command_list->ResourceBarrier(1, &barrier);
 
-	return intermediateResource;
+	return intermediate_resource;
 }

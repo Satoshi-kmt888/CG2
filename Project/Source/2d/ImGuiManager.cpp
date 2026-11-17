@@ -32,8 +32,8 @@ void ImGuiManager::Initialize(HWND hwnd, ID3D12Device* device, ID3D12CommandQueu
 	init_info.NumFramesInFlight = bufferCount;
 	init_info.RTVFormat = rtvFormat;
 	init_info.SrvDescriptorHeap = descriptorHeap;
-	init_info.LegacySingleSrvCpuDescriptor = descriptorHandle_.cpuHandle;
-	init_info.LegacySingleSrvGpuDescriptor = descriptorHandle_.gpuHandle;
+	init_info.LegacySingleSrvCpuDescriptor = descriptorHandle_.cpu_handle;
+	init_info.LegacySingleSrvGpuDescriptor = descriptorHandle_.gpu_handle;
 
 	ImGui_ImplDX12_Init(&init_info);
 	ImGuiIO& io = ImGui::GetIO();

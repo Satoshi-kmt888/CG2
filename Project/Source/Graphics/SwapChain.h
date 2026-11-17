@@ -76,9 +76,9 @@ public:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRtvHandle() const {
 		UINT index = m_swapChain->GetCurrentBackBufferIndex();
-		return m_rtvHandles[index].cpuHandle;
+		return m_rtvHandles[index].cpu_handle;
 	}
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return m_dsvHandle.cpuHandle; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return m_dsvHandle.cpu_handle; }
 
 private:
 	//==================================================

@@ -30,7 +30,7 @@ void Material::SetGraphicsCommand(ID3D12GraphicsCommandList* commandList, UINT r
 
 	if (textureData_) {
 		commandList->SetGraphicsRootDescriptorTable(rootParamIndexTexture,
-			textureData_->descriptorHandle.gpuHandle);
+			textureData_->descriptor_handle.gpu_handle);
 	}
 }
 

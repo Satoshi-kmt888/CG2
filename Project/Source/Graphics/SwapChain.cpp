@@ -142,7 +142,7 @@ bool SwapChain::CreateRenderTargetViews(ID3D12Device* device) {
 		m_rtvHandles[i] = DescriptorManager::GetInstance()->Allocate(DescriptorType::RTV);
 
 		//もらったハンドルの「cpuHandle」を使ってRTVを生成
-		device->CreateRenderTargetView(m_swapChainResources[i].Get(), &m_rtvDesc, m_rtvHandles[i].cpuHandle);
+		device->CreateRenderTargetView(m_swapChainResources[i].Get(), &m_rtvDesc, m_rtvHandles[i].cpu_handle);
 	}
 
 	return true;
@@ -163,7 +163,7 @@ bool SwapChain::CreateDepthStencilView(ID3D12Device* device, uint32_t width, uin
 	device->CreateDepthStencilView(
 		m_depthStencilResource.Get(),
 		&m_dsvDesc,
-		m_dsvHandle.cpuHandle
+		m_dsvHandle.cpu_handle
 	);
 
 	return true;

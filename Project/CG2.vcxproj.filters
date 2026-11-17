@@ -189,7 +189,9 @@
     <ClCompile Include="Source\Pipeline\PipelineObject2D.cpp">
       <Filter>Source\Pipeline</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Physics\Collision.cpp" />
+    <ClCompile Include="Source\Physics\Collision.cpp">
+      <Filter>Source\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Audio\Audio.h">
@@ -360,7 +362,9 @@
     <ClInclude Include="Source\Geometry\AABB.h">
       <Filter>Source\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Physics\Collision.h" />
+    <ClInclude Include="Source\Physics\Collision.h">
+      <Filter>Source\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Shader\Object3D.hlsli">

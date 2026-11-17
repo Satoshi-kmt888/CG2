@@ -88,8 +88,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//スプライト
 	auto sprite = Sprite::Create("uvChecker.png");
-	sprite->SetPosition(Vector2{ 0.0f, 0.0f });
-	sprite->SetSize(Vector2{ 256.0f, 256.0f });
+	Vector2 position = { 0.0f, 0.0f };
+	float rotation = 0.0f;
+	Vector2 size = { 256.0f, 256.0f };
+	Vector2 anchor_point = { 0.5f, 0.5f };
 
 	//モデル
 	auto model = Model::CreatePlane("uvChecker.png");
@@ -176,6 +178,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			}
 		}
 
+		if (ImGui::CollapsingHeader("Sprite")) {
+			ImGui::DragFloat2("position###SpritePosition", &position.x, 1.0f);
+			ImGui::DragFloat("rotation###SpriteRotation", &rotation, 0.01f);
+			ImGui::DragFloat2("size###SpriteSize", &size.x, 1.0f);
+			ImGui::DragFloat2("anchor point###SpriteAnchorPoint", &anchor_point.x, 0.1f);
+		}
+
 		ImGui::End();
 #endif
 
@@ -218,6 +227,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 		particle_system->SetParticle(particles);
 		particle_system->Update();
+
+		//スプライト適用
+		sprite->SetPosition(position);
+		sprite->SetSize(size);
+		sprite->SetRotation(rotation);
+		sprite->SetAnchorPoint(anchor_point);
 
 		//=====================
 		// ↑更新処理ここまで↑

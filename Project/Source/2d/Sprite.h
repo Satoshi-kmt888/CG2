@@ -59,6 +59,7 @@ public:
 	void SetPosition(const Vector2& position) { m_position = position; }
 	void SetRotation(float rotation) { m_rotation = rotation; }
 	void SetSize(const Vector2& size) { m_size = size; }
+	void SetAnchorPoint(const Vector2& anchor_point) { m_anchor_point = anchor_point; }
 	void SetColor(const Vector4& color) { m_material->SetColor(color); }
 
 	void SetUVTransform(const WorldTransform& transform) { m_material->SetTransform(transform); }

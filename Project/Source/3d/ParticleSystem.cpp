@@ -59,8 +59,8 @@ void ParticleSystem::Initialize() {
 	srv_desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 
 	const DescriptorHandle allocation = DescriptorManager::GetInstance()->Allocate(DescriptorType::SRV_CBV_UAV);
-	m_instancing_srv_gpu_handle = allocation.gpuHandle;
-	device->CreateShaderResourceView(m_transformation_buffer.Get(), &srv_desc, allocation.cpuHandle);
+	m_instancing_srv_gpu_handle = allocation.gpu_handle;
+	device->CreateShaderResourceView(m_transformation_buffer.Get(), &srv_desc, allocation.cpu_handle);
 }
 
 void ParticleSystem::Update() {

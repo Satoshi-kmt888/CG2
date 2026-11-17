@@ -16,15 +16,15 @@ enum class DescriptorType {
 	RTV,         //レンダーターゲット
 	DSV,         //深度ステンシル
 
-	Count        //種類の総数
+	COUNT        //種類の総数
 };
 
 /// <summary>
 /// ディスクリプタ
 /// </summary>
 struct DescriptorHandle {
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle{};
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle{};
+	D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle{};
+	D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle{};
 	uint32_t index = 0;
 	DescriptorType type = DescriptorType::SRV_CBV_UAV;
 };
@@ -36,11 +36,13 @@ class DescriptorManager {
 public:
 	//--- 公開定数 ---
 
-	static constexpr uint32_t kMaxSrvCbvUavDescriptors = 2048;
-	static constexpr uint32_t kMaxRtvDescriptors = 64;
-	static constexpr uint32_t kMaxDsvDescriptors = 64;
+	static constexpr uint32_t k_max_srv_cbv_uav_descriptors = 2048;
+	static constexpr uint32_t k_max_rtv_descriptors = 64;
+	static constexpr uint32_t k_max_dsv_descriptors = 64;
 
-	//--- インスタンス管理 ---
+	//=========================================================
+	// public methods
+	//=========================================================
 
 	/// <summary>
 	/// インスタンス取得
@@ -51,8 +53,6 @@ public:
 	//コピーガード
 	DescriptorManager(const DescriptorManager&) = delete;
 	DescriptorManager& operator=(const DescriptorManager&) = delete;
-
-	//--- 公開関数 ---
 
 	/// <summary>
 	/// 初期化
@@ -77,12 +77,16 @@ public:
 	/// </summary>
 	void Finalize();
 
-	//--- ゲッター ---
+	//=========================================================
+	// accessor
+	//=========================================================
 
-	ID3D12DescriptorHeap* GetHeap(DescriptorType type) const { return pools_[static_cast<size_t>(type)].descriptorHeap.Get(); }
+	ID3D12DescriptorHeap* GetHeap(DescriptorType type) const { return m_pools[static_cast<size_t>(type)].descriptorHeap.Get(); }
 
 private:
-	//--- インスタンス管理 ---
+	//=========================================================
+	// private methods
+	//=========================================================
 
 	DescriptorManager() = default;
 	~DescriptorManager() = default;
@@ -98,8 +102,10 @@ private:
 		std::vector<uint32_t> freeIndices;
 	};
 
-	//--- 内部変数 ---
+	//=========================================================
+	// private variables
+	//=========================================================
 
 	//ヒーププール
-	std::array<HeapPool, static_cast<size_t>(DescriptorType::Count)> pools_;
+	std::array<HeapPool, static_cast<size_t>(DescriptorType::COUNT)> m_pools;
 };
