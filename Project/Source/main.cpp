@@ -10,11 +10,13 @@
 #include "3d/Particle.h"
 #include "3d/ParticleSystem.h"
 #include "Debugger/D3D12ResourceLeakChecker.h"
+#include "Geometry/AABB.h"
 #include "Graphics/GraphicsSystem.h"
 #include "Input/Input.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
 #include "Math/WorldTransform.h"
+#include "Physics/Collision.h"
 
 #include "Pipeline/PipelineObject2D.h"
 #include "Pipeline/PipelineObject3D.h"
@@ -26,6 +28,11 @@
 #include <memory>
 #include <random>
 #include <Windows.h>
+
+struct AccelerationField {
+	Vector3 acceleration;
+	AABB area;
+};
 
 Particle MakeParticle(std::mt19937& random_engine, const Vector3& position);
 
@@ -98,12 +105,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	particle_system->Initialize();
 	//エミッター
 	Emitter emitter{};
-	emitter.world_transform.translation = {0.0f, 0.0f, 0.0f};
-	emitter.world_transform.rotation = {0.0f, 0.0f, 0.0f};
-	emitter.world_transform.scale = {1.0f, 1.0f, 1.0f};
+	emitter.world_transform.translation = { 0.0f, 0.0f, 0.0f };
+	emitter.world_transform.rotation = { 0.0f, 0.0f, 0.0f };
+	emitter.world_transform.scale = { 1.0f, 1.0f, 1.0f };
 	emitter.count = 3;
 	emitter.frequency = 0.5f;
 	emitter.frequency_time = 0.0f;
+	//フィールド
+	AccelerationField acceleration_field{};
+	acceleration_field.acceleration = { 15.0f, 0.0f, 0.0f };
+	acceleration_field.area.min = { -1.0f, -1.0f, -1.0f };
+	acceleration_field.area.max = { 1.0f, 1.0f, 1.0f };
+	bool is_enable_field = false;
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -156,6 +169,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::DragFloat3("emitter rotation###EmitterRotation", &emitter.world_transform.rotation.x, 0.01f);
 			ImGui::DragFloat3("emitter scale###EmitterScale", &emitter.world_transform.scale.x, 0.01f);
 
+			ImGui::Checkbox("enable wind field", &is_enable_field);
+
 			if (ImGui::Button("Emit Particle")) {
 				particles.splice(particles.end(), Emit(emitter, random_engine));
 			}
@@ -192,6 +207,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 
 		for (auto particle_iterator = particles.begin(); particle_iterator != particles.end(); ++particle_iterator) {
+			if (is_enable_field) {
+				if (Collision::IsCollision(acceleration_field.area, particle_iterator->transform.translation)) {
+					particle_iterator->velocity += acceleration_field.acceleration * k_delta_time;
+				}
+			}
+
 			particle_iterator->transform.translation += particle_iterator->velocity * k_delta_time;
 			particle_iterator->current_time += k_delta_time;
 		}

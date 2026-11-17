@@ -156,6 +156,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Physics\Collision.cpp" />
     <ClCompile Include="External\imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -221,6 +222,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClCompile Include="Source\Pipeline\ShaderCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Physics\Collision.h" />
     <ClInclude Include="External\imgui\imconfig.h" />
     <ClInclude Include="External\imgui\imgui.h" />
     <ClInclude Include="External\imgui\imgui_impl_dx12.h" />
@@ -230,6 +232,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\3d\Emitter.h" />
+    <ClInclude Include="Source\Geometry\AABB.h" />
     <ClInclude Include="Source\Graphics\ConstantBuffer.h" />
     <ClInclude Include="Source\Pipeline\PipelineObject2D.h" />
     <ClInclude Include="Source\2d\ImGuiManager.h" />

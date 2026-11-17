@@ -43,6 +43,12 @@
     <Filter Include="External\imgui">
       <UniqueIdentifier>{9d33d20f-1b76-44a1-a266-1d0826db3124}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Geometry">
+      <UniqueIdentifier>{974a303b-a82a-43ec-9c13-ad14fc441c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Physics">
+      <UniqueIdentifier>{459770a2-d2a8-4eb1-9893-e19effb2695a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio\Audio.cpp">
@@ -183,6 +189,7 @@
     <ClCompile Include="Source\Pipeline\PipelineObject2D.cpp">
       <Filter>Source\Pipeline</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Physics\Collision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Audio\Audio.h">
@@ -350,6 +357,10 @@
     <ClInclude Include="Source\3d\Emitter.h">
       <Filter>Source\3d</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Geometry\AABB.h">
+      <Filter>Source\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\Collision.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Shader\Object3D.hlsli">
