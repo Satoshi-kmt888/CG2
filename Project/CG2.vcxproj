@@ -229,6 +229,7 @@ xcopy "$(SolutionDir)Resource" "$(OutDir)Resource" /I /E /Y /D</Command>
     <ClInclude Include="External\imgui\imstb_rectpack.h" />
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
+    <ClInclude Include="Source\3d\Emitter.h" />
     <ClInclude Include="Source\Graphics\ConstantBuffer.h" />
     <ClInclude Include="Source\Pipeline\PipelineObject2D.h" />
     <ClInclude Include="Source\2d\ImGuiManager.h" />

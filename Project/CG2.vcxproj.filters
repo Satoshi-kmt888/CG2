@@ -347,6 +347,9 @@
     <ClInclude Include="Source\Graphics\ConstantBuffer.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\3d\Emitter.h">
+      <Filter>Source\3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Shader\Object3D.hlsli">

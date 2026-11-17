@@ -5,6 +5,7 @@
 #include "3d/Camera.h"
 #include "3d/DebugCamera.h"
 #include "3d/DirectionalLight.h"
+#include "3d/Emitter.h"
 #include "3d/Model.h"
 #include "3d/Particle.h"
 #include "3d/ParticleSystem.h"
@@ -26,7 +27,9 @@
 #include <random>
 #include <Windows.h>
 
-Particle MakeParticle(std::mt19937& random_engine);
+Particle MakeParticle(std::mt19937& random_engine, const Vector3& position);
+
+std::list<Particle> Emit(const Emitter& emitter, std::mt19937& random_engine);
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -46,6 +49,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//Δタイム
 	const float k_delta_time = 1.0f / 60.0f;
 
+	//スプライト描画前処理用
 	auto sprite_common = SpriteCommon::GetInstance();
 	if (!sprite_common->Initialize(device)) {
 		return false;
@@ -87,6 +91,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f }
 	};
+
+	//パーティクル
+	std::list<Particle> particles;
+	auto particle_system = std::make_unique<ParticleSystem>();
+	particle_system->Initialize();
+	//エミッター
+	Emitter emitter{};
+	emitter.world_transform.translation = {0.0f, 0.0f, 0.0f};
+	emitter.world_transform.rotation = {0.0f, 0.0f, 0.0f};
+	emitter.world_transform.scale = {1.0f, 1.0f, 1.0f};
+	emitter.count = 3;
+	emitter.frequency = 0.5f;
+	emitter.frequency_time = 0.0f;
 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (StarEngine::ProcessMessage()) {
@@ -134,6 +151,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::DragFloat3("scale###ModelScale", &model_world_transform.scale.x, 0.01f);
 		}
 
+		if (ImGui::CollapsingHeader("Particle")) {
+			ImGui::DragFloat3("emitter translation###EmitterTranslation", &emitter.world_transform.translation.x, 0.01f);
+			ImGui::DragFloat3("emitter rotation###EmitterRotation", &emitter.world_transform.rotation.x, 0.01f);
+			ImGui::DragFloat3("emitter scale###EmitterScale", &emitter.world_transform.scale.x, 0.01f);
+
+			if (ImGui::Button("Emit Particle")) {
+				particles.splice(particles.end(), Emit(emitter, random_engine));
+			}
+		}
+
 		ImGui::End();
 #endif
 
@@ -158,6 +185,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		/*--- オブジェクトを更新 ---*/
 
+		emitter.frequency_time += k_delta_time;
+		if (emitter.frequency <= emitter.frequency_time) {
+			particles.splice(particles.end(), Emit(emitter, random_engine));
+			emitter.frequency_time -= emitter.frequency;
+		}
+
+		for (auto particle_iterator = particles.begin(); particle_iterator != particles.end(); ++particle_iterator) {
+			particle_iterator->transform.translation += particle_iterator->velocity * k_delta_time;
+			particle_iterator->current_time += k_delta_time;
+		}
+		particle_system->SetParticle(particles);
+		particle_system->Update();
+
 		//=====================
 		// ↑更新処理ここまで↑
 		//=====================
@@ -168,7 +208,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		auto command_list = GraphicsSystem::GetInstance()->GetCommandList();
 
-		//-----------------------------------------------------
+		//=====================================================
+		// モデル
+		//=====================================================
 
 		pipeline_object3d.Bind(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
@@ -176,7 +218,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//モデルを描画
 		model->Draw(model_world_transform, camera.GetViewProjMatrix());
 
-		//-----------------------------------------------------
+		//=====================================================
+		// パーティクル
+		//=====================================================
+
+		pipeline_particle.Bind(command_list);
+
+		particle_system->Draw(&camera);
+
+		//=====================================================
+		// スプライト
+		//=====================================================
 
 		sprite_common->SetPipelineState(command_list);
 		command_list->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
@@ -199,22 +251,32 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	return 0;
 }
 
-Particle MakeParticle(std::mt19937& random_engine) {
+Particle MakeParticle(std::mt19937& random_engine, const Vector3& position) {
 	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 	std::uniform_real_distribution<float> dist_scale(1.0f, 3.0f);
+	Vector3 random_position = { distribution(random_engine), distribution(random_engine) , distribution(random_engine) };
 	Particle particle;
 	particle.transform.scale.x = dist_scale(random_engine);
 	particle.transform.scale = { particle.transform.scale.x, particle.transform.scale.x , 1.0f };
 	particle.transform.rotation = { 0.0f, 0.0f, 0.0f };
-	particle.transform.translation = { distribution(random_engine), distribution(random_engine) , distribution(random_engine) };
+	particle.transform.translation = position + random_position;
 	particle.velocity = { distribution(random_engine) , distribution(random_engine) ,distribution(random_engine) };
 
 	std::uniform_real_distribution<float> dist_color(0.0f, 1.0f);    //色
-	std::uniform_real_distribution<float> dist_time(1.0f, 5.0f);     //生存時間
+	std::uniform_real_distribution<float> dist_time(1.0f, 3.0f);     //生存時間
 
 	particle.color = { dist_color(random_engine), dist_color(random_engine), dist_color(random_engine), 1.0f };
 	particle.life_time = dist_time(random_engine);
 
 	particle.current_time = 0.0f;
 	return particle;
+}
+
+std::list<Particle> Emit(const Emitter& emitter, std::mt19937& random_engine) {
+	std::list<Particle> particles;
+	for (uint32_t count = 0; count < emitter.count; ++count) {
+		particles.push_back(MakeParticle(random_engine, emitter.world_transform.translation));
+	}
+
+	return particles;
 }
